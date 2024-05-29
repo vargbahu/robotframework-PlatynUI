@@ -1,0 +1,539 @@
+import threading
+import time
+import weakref
+from abc import ABCMeta
+from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type, TypeVar
+
+from .adapter import Adapter
+from .exceptions import CannotEnsureError, NoLocatorDefinedError, PlatynUiFatalError, PlatyUiError
+from .locatorbase import LocatorBase
+from .locatorscope import LocatorScope
+from .predicate import predicate
+from .settings import Settings
+from .strategies import NativeProperties, Properties
+
+__all__ = ["ContextBase", "TContextBase", "context_for", "context", "UnknownContext", "ContextFactory"]
+
+F = TypeVar("F", bound=Callable[..., Any])
+TAdapter = TypeVar("TAdapter")
+
+
+def context_for(
+    cls: Type[TAdapter],
+    role: Optional[str] = None,
+    framework_id: Optional[str] = None,
+    class_name: Optional[str] = None,
+    tag_name: Optional[str] = None,
+    properties: Optional[Dict[str, str]] = None,
+    native_properties: Optional[Dict[str, str]] = None,
+    **decorator_kwargs: Any,
+) -> Type[TAdapter]:
+    if role is None:
+        role = cls.__name__
+
+    setattr(cls, "default_role", role)
+
+    ContextFactory.register_context(
+        cls,
+        {
+            "role": role,
+            "framework_id": framework_id,
+            "class_name": class_name,
+            "tag_name": tag_name,
+            "properties": properties,
+            "native_properties": native_properties,
+            **decorator_kwargs,
+        },
+    )
+    return cls
+
+
+# class context_for(ClassDecorator):  # noqa: N801
+#     __role = None
+#     __framework_id = None
+#     __class_name = None
+#     __tag_name = None
+#     __properties = None
+#     __native_properties = None
+
+#     def __init__(
+#         self,
+#         role: Optional[str] = None,
+#         framework_id: Optional[str] = None,
+#         class_name: Optional[str] = None,
+#         tag_name: Optional[str] = None,
+#         properties: Optional[Dict[str, str]] = None,
+#         native_properties: Optional[Dict[str, str]] = None,
+#     ):
+#         super().__init__()
+#         self.__role = role
+#         self.__framework_id = framework_id
+#         self.__class_name = class_name
+#         self.__tag_name = tag_name
+#         self.__properties = properties
+#         self.__native_properties = native_properties
+
+#     def decorate(self, cls: Type[Any], *decorator_args: Any, **decorator_kwargs: Any) -> Type["ContextBase"]:
+#         role = self.__role
+#         if role is None:
+#             role = cls.__name__
+#         cls.default_role = role
+
+#         ContextFactory.register_context(
+#             cls,
+#             {
+#                 "role": role,
+#                 "framework_id": self.__framework_id,
+#                 "class_name": self.__class_name,
+#                 "tag_name": self.__tag_name,
+#                 "properties": self.__properties,
+#                 "native_properties": self.__native_properties,
+#                 **decorator_kwargs,
+#             },
+#         )
+
+#         return cls
+
+
+# class context(context_for):  # noqa: N801
+#     pass
+
+context = context_for
+
+
+class ContextBase(metaclass=ABCMeta):
+    default_role: Optional[str] = None
+
+    _locator: Optional[LocatorBase] = None
+    __context_parent: Optional["ContextBase"] = None
+
+    def __init__(
+        self,
+        locator: LocatorBase = None,
+        context_parent: Optional["ContextBase"] = None,
+        adapter: Optional[Adapter] = None,
+    ) -> None:
+        self._context_children: weakref.WeakSet["ContextBase"] = weakref.WeakSet()
+
+        if locator is not None:
+            self._locator = locator.copy_from(self._locator)
+        else:
+            self._locator = self._locator.copy() if self._locator is not None else None
+
+        if self._locator is not None:
+            self._locator.context = self
+
+        self.__context_parent = context_parent
+        if context_parent is not None and isinstance(context_parent, ContextBase):
+            context_parent._context_children.add(self)
+
+        self.__adapter = adapter
+
+    def __repr__(self) -> str:
+        return "%s(locator=%s)" % (self.__class__.__name__, self.locator)
+
+    @property
+    def locator(self) -> Optional[LocatorBase]:
+        return self._locator
+
+    @locator.setter
+    def locator(self, v: LocatorBase) -> None:
+        self.invalidate()
+        self._locator = v
+
+    @property
+    def context_parent(self) -> Optional["ContextBase"]:
+        return self.__context_parent
+
+    @context_parent.setter
+    def context_parent(self, v: Optional["ContextBase"]) -> None:
+        if self.context_parent is not None and isinstance(self.context_parent, ContextBase):
+            self.context_parent._context_children.remove(self)
+        self.__context_parent = v
+        self.invalidate()
+        if self.context_parent is not None and isinstance(self.context_parent, ContextBase):
+            self.context_parent._context_children.add(self)
+
+    @property
+    def adapter(self) -> Adapter:
+        self.ensure_that(self._adapter_exists)
+
+        result = self._try_get_adapter(True)
+
+        assert result is not None
+
+        return result
+
+    @adapter.setter
+    def adapter(self, v: Adapter) -> None:
+        self.__adapter = v
+
+    def _try_get_adapter(self, raise_exception: bool = False) -> Optional[Adapter]:
+        if self.__adapter is not None and not self.__adapter.valid:
+            self.invalidate()
+        if self.__adapter is None:
+            self.__adapter = self._get_adapter(raise_exception)
+        return self.__adapter
+
+    def invalidate(self) -> None:
+        for c in self._context_children:
+            c.invalidate()
+        self.__adapter = None
+
+    def _get_adapter(self, raise_exception: bool) -> Optional[Adapter]:
+        self.ensure_that(self._parent_exists)
+
+        if self.locator is not None:
+            return self.locator.technology.adapter_factory.get_adapter(
+                self.context_parent, type(self), self.locator, raise_exception
+            )
+        return None
+
+    def full_repr(self) -> str:
+        result = repr(self)
+        if self.context_parent is not None:
+            return self.context_parent.full_repr() + "." + result
+        return result
+
+    @predicate("{0} exists")
+    def _adapter_exists(self, raise_exception: bool = False) -> bool:
+        self.ensure_that(self._parent_exists)
+
+        a = self._try_get_adapter(raise_exception)
+
+        return a is not None and a.valid
+
+    @predicate("parent for {0} exists")
+    def _parent_exists(self) -> bool:
+        if self.context_parent is None:
+            return True
+
+        return self.context_parent._adapter_exists(True)
+
+    __ensure_that_hooks = []
+
+    @classmethod
+    def add_ensure_hook(cls, hook):
+        cls.__ensure_that_hooks.append(hook)
+
+    @classmethod
+    def __exec_ensure_that_hooks(cls, the_context):
+        for hook in cls.__ensure_that_hooks:
+            hook(the_context)
+
+    class _ContextBaseLocal(threading.local):
+        def __init__(self):
+            self.ensure_that_start_time = None
+            self.ensure_that_raise_exception = None
+            self.in_ensure_that = 0
+            self.succeeded_predicates = []
+            self.ensure_timeout = None  # type: float
+
+    __thread_local = _ContextBaseLocal()
+
+    def ensure_that(self, *predicates: Callable[[], bool], timeout: float = None, raise_exception: bool = None):
+        return ContextBase._ensure_that(
+            self, *predicates, timeout=timeout, raise_exception=raise_exception, failed_func=lambda: self.invalidate()
+        )
+
+    @staticmethod
+    def _ensure_that(
+        context: "ContextBase",
+        *predicates: Callable[[], bool],
+        timeout: float = None,
+        raise_exception: bool = None,
+        failed_func: Callable = None,
+    ) -> None:
+        if timeout is None:
+            timeout = Settings.current().ensure_timeout
+
+        ContextBase.__thread_local.in_ensure_that += 1
+        try:
+            if ContextBase.__thread_local.in_ensure_that == 1:
+                ContextBase.__thread_local.succeeded_predicates = []
+                ContextBase.__thread_local.ensure_that_raise_exception = raise_exception
+                ContextBase.__thread_local.ensure_timeout = timeout
+            else:
+                raise_exception = ContextBase.__thread_local.ensure_that_raise_exception
+
+            if raise_exception is None:
+                raise_exception = True
+
+            result = False
+            set_start_time = False
+            if ContextBase.__thread_local.ensure_that_start_time is None:
+                ContextBase.__thread_local.ensure_that_start_time = time.time()
+                set_start_time = True
+
+            last_exception = None
+            last_predicate = None
+
+            try:
+                while not result:
+                    for p in predicates:
+                        # skip empty predicates
+                        if p is None:
+                            continue
+
+                        if not callable(p):
+                            raise PlatynUiFatalError("%s is not callable " % p)
+
+                        if p in ContextBase.__thread_local.succeeded_predicates:
+                            result = True
+                            continue
+
+                        last_predicate = p
+                        try:
+                            ContextBase.__exec_ensure_that_hooks(context)
+
+                            result = p()
+
+                            if not result:
+                                ContextBase.__thread_local.succeeded_predicates.clear()
+                                break
+
+                            ContextBase.__thread_local.succeeded_predicates.append(p)
+
+                        except (PlatynUiFatalError, KeyboardInterrupt, SystemExit):
+                            raise
+                        except BaseException as e:
+                            last_exception = e
+                            result = False
+                            break
+
+                    if result:
+                        break
+
+                    if ContextBase.__thread_local.ensure_that_start_time is None:
+                        raise PlatyUiError("fatal")
+
+                    if (
+                        time.time() - ContextBase.__thread_local.ensure_that_start_time
+                        > ContextBase.__thread_local.ensure_timeout
+                    ):
+                        break
+
+                    if not result:
+                        time.sleep(Settings.current().ensure_delay)
+                        if failed_func is not None:
+                            failed_func()
+
+            finally:
+                if set_start_time:
+                    ContextBase.__thread_local.ensure_that_start_time = None
+
+            if not result and raise_exception:
+                raise CannotEnsureError(
+                    "cannot ensure that %s%s"
+                    % (
+                        (
+                            "%s" % last_predicate.message.format(context.full_repr())
+                            if hasattr(last_predicate, "message")
+                            else "%s for %s" % (last_predicate, context)
+                        ),
+                        (
+                            ",\n   because %s"
+                            % (last_exception if str(last_exception).strip() != "" else repr(last_exception))
+                            if last_exception is not None
+                            else ""
+                        ),
+                    )
+                ) from last_exception
+
+            return result
+        finally:
+            ContextBase.__thread_local.in_ensure_that -= 1
+            assert ContextBase.__thread_local.in_ensure_that >= 0
+
+    @property
+    def is_valid(self) -> bool:
+        return self.__adapter is not None and self.__adapter.valid
+
+    def exists(self, timeout=None) -> bool:
+        if timeout is None:
+            timeout = Settings.current().exists_timeout
+
+        return self.ensure_that(self._adapter_exists, timeout=timeout, raise_exception=False)
+
+    @property
+    def name(self) -> str:
+        return self.adapter.name
+
+    @property
+    def class_name(self) -> str:
+        return self.adapter.class_name
+
+    @property
+    def tag_name(self) -> str:
+        return self.adapter.tag_name
+
+    @property
+    def role(self) -> str:
+        return self.adapter.role
+
+    @property
+    def supported_roles(self) -> Set[str]:
+        return self.adapter.supported_roles
+
+    @property
+    def supported_strategies(self) -> Set[str]:
+        return self.adapter.supported_strategies
+
+    @property
+    def framework_id(self) -> str:
+        return self.adapter.framework_id
+
+    @property
+    def runtime_id(self) -> Any:
+        self.ensure_that(self._adapter_exists, raise_exception=False)
+
+        if not self.is_valid:
+            return self
+
+        return self.adapter.runtime_id
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    def get(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> "TContextBase":
+        if locator is None:
+            if self.locator is None:
+                raise NoLocatorDefinedError("no locator defined for %s" % self)
+
+            locator = self.locator.create_children_locator(*args, **kwargs)
+
+        return locator.copy().create_context(self, context_class)
+
+    def ancestor(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> "TContextBase":
+        return self.get(context_class, scope=LocatorScope.Ancestor, locator=locator, *args, **kwargs)
+
+    def ancestors(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> List["TContextBase"]:
+        return self.get_all(context_class, scope=LocatorScope.Ancestor, locator=locator, *args, **kwargs)
+
+    def get_child(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> "TContextBase":
+        return self.get(context_class, scope=LocatorScope.Children, locator=locator, *args, **kwargs)
+
+    def iter_all(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> Iterator["TContextBase"]:
+        if locator is None:
+            if self.locator is None:
+                raise NoLocatorDefinedError("no locator defined for %s" % self)
+
+            locator = self.locator.create_children_locator(*args, **kwargs)
+
+        children = self.locator.technology.adapter_factory.get_children_adapters(self, context_class, locator)
+
+        for a in children:
+            loc = locator.make_unique_locator(a)
+            res = loc.create_context(self, ContextFactory.find_context_class_for(a))
+            res.adapter = a
+            if context_class is None or isinstance(res, context_class):
+                yield res
+
+    def get_all(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> List["TContextBase"]:
+        return list(self.iter_all(context_class, *args, locator=locator, **kwargs))
+
+    def get_children(
+        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+    ) -> List["TContextBase"]:
+        return self.get_all(context_class, scope=LocatorScope.Children, locator=locator, *args, **kwargs)
+
+    @property
+    def parent(self) -> Optional["ContextBase"]:
+        adapter = self.adapter
+
+        if adapter is None or not adapter.valid:
+            return None
+
+        parent = adapter.parent
+        if parent is None:
+            return None
+
+        loc = self.locator.create_parent_locator(parent)
+
+        result = loc.create_context(self, ContextFactory.find_context_class_for(parent))
+        result.adapter = parent
+
+        return result
+
+    def __iter__(self):
+        adapter = self.adapter
+
+        if adapter is None or not adapter.valid:
+            return []
+
+        if self.locator is not None:
+
+            for a in adapter.children:
+                loc = self.locator.create_child_locator(a)
+                res = loc.create_context(self, ContextFactory.find_context_class_for(a))
+                res.adapter = a
+                yield res
+
+    @property
+    def children(self) -> List["ContextBase"]:
+        return list(self)
+
+    def get_properties(self) -> List[str]:
+        return self.adapter.get_strategy(Properties).get_property_names()
+
+    def get_property_value(self, name: str) -> Any:
+        return self.adapter.get_strategy(Properties).get_property_value(name)
+
+    def get_native_properties(self) -> List[str]:
+        return self.adapter.get_strategy(NativeProperties).get_native_property_names()
+
+    def get_native_property_value(self, name: str) -> Any:
+        return self.adapter.get_strategy(NativeProperties).get_native_property_value(name)
+
+
+class UnknownContext(ContextBase):
+    pass
+
+
+TContextBase = TypeVar("TContextBase", bound=ContextBase)
+
+
+class ContextFactory:
+    class Entry:
+        def __init__(self, proxy_type: Type[ContextBase], criterias: Dict[str, object]):
+            self.proxy_type = proxy_type
+            self.criterias = criterias
+
+    registered_adapters: List[Entry] = []
+
+    @classmethod
+    def register_context(cls, adapter_cls: Type[TAdapter], criterias: Dict[str, Any]) -> None:
+        cls.registered_adapters.append(ContextFactory.Entry(adapter_cls, criterias.copy()))
+
+    @classmethod
+    def find_context_class_for(cls, adapter: Adapter) -> Type[ContextBase]:
+        from .adapterproxy import WeightCalculator
+
+        weights = []
+        calculator = WeightCalculator(adapter)
+
+        for e in cls.registered_adapters:
+            weights.append((calculator.calculate(e.criterias), e.proxy_type))
+
+        if len(weights) > 0:
+            last = sorted(weights, key=lambda x: x[0])[-1]
+
+            if last[0] > 0:
+                return last[1]
+
+        return UnknownContext
