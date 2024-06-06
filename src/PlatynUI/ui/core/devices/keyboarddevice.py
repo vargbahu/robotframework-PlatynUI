@@ -1,11 +1,11 @@
 import abc
 import collections
 import logging
-from typing import Any, Iterable, Union
+from typing import Any, Iterable, Optional, Union
 
 from ....core.exceptions import PlatyUiError
 from ....core.settings import Settings
-from .basekeyboarddevice import BaseKeyboardDevice, BaseKeyCode
+from .basekeyboarddevice import BaseKeyboardDevice, BaseKeyCode, InputType
 from .inputdevice import InputDevice
 
 __all__ = [
@@ -65,15 +65,15 @@ class KeyboardDevice(InputDevice):
         pass
 
     @abc.abstractmethod
-    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: float = None):
+    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
         pass
 
     @abc.abstractmethod
-    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: float = None):
+    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
         pass
 
     @abc.abstractmethod
-    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: float = None):
+    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
         pass
 
 
@@ -224,7 +224,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
 
     def __del__(self):
         if len(self.__pressed_keys) > 0:
-            logger.warning("there are pressed keys (%s), try to send key release" % self.__pressed_keys)
+            logger.warning("there are pressed keys (%s), try to send key release", self.__pressed_keys, exc_info=True)
             for k in self.__pressed_keys:
                 self.base_keyboard_device.send_keycode(k, False)
 
@@ -236,11 +236,9 @@ class DefaultKeyboardDevice(KeyboardDevice):
                 )
         else:
             logger.warning(
-                "invalid keycode %s, don't send it to device%s"
-                % (
-                    key_event.key_code,
-                    "" if key_event.key_code.error_text is None else ": %s" % key_event.key_code.error_text,
-                )
+                "invalid keycode %s, don't send it to device%s",
+                key_event.key_code,
+                "" if key_event.key_code.error_text is None else ": %s" % key_event.key_code.error_text,
             )
 
         if key_event.press:
@@ -251,7 +249,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
             if key_event.key_code in self.__pressed_keys:
                 self.__pressed_keys.remove(key_event.key_code)
 
-    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: float = None):
+    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
         self.base_keyboard_device.start_input(InputType.TYPE)
         try:
             for c in KeyConverter(self.base_keyboard_device, *keys, down=True, up=True).convert():
@@ -262,7 +260,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
         finally:
             self.base_keyboard_device.end_input()
 
-    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: float = None):
+    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
         self.base_keyboard_device.start_input(InputType.PRESS)
         try:
             for c in KeyConverter(self.base_keyboard_device, *keys, down=True, up=False).convert():
@@ -273,7 +271,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
         finally:
             self.base_keyboard_device.end_input()
 
-    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: float = None):
+    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
         self.base_keyboard_device.start_input(InputType.RELEASE)
         try:
             for c in KeyConverter(self.base_keyboard_device, *keys, down=False, up=True).convert():

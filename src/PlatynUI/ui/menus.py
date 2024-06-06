@@ -1,8 +1,9 @@
-from ..core import context
+from typing import Optional
+from ..core import context, ContextBase
 from . import strategies
-from .control import *
-from .desktopbase import *
-from .window import *
+from .control import Control
+from .desktopbase import DesktopBase
+from .window import Window
 
 __all__ = ["Menu", "MenuBar", "MenuItem"]
 
@@ -20,19 +21,20 @@ class MenuBar(Control):
 @context
 class MenuItem(Control):
 
-    def activate(self):
+    def activate(self) -> None:
         items = []
-        p = self
+        p: Optional[ContextBase] = self
         while p is not None and not isinstance(p, (Window, DesktopBase)):
             if isinstance(p, MenuItem):
                 items.append(p)
+
             p = p.parent
 
         for i in reversed(items[1:]):
-            if not self.parent_window_is_active:
+            if not self.toplevel_parent_is_active:
                 i.activate()
 
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
         try:
             self.adapter.get_strategy(strategies.Activatable).activate()
         finally:

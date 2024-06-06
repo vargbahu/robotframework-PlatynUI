@@ -4,9 +4,8 @@ __all__ = ["MouseButton"]
 
 
 class MouseButton(IntEnum):
-    left = 1
-    middle = 2
-    right = 3
-    x1 = 4
-    x2 = 5
-
+    left = 0
+    middle = 1
+    right = 2
+    x1 = 3
+    x2 = 4

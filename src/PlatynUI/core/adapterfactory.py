@@ -1,4 +1,4 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, List, Optional, Type
 
 if TYPE_CHECKING:
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 __all__ = ["AdapterFactory"]
 
 
-class AdapterFactory(metaclass=ABCMeta):
+class AdapterFactory(ABC):
 
     @abstractmethod
     def get_adapter(

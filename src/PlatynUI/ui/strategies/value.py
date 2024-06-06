@@ -1,4 +1,5 @@
-from abc import *
+from abc import abstractmethod
+from typing import Any
 
 from ...core import StrategyBase
 
@@ -10,5 +11,5 @@ class Value(StrategyBase):
 
     @property
     @abstractmethod
-    def value(self) -> any:
+    def value(self) -> Any:
         pass

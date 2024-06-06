@@ -11,7 +11,7 @@ __all__ = ["Window"]
 class Window(Control):
 
     @predicate("parent window of element {0} is active")
-    def _parent_window_is_active(self) -> bool:
+    def _toplevel_parent_is_active(self) -> bool:
         if not self.is_active:
             self.activate()
             return False

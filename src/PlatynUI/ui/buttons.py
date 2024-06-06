@@ -17,7 +17,7 @@ class AbstractButton(Control):
 @context
 class Button(AbstractButton):
     def activate(self) -> None:
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view, self._element_is_enabled)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view, self._element_is_enabled)
 
         self.adapter.get_strategy(strategies.Activatable).activate()
 
@@ -67,7 +67,7 @@ class CheckBox(AbstractButton):
 
     def toggle(self):
         self.ensure_that(
-            self._parent_window_is_active,
+            self._toplevel_parent_is_active,
             self._element_is_in_view,
             self._element_is_enabled,
             self._element_is_not_readonly,

@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterator, Optional, cast
+from typing import Any, Callable, Iterator, Optional
 
 __all__ = ["Point", "VirtualPoint", "Rect", "Size"]
 
@@ -13,15 +13,27 @@ class Point:
         return self._x is not None and self._y is not None
 
     @property
-    def x(self) -> Optional[float]:
+    def x(self) -> float:
+        if self._x is None:
+            raise ValueError("x is not set")
+
         return self._x
 
     @x.setter
-    def x(self, v: Optional[float]) -> None:
+    def x(self, v: float) -> None:
         self._x = v
 
+    def x_is_valid(self) -> bool:
+        return self._x is not None
+
+    def y_is_valid(self) -> bool:
+        return self._y is not None
+
     @property
-    def y(self) -> Optional[float]:
+    def y(self) -> float:
+        if self._y is None:
+            raise ValueError("y is not set")
+
         return self._y
 
     @y.setter
@@ -42,7 +54,7 @@ class Point:
         if isinstance(other, Point):
             return self.x == other.x and self.y == other.y
 
-        raise NotImplementedError
+        return False
 
     def __bool__(self) -> bool:
         return self.is_valid
@@ -84,62 +96,63 @@ class VirtualPoint(Point):
 
 
 class Size:
-    def __init__(self, width: float = None, height: float = None):
+    def __init__(self, width: Optional[float] = None, height: Optional[float] = None):
         self._width = width
         self._height = height
 
     @property
     def width(self) -> float:
+        if self._width is None:
+            raise ValueError("width is not set")
+
         return self._width
 
     @width.setter
-    def width(self, v: float):
+    def width(self, v: float) -> None:
         self._width = v
 
     @property
     def height(self) -> float:
+        if self._height is None:
+            raise ValueError("height is not set")
         return self._height
 
     @height.setter
-    def height(self, v: float):
+    def height(self, v: float) -> None:
         self._height = v
 
     @property
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self.width is not None and self.height is not None
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Optional[float]]:
         yield self.width
         yield self.height
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "Size(width=%s, height=%s)" % (self.width, self.height)
 
-    def clone(self):
-        return Point(self.width, self.height)
+    def clone(self) -> "Size":
+        return Size(self.width, self.height)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, Size):
             return self.width == other.width and self.height == other.height
-        else:
-            raise NotImplementedError
 
-    def __bool__(self):
+        return False
+
+    def __bool__(self) -> bool:
         return self.is_valid
 
 
 class Rect:
-    TOP_LEFT = VirtualPoint("top_left", lambda r: r.top_left)
-    TOP = VirtualPoint("top", lambda r: Point(None, r.top))
-    VMIDDLE = VirtualPoint("bottom", lambda r: Point(None, r.top + r.height // 2))
-    HMIDDLE = VirtualPoint("right", lambda r: Point(r.left + r.width // 2, None))
-    BOTTOM = VirtualPoint("bottom", lambda r: Point(None, r.top + r.height - 1))
-    LEFT = VirtualPoint("left", lambda r: Point(r.left, None))
-    RIGHT = VirtualPoint("right", lambda r: Point(r.left + r.width - 1, None))
-    CENTER = VirtualPoint("center", lambda r: r.center)
-    BOTTOM_RIGHT = VirtualPoint("bottom_right", lambda r: r.bottom_right)
-
-    def __init__(self, left: float = 0, top: float = 0, width: float = -1, height: float = -1):
+    def __init__(
+        self,
+        left: Optional[float] = None,
+        top: Optional[float] = None,
+        width: Optional[float] = None,
+        height: Optional[float] = None,
+    ):
         self._left = left
         self._top = top
         self._width = width
@@ -147,23 +160,30 @@ class Rect:
 
     @property
     def x1(self) -> float:
-        return self._left
+        return self.left
 
     @property
     def y1(self) -> float:
-        return self._top
+        return self.top
 
     @property
     def x2(self) -> float:
-        return self._left + self._width - 1
+        return self.left + self.width - 1
 
     @property
     def y2(self) -> float:
-        return self._top + self._height - 1
+        return self.top + self.height - 1
 
     @property
     def is_valid(self) -> bool:
-        return self.x1 <= self.x2 and self.y1 <= self.y2
+        return (
+            self._left is not None
+            and self._top is not None
+            and self._width is not None
+            and self._height is not None
+            and self.x1 <= self.x2
+            and self.y1 <= self.y2
+        )
 
     @property
     def is_null(self) -> bool:
@@ -175,42 +195,53 @@ class Rect:
 
     @property
     def left(self) -> float:
+        if self._left is None:
+            raise ValueError("left is not set")
         return self._left
 
     @left.setter
-    def left(self, v: float):
+    def left(self, v: float) -> None:
         self._left = v
 
     @property
     def top(self) -> float:
+        if self._top is None:
+            raise ValueError("top is not set")
+
         return self._top
 
     @top.setter
-    def top(self, v: float):
+    def top(self, v: float) -> None:
         self._top = v
 
     @property
     def width(self) -> float:
+        if self._width is None:
+            raise ValueError("width is not set")
+
         return self._width
 
     @width.setter
-    def width(self, v: float):
+    def width(self, v: float) -> None:
         self._width = v
 
     @property
     def height(self) -> float:
+        if self._height is None:
+            raise ValueError("height is not set")
+
         return self._height
 
     @height.setter
-    def height(self, v: float):
+    def height(self, v: float) -> None:
         self._height = v
 
     @property
-    def right(self):
+    def right(self) -> float:
         return self.left + self.width - 1
 
     @property
-    def bottom(self):
+    def bottom(self) -> float:
         return self.top + self.height - 1
 
     @property
@@ -235,28 +266,33 @@ class Rect:
     def size(self) -> Size:
         return Size(self.width, self.height)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[float]:
         yield self.left
         yield self.top
         yield self.width
         yield self.height
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "Rect(left=%s, top=%s, width=%s, height=%s)" % (self.left, self.top, self.width, self.height)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, Rect):
-            o = cast(Rect, other)
+            o = other
             return self.left == o.left and self.top == o.top and self.width == o.width and self.height == o.height
-        else:
-            raise NotImplementedError
 
-    def __bool__(self):
+        return False
+
+    def __bool__(self) -> bool:
         return self.is_valid
 
-    def contains(self, p: Point = Point(), x: int = None, y: int = None, proper=False):
+    def contains(
+        self, p: Optional[Point] = None, x: Optional[float] = None, y: Optional[float] = None, proper: bool = False
+    ) -> bool:
         if not self:
             return False
+
+        if p is None:
+            p = Point()
 
         if x is not None:
             p.x = x
@@ -273,7 +309,7 @@ class Rect:
 
         if x2 < x1 - 1:
             l = x2
-            r = x
+            r = x1
         else:
             l = x1
             r = x2
@@ -301,7 +337,10 @@ class Rect:
 
         return True
 
-    def intersected(self, r: "Rect"):
+    def __contains__(self, p: Point) -> bool:
+        return self.contains(p)
+
+    def intersected(self, r: "Rect") -> "Rect":
         if not self or not r:
             return Rect()
 
@@ -346,14 +385,24 @@ class Rect:
 
         return Rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1)
 
-    def inflated(self, dx: float, dy: float):
+    def inflated(self, dx: float, dy: float) -> "Rect":
         if not self:
             return Rect()
 
         return Rect(self.left - dx, self.top - dy, self.width + dx, self.height + dy)
 
-    def deflated(self, dx: float, dy: float):
+    def deflated(self, dx: float, dy: float) -> "Rect":
         if not self:
             return Rect()
 
         return Rect(self.left + dx, self.top + dy, self.width - dx, self.height - dy)
+
+    TOP_LEFT = VirtualPoint("top_left", lambda r: r.top_left)
+    TOP = VirtualPoint("top", lambda r: Point(None, r.top))
+    VMIDDLE = VirtualPoint("bottom", lambda r: Point(None, r.top + r.height // 2))
+    HMIDDLE = VirtualPoint("right", lambda r: Point(r.left + r.width // 2, None))
+    BOTTOM = VirtualPoint("bottom", lambda r: Point(None, r.top + r.height - 1))
+    LEFT = VirtualPoint("left", lambda r: Point(r.left, None))
+    RIGHT = VirtualPoint("right", lambda r: Point(r.left + r.width - 1, None))
+    CENTER = VirtualPoint("center", lambda r: r.center)
+    BOTTOM_RIGHT = VirtualPoint("bottom_right", lambda r: r.bottom_right)

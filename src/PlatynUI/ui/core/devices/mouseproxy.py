@@ -1,6 +1,6 @@
 import enum
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, cast
+from typing import Any, Optional, cast, overload
 
 from ....core import Adapter, InvalidArgumentError
 from ....core.types import Point, Rect, VirtualPoint
@@ -28,13 +28,11 @@ class MouseProxy(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def base_point(self) -> Optional[Point]:
-        return None
+    def base_point(self) -> Point: ...
 
     @property
     @abstractmethod
-    def base_rect(self) -> Optional[Rect]:
-        return None
+    def base_rect(self) -> Rect: ...
 
     @property
     def default_click_position(self) -> Point:
@@ -64,9 +62,9 @@ class MouseProxy(metaclass=ABCMeta):
         if isinstance(pos, VirtualPoint):
             default = pos.calc_rect(self.base_rect)
             base = self._mouse_device.get_position()
-            if default.x is None:
+            if not default.x_is_valid():
                 default.x = base.x
-            if default.y is None:
+            if not default.y_is_valid():
                 default.y = base.y
             pos = Point(default.x if x is None else base.x, default.y if y is None else base.y)
         elif not pos:
@@ -85,7 +83,7 @@ class MouseProxy(metaclass=ABCMeta):
 
         return pos
 
-    def move_to(self, pos: Point = None, x: float = None, y: float = None) -> Optional[Point]:
+    def move_to(self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None) -> Optional[Point]:
         self.before_action(MouseProxy.Action.MOVE)
 
         result = self.mouse_device.move_to(self._calc_mouse_point(pos, x, y))

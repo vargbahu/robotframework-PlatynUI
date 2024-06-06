@@ -41,7 +41,7 @@ class TreeItem(Item):
         if self.is_expanded:
             return True
 
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
         self.adapter.get_strategy(strategies.Expandable).expand()
 
@@ -56,7 +56,7 @@ class TreeItem(Item):
         if not self.is_expanded:
             return True
 
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
         self.adapter.get_strategy(strategies.Expandable).collapse()
 

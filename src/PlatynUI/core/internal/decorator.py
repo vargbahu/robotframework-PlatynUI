@@ -1,8 +1,11 @@
 import functools
 import inspect
 from abc import ABCMeta
+from typing import Any, Callable, Optional, TypeVar, Union, overload
 
-__all__ = ["Decorator", "FuncDecorator", "ClassDecorator", "InstanceDecorator"]
+__all__ = ["Decorator", "FuncDecorator"]
+
+TCallable = TypeVar("TCallable", bound=Callable[..., Any])
 
 
 class Decorator(metaclass=ABCMeta):
@@ -35,7 +38,7 @@ class Decorator(metaclass=ABCMeta):
     __wrapped_class = False
     __wrapped_instance = False
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Any, **kwargs: Any) -> Any:
         instance = super().__new__(cls)
 
         if instance.is_wrapped_arg(*args, **kwargs):
@@ -74,14 +77,14 @@ class Decorator(metaclass=ABCMeta):
         return instance
 
     @staticmethod
-    def is_wrapped_arg(*args, **kwargs):
+    def is_wrapped_arg(*args: Any, **kwargs: Any) -> bool:
         if len(args) == 1 and len(kwargs) == 0:
             if inspect.isfunction(args[0]) or isinstance(args[0], type) or isinstance(args[0], FuncDecorator):
                 return True
 
         return False
 
-    def set_wrapped(self, wrapped):
+    def set_wrapped(self, wrapped: Any) -> None:
         self.__wrapped = wrapped
         functools.update_wrapper(self, self.__wrapped)
         self.__wrapped_func = False
@@ -93,24 +96,19 @@ class Decorator(metaclass=ABCMeta):
         elif isinstance(wrapped, type):
             self.__wrapped_class = True
 
-    # def __get__(self, instance, cls):
-    #     """
-    #     having this method here turns the class into a descriptor used when there
-    #     is no (...) on the decorator
-    #     """
-    #     if instance in self.__instances:
-    #         return self.__instances[instance]
-    #
-    #     return self
-    #
-    # def __set__(self, instance, value):
-    #     self.__instances[instance] = value
+    @overload
+    def __call__(self, _func: TCallable, *args: Any, **kwargs: Any) -> TCallable: ...
 
-    def __call__(self, *args, **kwargs):
+    @overload
+    def __call__(self, *args: Any, **kwargs: Any) -> Callable[[TCallable], TCallable]: ...
+
+    def __call__(
+        self, _func: Optional[TCallable] = None, *args: Any, **kwargs: Any
+    ) -> Union[TCallable, Callable[[TCallable], TCallable]]:
         """call is used when there are (...) on the decorator"""
         invoke = True
         if not self.__wrapped:
-            self.set_wrapped(args[0])
+            self.set_wrapped(_func)
             args = ()
             invoke = False
 
@@ -131,7 +129,7 @@ class Decorator(metaclass=ABCMeta):
 
         return ret
 
-    def decorate_func(self, func, *decorator_args, **decorator_kwargs):
+    def decorate_func(self, func: TCallable, *decorator_args: Any, **decorator_kwargs: Any)-> TCallable:
         """
         override this in a child class with your own logic, it must return a
         function that calls self.func
@@ -148,43 +146,6 @@ class Decorator(metaclass=ABCMeta):
 
     def decorate_instance(self, instance, *decorator_args, **decorator_kwargs):
         raise RuntimeError("decorator {} does not support instance decoration".format(self.__class__.__name__))
-
-
-class InstanceDecorator(Decorator):
-    __wrapped_instance = True
-
-    def decorate(self, instance, *decorator_args, **decorator_kwargs):
-        """
-        override this in a child class with your own logic, it must return an
-        instance of a class
-
-        instance -- class() -- the class instance being decorated
-        decorator_args -- tuple -- the arguments passed into the decorator (eg, @dec(1, 2))
-        decorator_kwargs -- dict -- the named args passed into the decorator (eg, @dec(foo=1))
-        """
-        return instance
-
-    def decorate_instance(self, *args, **kwargs):
-        return self.decorate(*args, **kwargs)
-
-    def decorate_class(self, cls, *decorator_args, **decorator_kwargs):
-        return cls
-
-
-class ClassDecorator(Decorator):
-    def decorate(self, cls, *decorator_args, **decorator_kwargs):
-        """
-        override this in a child class with your own logic, it must return a
-        class object
-
-        cls -- class -- the class being decorated
-        decorator_args -- tuple -- the arguments passed into the decorator (eg, @dec(1, 2))
-        decorator_kwargs -- dict -- the named args passed into the decorator (eg, @dec(foo=1))
-        """
-        return cls
-
-    def decorate_class(self, *args, **kwargs):
-        return self.decorate(*args, **kwargs)
 
 
 class FuncDecorator(Decorator):

@@ -1,11 +1,11 @@
-from abc import *
+from abc import ABC, abstractmethod
 
-from ..core.types import *
+from ....core.types import Rect
 
 __all__ = ["BaseScreenDevice"]
 
 
-class BaseScreenDevice(metaclass=ABCMeta):
+class BaseScreenDevice(ABC):
     @property
     @abstractmethod
     def rectangle(self) -> Rect:

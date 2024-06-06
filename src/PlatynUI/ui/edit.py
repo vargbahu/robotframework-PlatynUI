@@ -14,7 +14,7 @@ class Edit(Text):
 
     def set_text(self, value):
         self.ensure_that(
-            self._parent_window_is_active,
+            self._toplevel_parent_is_active,
             self._element_is_in_view,
             self._element_is_enabled,
             self._element_is_not_readonly,
@@ -27,7 +27,7 @@ class Edit(Text):
 
     def clear(self):
         self.ensure_that(
-            self._parent_window_is_active,
+            self._toplevel_parent_is_active,
             self._element_is_in_view,
             self._element_is_enabled,
             self._element_is_not_readonly,

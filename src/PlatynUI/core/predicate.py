@@ -1,16 +1,15 @@
-from typing import Any, Callable, Optional
-
-from .internal.decorator import *
+from typing import Any, Callable, Optional, TypeVar
 
 __all__ = ["predicate"]
 
+F = TypeVar("F", bound=Callable[..., Any])
 
-class predicate(FuncDecorator):  # noqa: N801
-    def __init__(self, message: Optional[str] = None, flags: Any = None) -> None:
-        self.message = message
-        self.flags = flags
 
-    def decorate(self, func: Callable[..., Any], *decorator_args: Any, **decorator_kwargs: Any) -> Callable[..., Any]:
-        func.message = self.message
-        func.flags = self.flags
-        return super().decorate(func, decorator_args, decorator_kwargs)
+def predicate(message: Optional[str] = None, flags: Any = None) -> Callable[[F], F]:
+    def decorator(func: F) -> F:
+        setattr(func, "__predicate__", True)
+        setattr(func, "message", message)
+        setattr(func, "flags", flags)
+        return func
+
+    return decorator

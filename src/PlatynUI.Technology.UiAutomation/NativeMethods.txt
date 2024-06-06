@@ -1,0 +1,9 @@
+GetSystemMetrics
+SendInput
+GetMessageExtraInfo
+LPARAM
+GetCursorInfo
+GetForegroundWindow
+GetWindow
+SwitchToThisWindow
+GetDoubleClickTime

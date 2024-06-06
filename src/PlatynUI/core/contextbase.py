@@ -2,7 +2,7 @@ import threading
 import time
 import weakref
 from abc import ABCMeta
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type, TypeVar
+from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type, TypeVar, Union, overload
 
 from .adapter import Adapter
 from .exceptions import CannotEnsureError, NoLocatorDefinedError, PlatynUiFatalError, PlatyUiError
@@ -12,14 +12,19 @@ from .predicate import predicate
 from .settings import Settings
 from .strategies import NativeProperties, Properties
 
-__all__ = ["ContextBase", "TContextBase", "context_for", "context", "UnknownContext", "ContextFactory"]
+__all__ = ["ContextBase", "TContextBase", "context", "UnknownContext", "ContextFactory"]
 
 F = TypeVar("F", bound=Callable[..., Any])
-TAdapter = TypeVar("TAdapter")
+T = TypeVar("T")
 
 
-def context_for(
-    cls: Type[TAdapter],
+@overload
+def context(__cls: Type[T]) -> Type[T]: ...
+
+
+@overload
+def context(
+    *,
     role: Optional[str] = None,
     framework_id: Optional[str] = None,
     class_name: Optional[str] = None,
@@ -27,82 +32,52 @@ def context_for(
     properties: Optional[Dict[str, str]] = None,
     native_properties: Optional[Dict[str, str]] = None,
     **decorator_kwargs: Any,
-) -> Type[TAdapter]:
-    if role is None:
-        role = cls.__name__
-
-    setattr(cls, "default_role", role)
-
-    ContextFactory.register_context(
-        cls,
-        {
-            "role": role,
-            "framework_id": framework_id,
-            "class_name": class_name,
-            "tag_name": tag_name,
-            "properties": properties,
-            "native_properties": native_properties,
-            **decorator_kwargs,
-        },
-    )
-    return cls
+) -> Callable[[Type[T]], Type[T]]: ...
 
 
-# class context_for(ClassDecorator):  # noqa: N801
-#     __role = None
-#     __framework_id = None
-#     __class_name = None
-#     __tag_name = None
-#     __properties = None
-#     __native_properties = None
+def context(
+    __cls: Optional[Type[T]] = None,
+    *,
+    role: Optional[str] = None,
+    framework_id: Optional[str] = None,
+    class_name: Optional[str] = None,
+    tag_name: Optional[str] = None,
+    properties: Optional[Dict[str, str]] = None,
+    native_properties: Optional[Dict[str, str]] = None,
+    prefix: Optional[str] = None,
+    **decorator_kwargs: Any,
+) -> Union[Type[T], Callable[[Type[T]], Type[T]]]:
+    def decorator(cls: Type[T]) -> Type[T]:
 
-#     def __init__(
-#         self,
-#         role: Optional[str] = None,
-#         framework_id: Optional[str] = None,
-#         class_name: Optional[str] = None,
-#         tag_name: Optional[str] = None,
-#         properties: Optional[Dict[str, str]] = None,
-#         native_properties: Optional[Dict[str, str]] = None,
-#     ):
-#         super().__init__()
-#         self.__role = role
-#         self.__framework_id = framework_id
-#         self.__class_name = class_name
-#         self.__tag_name = tag_name
-#         self.__properties = properties
-#         self.__native_properties = native_properties
+        setattr(cls, "default_role", role or cls.__name__)
 
-#     def decorate(self, cls: Type[Any], *decorator_args: Any, **decorator_kwargs: Any) -> Type["ContextBase"]:
-#         role = self.__role
-#         if role is None:
-#             role = cls.__name__
-#         cls.default_role = role
+        if prefix is not None:
+            setattr(cls, "default_prefix", prefix)
 
-#         ContextFactory.register_context(
-#             cls,
-#             {
-#                 "role": role,
-#                 "framework_id": self.__framework_id,
-#                 "class_name": self.__class_name,
-#                 "tag_name": self.__tag_name,
-#                 "properties": self.__properties,
-#                 "native_properties": self.__native_properties,
-#                 **decorator_kwargs,
-#             },
-#         )
+        ContextFactory.register_context(
+            cls,
+            {
+                "role": cls.__name__ if role is None else role,
+                "framework_id": framework_id,
+                "class_name": class_name,
+                "tag_name": tag_name,
+                "properties": properties,
+                "native_properties": native_properties,
+                **decorator_kwargs,
+            },
+        )
 
-#         return cls
+        return cls
 
+    if __cls is None:
+        return decorator
 
-# class context(context_for):  # noqa: N801
-#     pass
-
-context = context_for
+    return decorator(__cls)
 
 
 class ContextBase(metaclass=ABCMeta):
     default_role: Optional[str] = None
+    default_prefix: Optional[str] = None
 
     _locator: Optional[LocatorBase] = None
     __context_parent: Optional["ContextBase"] = None
@@ -210,28 +185,30 @@ class ContextBase(metaclass=ABCMeta):
 
         return self.context_parent._adapter_exists(True)
 
-    __ensure_that_hooks = []
+    __ensure_that_hooks: List[Callable[["ContextBase"], None]] = []
 
     @classmethod
-    def add_ensure_hook(cls, hook):
+    def add_ensure_hook(cls, hook: Callable[["ContextBase"], None]) -> None:
         cls.__ensure_that_hooks.append(hook)
 
     @classmethod
-    def __exec_ensure_that_hooks(cls, the_context):
+    def __exec_ensure_that_hooks(cls, the_context: "ContextBase") -> None:
         for hook in cls.__ensure_that_hooks:
             hook(the_context)
 
     class _ContextBaseLocal(threading.local):
-        def __init__(self):
-            self.ensure_that_start_time = None
-            self.ensure_that_raise_exception = None
-            self.in_ensure_that = 0
-            self.succeeded_predicates = []
-            self.ensure_timeout = None  # type: float
+        def __init__(self) -> None:
+            self.ensure_that_start_time: Optional[float] = None
+            self.ensure_that_raise_exception: Optional[bool] = None
+            self.in_ensure_that: int = 0
+            self.succeeded_predicates: List[Callable[..., Any]] = []
+            self.ensure_timeout: Optional[float] = None
 
     __thread_local = _ContextBaseLocal()
 
-    def ensure_that(self, *predicates: Callable[[], bool], timeout: float = None, raise_exception: bool = None):
+    def ensure_that(
+        self, *predicates: Callable[[], bool], timeout: Optional[float] = None, raise_exception: Optional[bool] = None
+    ) -> bool:
         return ContextBase._ensure_that(
             self, *predicates, timeout=timeout, raise_exception=raise_exception, failed_func=lambda: self.invalidate()
         )
@@ -239,11 +216,11 @@ class ContextBase(metaclass=ABCMeta):
     @staticmethod
     def _ensure_that(
         context: "ContextBase",
-        *predicates: Callable[[], bool],
-        timeout: float = None,
-        raise_exception: bool = None,
-        failed_func: Callable = None,
-    ) -> None:
+        *predicates: Optional[Callable[[], bool]],
+        timeout: Optional[float] = None,
+        raise_exception: Optional[bool] = None,
+        failed_func: Optional[Callable[[], None]] = None,
+    ) -> bool:
         if timeout is None:
             timeout = Settings.current().ensure_timeout
 
@@ -304,13 +281,13 @@ class ContextBase(metaclass=ABCMeta):
                     if result:
                         break
 
-                    if ContextBase.__thread_local.ensure_that_start_time is None:
+                    thread_ensure_that_start_time = ContextBase.__thread_local.ensure_that_start_time
+                    thread_local_ensure_timeout = ContextBase.__thread_local.ensure_timeout
+
+                    if thread_local_ensure_timeout is None or thread_ensure_that_start_time is None:
                         raise PlatyUiError("fatal")
 
-                    if (
-                        time.time() - ContextBase.__thread_local.ensure_that_start_time
-                        > ContextBase.__thread_local.ensure_timeout
-                    ):
+                    if time.time() - thread_ensure_that_start_time > thread_local_ensure_timeout:
                         break
 
                     if not result:
@@ -328,7 +305,7 @@ class ContextBase(metaclass=ABCMeta):
                     % (
                         (
                             "%s" % last_predicate.message.format(context.full_repr())
-                            if hasattr(last_predicate, "message")
+                            if last_predicate is not None and hasattr(last_predicate, "message")
                             else "%s for %s" % (last_predicate, context)
                         ),
                         (
@@ -349,11 +326,11 @@ class ContextBase(metaclass=ABCMeta):
     def is_valid(self) -> bool:
         return self.__adapter is not None and self.__adapter.valid
 
-    def exists(self, timeout=None) -> bool:
+    def exists(self, timeout: Optional[float] = None, raise_exception: bool = False) -> bool:
         if timeout is None:
             timeout = Settings.current().exists_timeout
 
-        return self.ensure_that(self._adapter_exists, timeout=timeout, raise_exception=False)
+        return self.ensure_that(self._adapter_exists, timeout=timeout, raise_exception=raise_exception)
 
     @property
     def name(self) -> str:
@@ -517,7 +494,7 @@ class ContextFactory:
     registered_adapters: List[Entry] = []
 
     @classmethod
-    def register_context(cls, adapter_cls: Type[TAdapter], criterias: Dict[str, Any]) -> None:
+    def register_context(cls, adapter_cls: Type[T], criterias: Dict[str, Any]) -> None:
         cls.registered_adapters.append(ContextFactory.Entry(adapter_cls, criterias.copy()))
 
     @classmethod
@@ -537,3 +514,18 @@ class ContextFactory:
                 return last[1]
 
         return UnknownContext
+
+    @classmethod
+    def create_context(
+        cls,
+        locator: "LocatorBase",
+        parent: Optional["ContextBase"] = None,
+        context_type: Optional[Type["TContextBase"]] = None,
+        raise_error: bool = True,
+    ) -> Union["TContextBase", ContextBase, None]:
+        adapter = locator.technology.adapter_factory.get_adapter(parent, context_type, locator, raise_error)
+        if adapter is None:
+            return None
+        context_cls = cls.find_context_class_for(adapter) if context_type is None else context_type
+
+        return context_cls(locator, parent, adapter)

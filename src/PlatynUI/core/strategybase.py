@@ -1,9 +1,8 @@
-from token import OP
-from typing import ClassVar, Optional, Protocol, runtime_checkable
+from abc import ABC
+from typing import ClassVar, Optional
 
 __all__ = ["StrategyBase"]
 
 
-@runtime_checkable
-class StrategyBase(Protocol):
+class StrategyBase(ABC):
     strategy_name: ClassVar[Optional[str]] = None

@@ -49,7 +49,7 @@ class ComboBox(Control):
             return False
 
         self.ensure_that(
-            self._combobox_can_expand, self._parent_window_is_active, self._element_is_in_view, self._control_has_focus
+            self._combobox_can_expand, self._toplevel_parent_is_active, self._element_is_in_view, self._control_has_focus
         )
 
         self.adapter.get_strategy(strategies.Expandable).expand()
@@ -63,7 +63,7 @@ class ComboBox(Control):
             return False
 
         self.ensure_that(
-            self._combobox_can_expand, self._parent_window_is_active, self._element_is_in_view, self._control_has_focus
+            self._combobox_can_expand, self._toplevel_parent_is_active, self._element_is_in_view, self._control_has_focus
         )
 
         self.adapter.get_strategy(strategies.Expandable).collapse()
@@ -136,7 +136,7 @@ class ComboBox(Control):
 
     def set_text(self, value):
         self.ensure_that(
-            self._parent_window_is_active,
+            self._toplevel_parent_is_active,
             self._element_is_in_view,
             self._element_is_enabled,
             self._element_is_not_readonly,

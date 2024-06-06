@@ -22,7 +22,12 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["typing-extensions"]
+dependencies = [
+  "typing-extensions",
+  "robotframework-pythonlibcore>=4.4.0",
+  "robotframework-assertion-engine>=3.0.0",
+  "pythonnet>=3.0.0",
+]
 
 [project.urls]
 Documentation = "https://github.com/imbus/robotframework-platynui#readme"
@@ -54,6 +59,8 @@ dependencies = [
   "GitPython",
   "semantic-version",
   "robotremoteserver",
+  "robotframework-tidy",
+  "robotframework-robocop",
 ]
 # features = ["all"]
 # pre-install-commands = ["install-packages"]
@@ -82,6 +89,7 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 [tool.ruff]
 line-length = 120
 target-version = "py38"
+extend-exclude = ["typings"]
 
 [tool.ruff.lint]
 ignore = ["E741", "N805", "N999", "RUF012", "RUF006", "ISC001"]
@@ -124,8 +132,9 @@ select = [
   # "TID"
 ]
 
+
 [tool.ruff.lint.per-file-ignores]
-#"__init__.py" = ["F401"]
+"__init__.py" = ["F401"]
 
 [tool.ruff.lint.isort]
 detect-same-package = true
@@ -147,11 +156,12 @@ addopts = "-ra -vv -rf"
 filterwarnings = "ignore:.*Using or importing the ABCs from 'collections' instead of from 'collections.abc'.*:DeprecationWarning"
 testpaths = ["tests"]
 junit_suite_name = "robotcode"
-# console_output_style = "classic"
+#console_output_style = "classic"
 # log_cli = true
 # log_cli_level = 4
 # log_cli_format = "%(levelname)s %(name)s: %(message)s"
-faulthandler_timeout = 30
+faulthandler_timeout = 240
+
 
 # mypy
 
@@ -179,19 +189,26 @@ exclude = [
   "^playground/",
   "^scripts/",
 ]
+
+mypy_path = ["src", "typings"]
+
 # allow_untyped_calls = true
 
 [[tool.mypy.overrides]]
-module = ["robot.*", "clr", "System.*", "RobotFramework.*"]
+module = ["robot.*", "clr", "System.*", "RobotFramework.*", "robotlibcore.*"]
 ignore_missing_imports = true
 no_implicit_reexport = false
+
+[[tool.mypy.overrides]]
+module = ["Sytem", "Internal", "Microsoft", "PlatynUI.Technology.UiAutomation"]
+ignore_errors = true
 
 # pyright
 [tool.pyright]
 exclude = ["**/.hatch", "**/node_modules", "**/__pycache__", "bundled/libs"]
 typeCheckingMode = "off"
 pythonVersion = "3.8"
-reportMissingImports = "error"
+#stubPath = "typings"
 
 [tool.commitizen]
 name = "cz_conventional_commits"

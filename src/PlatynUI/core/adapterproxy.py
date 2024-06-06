@@ -1,8 +1,7 @@
 import re
-from typing import Any, Dict, List, Optional, Set, Type, TypeVar, cast, overload
+from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar, cast, overload
 
 from .adapter import Adapter, TStrategyBase
-from .internal.decorator import ClassDecorator
 from .strategies import NativeProperties, Properties
 from .strategybase import StrategyBase
 from .technology import Technology
@@ -239,43 +238,30 @@ class AdapterProxyFactory:
         return adapter
 
 
-class adapter_proxy_for(ClassDecorator):  # noqa: N801
-    __role = None
-    __framework_id = None
-    __class_name = None
-    __tag_name = None
-    __properties = None
-    __native_properties = None
+def adapter_proxy_for(
+    role: Optional[str] = None,
+    framework_id: Optional[str] = None,
+    class_name: Optional[str] = None,
+    tag_name: Optional[str] = None,
+    properties: Optional[Dict[str, str]] = None,
+    native_properties: Optional[Dict[str, str]] = None,
+    **decorator_kwargs: Any,
+) -> Callable[[Type[TAdapter]], Type[TAdapter]]:
 
-    def __init__(
-        self,
-        role: Optional[str] = None,
-        framework_id: Optional[str] = None,
-        class_name: Optional[str] = None,
-        tag_name: Optional[str] = None,
-        properties: Optional[Dict[str, str]] = None,
-        native_properties: Optional[Dict[str, str]] = None,
-    ):
-        super().__init__()
-        self.__role = role
-        self.__framework_id = framework_id
-        self.__class_name = class_name
-        self.__tag_name = tag_name
-        self.__properties = properties
-        self.__native_properties = native_properties
+    def decorator(cls: Type[TAdapter]) -> Type[TAdapter]:
 
-    def decorate(self, cls: Type[Any], *decorator_args: Any, **decorator_kwargs: Any) -> Type[Any]:
         AdapterProxyFactory.register_proxy(
             cls,
             {
-                "role": self.__role,
-                "framework_id": self.__framework_id,
-                "class_name": self.__class_name,
-                "tag_name": self.__tag_name,
-                "properties": self.__properties,
-                "native_properties": self.__native_properties,
+                "role": role,
+                "framework_id": framework_id,
+                "class_name": class_name,
+                "tag_name": tag_name,
+                "properties": properties,
+                "native_properties": native_properties,
                 **decorator_kwargs,
             },
         )
-
         return cls
+
+    return decorator

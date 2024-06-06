@@ -20,7 +20,7 @@ __all__ = ["Element"]
 class Element(ContextBase):
     default_prefix = "element"
 
-    def invalidate(self):
+    def invalidate(self) -> None:
         super().invalidate()
         self._mouse_proxy = None
         self._keyboard_proxy = None
@@ -50,7 +50,7 @@ class Element(ContextBase):
         return self.adapter.get_strategy(strategies.Element).is_in_view
 
     @property
-    def parent_window_is_active(self) -> bool:
+    def toplevel_parent_is_active(self) -> bool:
         from .window import Window
 
         self.ensure_that(self._application_is_ready)
@@ -58,7 +58,7 @@ class Element(ContextBase):
         if isinstance(top_level_window, Window):
             return top_level_window.is_active
 
-        return self.adapter.get_strategy(strategies.Element).parent_window_is_active
+        return self.adapter.get_strategy(strategies.Element).toplevel_parent_is_active
 
     @property
     def bounding_rectangle(self) -> Rect:
@@ -111,6 +111,9 @@ class Element(ContextBase):
 
     @property
     def top_level_element(self) -> Optional["Element"]:
+        if self.locator is None:
+            return None
+
         self.ensure_that(self._adapter_exists)
 
         if not self.is_valid:
@@ -129,8 +132,8 @@ class Element(ContextBase):
 
         return result if isinstance(result, Element) else None
 
-    @predicate("parent window of element {0} is active")
-    def _parent_window_is_active(self) -> bool:
+    @predicate("parent top level parent of element {0} is active")
+    def _toplevel_parent_is_active(self) -> bool:
         from .window import Window
 
         self.ensure_that(self._application_is_ready)
@@ -140,10 +143,10 @@ class Element(ContextBase):
             if isinstance(parent_window, Window):
                 return parent_window.activate()
 
-        return self.adapter.get_strategy(strategies.Element).try_ensure_parent_window_is_active()
+        return self.adapter.get_strategy(strategies.Element).try_ensure_toplevel_parent_is_active()
 
-    def activate_parent_window(self):
-        self.ensure_that(self._parent_window_is_active)
+    def activate_parent_window(self) -> bool:
+        return self.ensure_that(self._toplevel_parent_is_active)
 
     @predicate("element {0} is in view")
     def _element_is_in_view(self) -> bool:
@@ -152,7 +155,7 @@ class Element(ContextBase):
         return self.adapter.get_strategy(strategies.Element).try_bring_into_view()
 
     def bring_to_view(self) -> bool:
-        return self.ensure_that(self._parent_window_is_active, self._element_is_in_view)
+        return self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
     def highlight(self, rect: Rect = None, time=None):
         if time is None:
@@ -160,13 +163,17 @@ class Element(ContextBase):
         if rect is None:
             rect = self.bounding_rectangle
         if self.is_visible:
-            self.ensure_that(self._parent_window_is_active, self._element_is_in_view, raise_exception=False,
-                             timeout=Settings.current().element_highlight_ensure_timeout)
+            self.ensure_that(
+                self._toplevel_parent_is_active,
+                self._element_is_in_view,
+                raise_exception=False,
+                timeout=Settings.current().element_highlight_ensure_timeout,
+            )
 
-            if self.parent_window_is_active and self.is_in_view:
+            if self.toplevel_parent_is_active and self.is_in_view:
                 cast(UiTechnology, self.adapter.technology).display_device.highlight_rect(rect, time)
 
-    class __ElementMouseProxy(MouseProxy):
+    class _ElementMouseProxy(MouseProxy):
         def __init__(self, element: "Element", mouse_device: MouseDevice):
             super().__init__(mouse_device)
             self._element = element
@@ -184,17 +191,17 @@ class Element(ContextBase):
             return self._element.default_click_position
 
         def before_action(self, action: MouseProxy.Action):
-            self._element.ensure_that(self._element._parent_window_is_active, self._element._element_is_in_view)
+            self._element.ensure_that(self._element._toplevel_parent_is_active, self._element._element_is_in_view)
             self.mouse_device.add_context(self._element)
 
         def after_action(self, action: MouseProxy.Action):
             self.mouse_device.remove_context(self._element)
             self._element.ensure_that(self._element._application_is_ready, raise_exception=False)
 
-    _mouse_proxy = None  # type: MouseProxy
+    _mouse_proxy: Optional[MouseProxy] = None
 
     def _create_mouse_proxy(self, mouse_device: MouseDevice) -> MouseProxy:
-        return self.__ElementMouseProxy(self, mouse_device)
+        return self._ElementMouseProxy(self, mouse_device)
 
     @property
     def mouse(self) -> MouseProxy:
@@ -206,30 +213,34 @@ class Element(ContextBase):
 
         return self._mouse_proxy
 
-    class __ElementKeyboardProxy(KeyboardProxy):
+    class _ElementKeyboardProxy(KeyboardProxy):
         def __init__(self, element: "Element", keyboard_device: KeyboardDevice):
             super().__init__(keyboard_device)
             self._element = element
 
-        def before_action(self, action: KeyboardProxy.Action):
-            self._element.ensure_that(self._element._parent_window_is_active, self._element._element_is_visible,
-                                      self._element._element_is_in_view)
+        def before_action(self, action: KeyboardProxy.Action) -> None:
+            self._element.ensure_that(
+                self._element._toplevel_parent_is_active,
+                self._element._element_is_visible,
+                self._element._element_is_in_view,
+            )
             self.keyboard_device.add_context(self._element)
 
-        def after_action(self, action: KeyboardProxy.Action):
+        def after_action(self, action: KeyboardProxy.Action) -> None:
             self.keyboard_device.remove_context(self._element)
             self._element.ensure_that(self._element._application_is_ready, raise_exception=False)
 
-    _keyboard_proxy = None  # type: KeyboardProxy
+    _keyboard_proxy: Optional[KeyboardProxy] = None
 
     def _create_keyboard_proxy(self, keyboard_device: KeyboardDevice) -> KeyboardProxy:
-        return self.__ElementKeyboardProxy(self, keyboard_device)
+        return self._ElementKeyboardProxy(self, keyboard_device)
 
     @property
     def keyboard(self) -> KeyboardProxy:
         if self._keyboard_proxy is None:
             self._keyboard_proxy = self._create_keyboard_proxy(
-                cast(UiTechnology, self.adapter.technology).keyboard_device)
+                cast(UiTechnology, self.adapter.technology).keyboard_device
+            )
 
         if self._keyboard_proxy is None:
             raise NoKeyboardProxyError("cannot get a valid keyboard device")
@@ -241,7 +252,7 @@ class Element(ContextBase):
         return cast(UiTechnology, self.adapter.technology).display_device
 
     def _before_get_screenshot(self):
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
     def get_screenshot(self, rect: Rect = None, format: str = None, quality: int = None) -> bytearray:
         self._before_get_screenshot()
@@ -251,5 +262,6 @@ class Element(ContextBase):
     def save_screenshot(self, filename: str = None, rect: Rect = None, format: str = None, quality: int = None) -> str:
         self._before_get_screenshot()
 
-        return self.display.save_screenshot(filename, rect if rect is not None else self.bounding_rectangle, format,
-                                            quality)
+        return self.display.save_screenshot(
+            filename, rect if rect is not None else self.bounding_rectangle, format, quality
+        )

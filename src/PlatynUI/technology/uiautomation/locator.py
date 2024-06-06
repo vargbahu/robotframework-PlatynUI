@@ -2,31 +2,34 @@ import collections
 import enum
 import numbers
 import xml.sax.saxutils as xmlutils
-from typing import Optional, Type, cast
+from typing import Any, Dict, List, Optional, Type, cast
+
+from typing_extensions import Self
 
 from PlatynUI import ui
-from PlatynUI.core import Adapter, ContextBase, LocatorBase, LocatorScope, TContextBase
+from PlatynUI.core import Adapter, ContextBase, LocatorBase, LocatorScope, TContextBase, Technology
 
-from .technology import get_technology
+from .core.technology import get_technology
 
 __all__ = ["Locator", "locator", "LocatorScope"]
 
 
 # noinspection PyPep8Naming
 class Locator(LocatorBase):
-    node = None  # type: str
-    prefix = None  # type: str
-    axis = None  # type: str
-    path = None  # type: str
-    __id = None  # type: str
-    __name = None  # type: str
-    __class_name = None  # type: str
-    __role = None  # type: str
-    __runtime_id = None  # type: str
-    __framework_id = None  # type: str
-    index = None  # type: int
-    scope = None  # type: LocatorScope
-    position = None  # type int
+    node: Optional[str] = None
+    prefix: Optional[str] = None
+    use_default_prefix: bool = False
+    axis: Optional[str] = None
+    path: Optional[str] = None
+    __id: Optional[str] = None
+    __name: Optional[str] = None
+    __class_name: Optional[str] = None
+    __role: Optional[str] = None
+    __runtime_id: Optional[str] = None
+    __framework_id: Optional[str] = None
+    index: Optional[int] = None
+    scope: Optional[LocatorScope] = None
+    position: Optional[int] = None
 
     __xpath_axis = {
         LocatorScope.Descendants: ".//",
@@ -44,13 +47,14 @@ class Locator(LocatorBase):
     # noinspection PyShadowingBuiltins
     def __init__(
         self,
-        *args,
+        *args: Any,
         path: Optional[str] = None,
         id: Optional[str] = None,
         name: Optional[str] = None,
         class_name: Optional[str] = None,
         role: Optional[str] = None,
         prefix: Optional[str] = None,
+        use_default_prefix: Optional[bool] = None,
         runtime_id: Optional[str] = None,
         framework_id: Optional[str] = None,
         index: Optional[int] = None,
@@ -58,13 +62,13 @@ class Locator(LocatorBase):
         scope: Optional[LocatorScope] = None,
         axis: Optional[str] = None,
         position: Optional[int] = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
 
         super().__init__()
 
-        self.custom_attributes = list(args)
-        self.attributes = dict(kwargs)
+        self.custom_attributes: List[Any] = list(args)
+        self.attributes: Dict[str, Any] = dict(kwargs)
 
         self.path = path
         self.node = node
@@ -90,16 +94,19 @@ class Locator(LocatorBase):
         if framework_id is not None:
             self.framework_id = framework_id
 
+        if use_default_prefix is not None:
+            self.use_default_prefix = use_default_prefix
+
         self.index = index
         self.position = position
         self.scope = scope
 
     @property
-    def id(self) -> str:
+    def id(self) -> Optional[str]:
         return self.__id
 
     @id.setter
-    def id(self, v: str):
+    def id(self, v: Optional[str]) -> None:
         self.__id = v
         if v is None:
             self.attributes.pop("Id", None)
@@ -107,11 +114,11 @@ class Locator(LocatorBase):
             self.attributes["Id"] = self.__id
 
     @property
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
         return self.__name
 
     @name.setter
-    def name(self, v: str):
+    def name(self, v: Optional[str]) -> None:
         self.__name = v
         if v is None:
             self.attributes.pop("Name", None)
@@ -119,11 +126,11 @@ class Locator(LocatorBase):
             self.attributes["Name"] = self.__name
 
     @property
-    def class_name(self) -> str:
+    def class_name(self) -> Optional[str]:
         return self.__class_name
 
     @class_name.setter
-    def class_name(self, v: str):
+    def class_name(self, v: Optional[str]) -> None:
         self.__class_name = v
         if v is None:
             self.attributes.pop("ClassName", None)
@@ -131,98 +138,52 @@ class Locator(LocatorBase):
             self.attributes["ClassName"] = self.__class_name
 
     @property
-    def role(self) -> str:
+    def role(self) -> Optional[str]:
         return self.__role
 
     @role.setter
-    def role(self, v: str):
+    def role(self, v: Optional[str]) -> None:
         self.__role = v
-        if v is None:
-            self.attributes.pop("Role", None)
-        else:
-            self.attributes["Role"] = self.__role
 
     @property
-    def framework_id(self) -> str:
+    def framework_id(self) -> Optional[str]:
         return self.__framework_id
 
     @framework_id.setter
-    def framework_id(self, v: str):
+    def framework_id(self, v: Optional[str]) -> None:
         self.__framework_id = v
         if v is None:
-            self.attributes.pop("FrameWorkId", None)
+            self.attributes.pop("FrameworkId", None)
         else:
-            self.attributes["FrameWorkId"] = self.__framework_id
+            self.attributes["FrameworkId"] = self.__framework_id
 
     @property
-    def runtime_id(self) -> str:
+    def runtime_id(self) -> Optional[str]:
         return self.__runtime_id
 
     @runtime_id.setter
-    def runtime_id(self, v: str):
+    def runtime_id(self, v: Optional[str]) -> None:
         self.__runtime_id = v
         if v is None:
             self.attributes.pop("RuntimeId", None)
         else:
             self.attributes["RuntimeId"] = self.__runtime_id
 
-    @property
-    def display_name(self):
-        return self.__display_name
+    def _create_technology(self) -> Technology:
+        return get_technology()
 
-    @display_name.setter
-    def display_name(self, v: str):
-        self.__display_name = v
-        if self.context is not None:
-            self.context.invalidate()
-
-    @property
-    def host(self):
-        return self.__host
-
-    @host.setter
-    def host(self, v: str):
-        self.__host = v
-        if self.context is not None:
-            self.context.invalidate()
-
-    def _calc_display_name(self):
-        if self.display_name is not None:
-            return self.display_name
-
-        parent_locator = self.get_parent_locator()
-        if parent_locator is not None:
-            return parent_locator._calc_display_name()
-
-        return None
-
-    def _calc_host(self):
-        if self.host is not None:
-            return self.host
-
-        parent_locator = self.get_parent_locator()
-        if parent_locator is not None:
-            return parent_locator._calc_host()
-
-        return None
-
-    def _create_technology(self):
-        return get_technology(self._calc_display_name(), self._calc_host())
-
-    def create_context(self, context_parent: ContextBase, context_type: Type[TContextBase]) -> TContextBase:
-        if context_type is None:
-            context_type = ui.Element
+    def create_context(
+        self, context_parent: Optional[ContextBase], context_type: Optional[Type[TContextBase]]
+    ) -> TContextBase:
 
         if isinstance(context_parent, ui.DesktopBase):
-            if isinstance(context_parent.locator, Locator):
-                parent_locator = cast(Locator, context_parent.locator)
-                self.host = parent_locator.host
-                self.display_name = parent_locator.display_name
             context_parent = None
 
-        return super().create_context(context_parent=context_parent, context_type=context_type)
+        return super().create_context(
+            context_parent=context_parent, context_type=ui.Element if context_type is None else context_type
+        )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.__last_path is not None:
             params = "path=%s" % repr(self.__last_path)
         else:
@@ -270,26 +231,16 @@ class Locator(LocatorBase):
                     params += ", "
                 params += "position=%s" % repr(self.position)
 
-        if self.display_name is not None:
-            if params != "":
-                params += ", "
-            params += "display_name=%s" % repr(self.display_name)
-
-        if self.host is not None:
-            if params != "":
-                params += ", "
-            params += "host=%s" % repr(self.host)
-
         return "locator(%s)" % params
 
-    __last_path = None
+    __last_path: Optional[str] = None
 
-    __last_parent = None
-    __last_context_type = None
-    __last_attributes = None
-    __last_custom_attributes = None
+    __last_parent: Optional[ContextBase] = None
+    __last_context_type: Optional[Type[Any]] = None
+    __last_attributes: Optional[Dict[str, Any]] = None
+    __last_custom_attributes: Optional[List[Any]] = None
 
-    def get_path(self, parent, context_type: type) -> str:
+    def get_path(self, parent: Optional[ContextBase], context_type: Optional[Type[TContextBase]]) -> str:
 
         combined = (
             self.copy_from(getattr(context_type, "_locator"))
@@ -337,17 +288,20 @@ class Locator(LocatorBase):
                     attrs += " and "
                 attrs += "position()=%s" % combined.position
 
+            role = self.role or getattr(context_type, "default_role", None)
             if combined.node is not None:
                 result = combined.node + result
-            elif hasattr(context_type, "default_role") and context_type.default_role is not None:
-                result = context_type.default_role + result
+            elif role:
+                result = role + result
             else:
                 result = "*" + result
 
+            prefix = self.prefix or getattr(context_type, "default_prefix", None)
+
             if combined.prefix is not None:
                 result = combined.prefix + ":" + result
-            elif hasattr(context_type, "default_prefix") and context_type.default_prefix is not None:
-                result = context_type.default_prefix + ":" + result
+            elif self.use_default_prefix and prefix:
+                result = prefix + ":" + result
 
             if combined.axis is not None:
                 result = combined.axis + result
@@ -376,7 +330,7 @@ class Locator(LocatorBase):
 
         return result
 
-    def copy_from(self, other: LocatorBase) -> Optional[LocatorBase]:
+    def copy_from(self, other: Optional[LocatorBase]) -> Self:
         if other is None:
             return self
 
@@ -403,10 +357,6 @@ class Locator(LocatorBase):
 
             o = cast(Locator, other)
 
-            if o.__display_name is not None:
-                self.__display_name = o.__display_name
-            if o.__host is not None:
-                self.__host = o.__host
             if o._technology is not None:
                 self._technology = o._technology
 
@@ -420,12 +370,10 @@ class Locator(LocatorBase):
 
         return self
 
-    def copy(self) -> Optional["LocatorBase"]:
+    def copy(self) -> "Locator":
         # return copy.deepcopy(self)
         result = Locator()
 
-        result.__display_name = self.__display_name
-        result.__host = self.__host
         result._technology = self._technology
 
         result.node = self.node
@@ -446,7 +394,7 @@ class Locator(LocatorBase):
 
         return result
 
-    def create_children_locator(self, *args, **kwargs) -> LocatorBase:
+    def create_children_locator(self, *args: Any, **kwargs: Any) -> LocatorBase:
         return Locator(*args, **kwargs)
 
     def make_unique_locator(self, adapter: Adapter) -> LocatorBase:
@@ -464,7 +412,7 @@ class Locator(LocatorBase):
         return Locator(runtime_id=adapter.runtime_id, scope=LocatorScope.AncestorOrSelf)
 
     @staticmethod
-    def xquery_repr(v) -> str:
+    def xquery_repr(v: Any) -> str:
         if isinstance(v, enum.Enum):
             return '"' + repr(v.value) + '"'
         if isinstance(v, bool):
@@ -480,46 +428,4 @@ class Locator(LocatorBase):
         return xmlutils.quoteattr(repr(v))
 
 
-# noinspection PyShadowingBuiltins
-def locator(
-    *args,
-    path: Optional[str] = None,
-    id: str = None,
-    name: str = None,
-    class_name: str = None,
-    role: str = None,
-    prefix: str = None,
-    runtime_id: str = None,
-    framework_id: str = None,
-    index: int = None,
-    node: str = None,
-    scope: LocatorScope = None,
-    axis: str = None,
-    position: int = None,
-    display_name: str = None,
-    host: str = None,
-    **kwargs,
-) -> Locator:
-    return Locator(
-        *args,
-        path=path,
-        id=id,
-        name=name,
-        class_name=class_name,
-        role=role,
-        prefix=prefix,
-        runtime_id=runtime_id,
-        framework_id=framework_id,
-        index=index,
-        node=node,
-        scope=scope,
-        axis=axis,
-        position=position,
-        display_name=display_name,
-        host=host,
-        **kwargs,
-    )
-
-
-# def locator(*args, **kwargs) -> Locator:
-#     return Locator(*args, **kwargs)
+locator = Locator

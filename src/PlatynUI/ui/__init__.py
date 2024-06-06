@@ -12,6 +12,7 @@ from .header import *
 from .item import *
 from .lists import *
 from .menus import *
+from .pane import *
 from .proxies import *
 from .scrollbar import *
 from .table import *
@@ -22,25 +23,43 @@ from .tree import *
 from .unknown import *
 from .window import *
 
-__all__ = ["Application",
-           "Control", "CustomControl",
-           "AbstractButton", "Button", "Link", "ToggleState", "CheckBox", "RadioButton",
-           "Element",
-           "Container",
-           "DesktopBase",
-           "Dialog",
-           "Text",
-           "Edit",
-           "Item",
-           "Header", "HeaderItem", "Orientation",
-           "List", "ListItem",
-           "ComboBox",
-           "Menu", "MenuBar", "MenuItem",
-           "Table", "Cell", "Row",
-           "TabList", "TabItem",
-           "ToggleState",
-           "Tree", "TreeItem",
-           "Unknown",
-           "Window",
-           "ScrollBar",
-           "Graphic"]
+__all__ = [
+    "Application",
+    "Control",
+    "CustomControl",
+    "AbstractButton",
+    "Button",
+    "Link",
+    "ToggleState",
+    "CheckBox",
+    "RadioButton",
+    "Element",
+    "Container",
+    "DesktopBase",
+    "Dialog",
+    "Text",
+    "Edit",
+    "Item",
+    "Header",
+    "HeaderItem",
+    "Orientation",
+    "List",
+    "ListItem",
+    "ComboBox",
+    "Menu",
+    "MenuBar",
+    "MenuItem",
+    "Table",
+    "Cell",
+    "Row",
+    "TabList",
+    "TabItem",
+    "ToggleState",
+    "Tree",
+    "TreeItem",
+    "Unknown",
+    "Window",
+    "ScrollBar",
+    "Graphic",
+    "Pane",
+]

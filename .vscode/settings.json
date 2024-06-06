@@ -47,4 +47,8 @@
     "mypy-type-checker.importStrategy": "fromEnvironment",
     "debugpy.debugJustMyCode": false,
     "black-formatter.importStrategy": "fromEnvironment",
+    "robotcode.debug.attachPython": true,
+    "[csharp]": {
+        "editor.defaultFormatter": "csharpier.csharpier-vscode"
+    }
 }

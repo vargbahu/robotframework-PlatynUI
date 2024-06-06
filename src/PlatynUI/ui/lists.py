@@ -11,7 +11,7 @@ __all__ = ["List", "ListItem"]
 @context
 class ListItem(Item):
     def select(self, check_selected: bool = True):
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view, self._element_is_enabled)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view, self._element_is_enabled)
 
         if not check_selected or not self.is_selected:
             self.adapter.get_strategy(strategies.Selectable).select()

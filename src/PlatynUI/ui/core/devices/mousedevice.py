@@ -1,7 +1,8 @@
 import abc
 import time
-from typing import Optional
+from typing import Iterator, Optional
 
+from ....core.contextbase import ContextBase
 from ....core.settings import Settings
 from ....core.types import Point, Rect
 from .basemousedevice import BaseMouseDevice
@@ -12,14 +13,14 @@ __all__ = ["MouseDevice", "DefaultMouseDevice"]
 
 
 class MouseDevice(InputDevice):
-    __double_click_time: float = 0.4  # type: float
-    __multi_click_delay = None  # type: float
-    __press_release_delay = None  # type: float
-    __after_move_delay = None  # type: float
-    __move_delay = None  # type: float
-    __move_time = None  # type: float
-    __after_click_delay = None  # type: float
-    __before_next_click_delay = None  # type: float
+    __double_click_time: float = 0.4
+    __multi_click_delay: Optional[float] = None
+    __press_release_delay: Optional[float] = None
+    __after_move_delay: Optional[float] = None
+    __move_delay: Optional[float] = None
+    __move_time: Optional[float] = None
+    __after_click_delay: Optional[float] = None
+    __before_next_click_delay: Optional[float] = None
 
     default_button = MouseButton.left
 
@@ -38,7 +39,7 @@ class MouseDevice(InputDevice):
         return self.__before_next_click_delay
 
     @before_next_click_delay.setter
-    def before_next_click_delay(self, value: float):
+    def before_next_click_delay(self, value: Optional[float]) -> None:
         self.__before_next_click_delay = value
 
     @property
@@ -48,7 +49,7 @@ class MouseDevice(InputDevice):
         return self.__after_click_delay
 
     @after_click_delay.setter
-    def after_click_delay(self, value: float):
+    def after_click_delay(self, value: Optional[float]) -> None:
         self.__after_click_delay = value
 
     @property
@@ -58,7 +59,7 @@ class MouseDevice(InputDevice):
         return self.__multi_click_delay
 
     @multi_click_delay.setter
-    def multi_click_delay(self, value: float):
+    def multi_click_delay(self, value: Optional[float]) -> None:
         self.__multi_click_delay = value
 
     @property
@@ -68,7 +69,7 @@ class MouseDevice(InputDevice):
         return self.__press_release_delay
 
     @press_release_delay.setter
-    def press_release_delay(self, value: float):
+    def press_release_delay(self, value: Optional[float]) -> None:
         self.__press_release_delay = value
 
     @property
@@ -78,7 +79,7 @@ class MouseDevice(InputDevice):
         return self.__after_move_delay
 
     @after_move_delay.setter
-    def after_move_delay(self, value: float):
+    def after_move_delay(self, value: Optional[float]) -> None:
         self.__move_time = value
 
     @property
@@ -88,7 +89,7 @@ class MouseDevice(InputDevice):
         return self.__move_time
 
     @move_time.setter
-    def move_time(self, value: float):
+    def move_time(self, value: Optional[float]) -> None:
         self.__move_time = value
 
     @property
@@ -98,13 +99,13 @@ class MouseDevice(InputDevice):
         return self.__move_delay
 
     @move_delay.setter
-    def move_delay(self, value: float):
+    def move_delay(self, value: Optional[float]) -> None:
         self.__move_delay = value
 
-    def add_context(self, context):
+    def add_context(self, context: ContextBase) -> None:
         pass
 
-    def remove_context(self, context):
+    def remove_context(self, context: ContextBase) -> None:
         pass
 
     @abc.abstractmethod
@@ -113,23 +114,30 @@ class MouseDevice(InputDevice):
 
     @abc.abstractmethod
     def move_to(
-        self, pos: Point = None, x: float = None, y: float = None, raise_exception: bool = True
+        self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, raise_exception: bool = True
     ) -> Optional[Point]:
         pass
 
     @abc.abstractmethod
-    def press(self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None) -> Optional[Point]:
+    def press(
+        self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
+    ) -> Optional[Point]:
         pass
 
     @abc.abstractmethod
     def release(
-        self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None
+        self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
     ) -> Optional[Point]:
         pass
 
     @abc.abstractmethod
     def click(
-        self, pos: Point = Point(), x: float = None, y: float = None, button: MouseButton = None, times: int = 1
+        self,
+        pos: Point = Point(),
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        button: MouseButton = None,
+        times: int = 1,
     ) -> Optional[Point]:
         pass
 
@@ -148,7 +156,7 @@ class DefaultMouseDevice(MouseDevice):
     def get_position(self) -> Point:
         return self.__base_mouse_device.get_position()
 
-    def _generate_move_events(self, start_pos, end_pos):
+    def _generate_move_events(self, start_pos: Point, end_pos: Point) -> Iterator[Point]:
         end_time = time.time() + self.move_time
 
         while True:
@@ -161,8 +169,8 @@ class DefaultMouseDevice(MouseDevice):
                 break
 
     def move_to(
-        self, pos: Point = None, x: float = None, y: float = None, raise_exception: bool = True
-    ) -> Optional[Point]:
+        self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, raise_exception: bool = True
+    ) -> Point:
         if pos is None:
             pos = Point()
 
@@ -191,7 +199,9 @@ class DefaultMouseDevice(MouseDevice):
 
         return pos
 
-    def press(self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None) -> Optional[Point]:
+    def press(
+        self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
+    ) -> Optional[Point]:
         if button is None:
             button = self.default_button
 
@@ -205,7 +215,7 @@ class DefaultMouseDevice(MouseDevice):
         return result
 
     def release(
-        self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None
+        self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
     ) -> Optional[Point]:
         if button is None:
             button = self.default_button
@@ -219,17 +229,22 @@ class DefaultMouseDevice(MouseDevice):
 
         return result
 
-    _last_click_time = 0
-    _last_click_pos = Point()
+    _last_click_time: float = 0
+    _last_click_pos: Point = Point()
     _last_click_rect = Rect()
 
-    def _calc_last_click_rect(self, p: Point):
+    def _calc_last_click_rect(self, p: Point) -> Rect:
         size = self.__base_mouse_device.double_click_size
 
         return Rect(p.x - size.width / 2, p.y - size.height / 2, size.width, size.height)
 
     def click(
-        self, pos: Point = Point(), x: float = None, y: float = None, button: MouseButton = None, times: int = 1
+        self,
+        pos: Point = Point(),
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        button: MouseButton = None,
+        times: int = 1,
     ) -> Optional[Point]:
         last_click_time_span = time.time() - self._last_click_time
 

@@ -1,54 +1,64 @@
-from abc import abstractmethod
-from typing import ClassVar, Optional, Protocol, runtime_checkable
+from typing import ClassVar, Optional
 
 from ...core import Adapter, Point, Rect, StrategyBase
 
 __all__ = ["Element", "TopLevelElement"]
 
 
-@runtime_checkable
-class Element(StrategyBase, Protocol):
+class Element(StrategyBase):
     strategy_name: ClassVar[str] = "org.platynui.strategies.Element"
 
     @property
-    def is_readonly(self) -> bool: ...
+    def is_readonly(self) -> bool:
+        raise NotImplementedError
 
     @property
-    def is_enabled(self) -> bool: ...
+    def is_enabled(self) -> bool:
+        raise NotImplementedError
 
     @property
-    def is_visible(self) -> bool: ...
+    def is_visible(self) -> bool:
+        raise NotImplementedError
 
     @property
-    def is_in_view(self) -> bool: ...
+    def is_in_view(self) -> bool:
+        raise NotImplementedError
 
     @property
-    def parent_window_is_active(self) -> bool: ...
+    def toplevel_parent_is_active(self) -> bool:
+        raise NotImplementedError
 
     @property
-    def bounding_rectangle(self) -> Rect: ...
+    def bounding_rectangle(self) -> Rect:
+        raise NotImplementedError
 
     @property
-    def visible_rectangle(self) -> Rect: ...
+    def visible_rectangle(self) -> Rect:
+        raise NotImplementedError
 
     @property
-    def default_click_position(self) -> Point: ...
+    def default_click_position(self) -> Point:
+        raise NotImplementedError
 
-    def try_ensure_visible(self) -> bool: ...
+    def try_ensure_visible(self) -> bool:
+        raise NotImplementedError
 
-    def try_ensure_application_is_ready(self) -> bool: ...
+    def try_ensure_application_is_ready(self) -> bool:
+        raise NotImplementedError
 
-    def try_ensure_parent_window_is_active(self) -> bool: ...
+    def try_ensure_toplevel_parent_is_active(self) -> bool:
+        raise NotImplementedError
 
-    def try_bring_into_view(self) -> bool: ...
+    def try_bring_into_view(self) -> bool:
+        raise NotImplementedError
 
-    def top_level_parent(self) -> Optional[Adapter]: ...
+    def top_level_parent(self) -> Optional[Adapter]:
+        raise NotImplementedError
 
 
 class TopLevelElement(StrategyBase):
     strategy_name = "org.platynui.strategies.TopLevelElement"
 
     @property
-    @abstractmethod
     def is_top_level_element(self) -> bool:
-        pass
+        raise NotImplementedError

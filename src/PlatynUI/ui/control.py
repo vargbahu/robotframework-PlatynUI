@@ -1,9 +1,9 @@
 from ..core import context
 from ..core.predicate import predicate
 from . import strategies
-from .core.devices.keyboarddevice import *
-from .core.devices.keyboardproxy import *
-from .element import *
+from .core.devices.keyboarddevice import KeyboardDevice
+from .core.devices.keyboardproxy import KeyboardProxy
+from .element import Element
 
 __all__ = ["Control", "CustomControl"]
 
@@ -20,14 +20,14 @@ class Control(Element):
 
     @predicate("control {0} has focus")
     def _control_has_focus(self) -> bool:
-        self.ensure_that(self._parent_window_is_active, self._element_is_in_view)
+        self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
         return self.adapter.get_strategy(strategies.Control).try_ensure_focused()
 
     def focus(self) -> bool:
         return self.ensure_that(self._control_has_focus)
 
-    class __ControlKeyboardProxy(KeyboardProxy):
+    class _ControlKeyboardProxy(KeyboardProxy):
         def __init__(self, control: "Control", keyboard_device: KeyboardDevice):
             super().__init__(keyboard_device)
             self._control = control
@@ -41,7 +41,7 @@ class Control(Element):
             self.keyboard_device.remove_context(self._control)
 
     def _create_keyboard_proxy(self, keyboard_device: KeyboardDevice) -> KeyboardProxy:
-        return self.__ControlKeyboardProxy(self, keyboard_device)
+        return self._ControlKeyboardProxy(self, keyboard_device)
 
 
 @context

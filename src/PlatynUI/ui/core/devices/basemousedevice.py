@@ -1,4 +1,4 @@
-from typing import Protocol, runtime_checkable
+from abc import abstractmethod
 
 from ....core.strategybase import StrategyBase
 from ....core.types import Point, Size
@@ -7,26 +7,24 @@ from .mousebutton import MouseButton
 __all__ = ["BaseMouseDevice"]
 
 
-@runtime_checkable
-class BaseMouseDevice(StrategyBase, Protocol):
+class BaseMouseDevice(StrategyBase):
     strategy_name = "org.platynui.devices.Mouse"
 
     @property
-    def double_click_time(self) -> float:
-        pass
+    @abstractmethod
+    def double_click_time(self) -> float: ...
 
     @property
-    def double_click_size(self) -> Size:
-        pass
+    @abstractmethod
+    def double_click_size(self) -> Size: ...
 
-    def get_position(self) -> Point:
-        pass
+    @abstractmethod
+    def get_position(self) -> Point: ...
+    @abstractmethod
+    def move_to(self, pos: Point) -> None: ...
 
-    def move_to(self, pos: Point):
-        pass
+    @abstractmethod
+    def press(self, button: MouseButton) -> None: ...
 
-    def press(self, button: MouseButton):
-        pass
-
-    def release(self, button: MouseButton):
-        pass
+    @abstractmethod
+    def release(self, button: MouseButton) -> None: ...

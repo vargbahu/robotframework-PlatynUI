@@ -1,9 +1,7 @@
 import time
 from typing import Optional, cast
 
-from ...core.adapter import Adapter
-from ...core.adapterproxy import AdapterProxy, adapter_proxy_for
-from ...core.types import Point, Rect, Size
+from ...core import Adapter, AdapterProxy, Point, Rect, Size, adapter_proxy_for, wait_for
 from .. import strategies
 from ..core import UiTechnology
 from ..core.devices import AdapterKeyboardProxy, AdapterMouseProxy
@@ -24,8 +22,8 @@ class ElementProxy(AdapterProxy, strategies.Element):
     def default_click_position(self) -> Point:
         return self.adapter.get_strategy(strategies.Element).default_click_position
 
-    def try_ensure_parent_window_is_active(self) -> bool:
-        return self.adapter.get_strategy(strategies.Element).try_ensure_parent_window_is_active()
+    def try_ensure_toplevel_parent_is_active(self) -> bool:
+        return self.adapter.get_strategy(strategies.Element).try_ensure_toplevel_parent_is_active()
 
     @property
     def is_enabled(self) -> bool:
@@ -49,8 +47,8 @@ class ElementProxy(AdapterProxy, strategies.Element):
         return self.adapter.get_strategy(strategies.Element).is_in_view
 
     @property
-    def parent_window_is_active(self) -> bool:
-        return self.adapter.get_strategy(strategies.Element).parent_window_is_active
+    def toplevel_parent_is_active(self) -> bool:
+        return self.adapter.get_strategy(strategies.Element).toplevel_parent_is_active
 
     @property
     def is_readonly(self) -> bool:
@@ -352,8 +350,8 @@ class WindowProxy(
                 cast(UiTechnology, self.adapter.technology).window_manager.active_window
                 == native_window.native_window_handle
             )
-        else:
-            return self.adapter.get_strategy(strategies.HasIsActive).is_active
+
+        return self.adapter.get_strategy(strategies.HasIsActive).is_active
 
     def close(self):
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
