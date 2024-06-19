@@ -56,7 +56,7 @@ class UiaAdapterFactory(AdapterFactory):
                     if parent is None
                     else f"Element for {path:r} not found in {parent}"
                 )
-        except:  # noqa: E722
+        except BaseException:
             if raise_error:
                 raise
 

@@ -51,7 +51,7 @@ def test_fifth() -> None:
 
 def test_sixth() -> None:
     context: Element = ContextFactory.create_context(
-        Locator(path="/Pane[@Name='Taskleiste']//Button[@Name='Start' and @Role='Button1']"), Button
+        Locator(path="/Pane[@Name='Taskleiste']//Button[@Name='Start' and @Role='Button']"), Button
     )
     props = context.get_properties()
 
