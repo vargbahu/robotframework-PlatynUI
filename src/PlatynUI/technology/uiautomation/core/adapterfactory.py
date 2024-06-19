@@ -47,6 +47,7 @@ class UiaAdapterFactory(AdapterFactory):
         uia_parent = parent.adapter.element if parent and isinstance(parent.adapter, UiaAdapter) else None
         path = locator.get_path(parent, context_type=context_type)
 
+        result = None
         try:
             result = DotNetInterface.finder().FindSingleElement(uia_parent, path, False)
             if result is None and raise_error:
