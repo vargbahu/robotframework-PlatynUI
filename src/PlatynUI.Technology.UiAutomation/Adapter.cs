@@ -120,4 +120,14 @@ public static class Adapter
 
         return false;
     }
+
+    public static string[] GetSupportedPropertyNames(IUIAutomationElement element)
+    {
+        return Automation.GetSupportedPropertyNames(element);
+    }
+
+    public static object? GetPropertyValue(IUIAutomationElement element, string propertyName)
+    {
+        return Automation.GetPropertyValue(element, propertyName);
+    }
 }

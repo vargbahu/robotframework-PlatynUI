@@ -1,3 +1,5 @@
+from typing import Optional
+
 from ..core import Settings, context
 from ..core.predicate import predicate
 from ..core.types import Point, Size
@@ -67,7 +69,7 @@ class Window(Control):
 
         return self.adapter.get_strategy(strategies.HasCanMinimize).is_minimized
 
-    def minimize(self):
+    def minimize(self) -> None:
         if self.is_minimized:
             return
 
@@ -93,7 +95,7 @@ class Window(Control):
 
         return self.adapter.get_strategy(strategies.HasCanMaximize).is_maximized
 
-    def maximize(self):
+    def maximize(self) -> None:
         if self.is_maximized:
             return
 
@@ -109,18 +111,22 @@ class Window(Control):
 
         return self.adapter.get_strategy(strategies.HasCanClose).can_close
 
-    def close(self):
+    def close(self) -> None:
         self.ensure_that(self._window_is_active)
 
         self.adapter.get_strategy(strategies.Closeable).close()
 
-        self.ensure_that(self._application_is_ready, timeout=Settings.current().window_close_timeout,
-                         raise_exception=False)
+        self.ensure_that(
+            self._application_is_ready, timeout=Settings.current().window_close_timeout, raise_exception=False
+        )
 
-    def restore(self):
+    def restore(self) -> None:
         if self.is_maximized or self.is_minimized:
-            self.ensure_that(self._application_is_ready, self._element_is_visible,
-                             self._window_is_active if self.is_maximized or self.is_minimized else None)
+            self.ensure_that(
+                self._application_is_ready,
+                self._element_is_visible,
+                self._window_is_active if self.is_maximized or self.is_minimized else None,
+            )
 
             self.adapter.get_strategy(strategies.Restorable).restore()
 
@@ -138,7 +144,7 @@ class Window(Control):
 
         return self.adapter.get_strategy(strategies.Text).text
 
-    def move(self, x: float = None, y: float = None, pos: Point = None):
+    def move(self, x: Optional[float] = None, y: Optional[float] = None, pos: Point = None) -> None:
         if pos is None and (x is None or y is None):
             return
 
@@ -154,7 +160,7 @@ class Window(Control):
 
         self.ensure_that(self._application_is_ready, raise_exception=False)
 
-    def resize(self, width: float = None, height: float = None, size: Size = None):
+    def resize(self, width: Optional[float] = None, height: Optional[float] = None, size: Size = None) -> None:
         if size is None and (width is None or height is None):
             return
 

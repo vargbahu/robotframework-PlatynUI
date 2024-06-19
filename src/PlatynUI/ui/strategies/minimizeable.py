@@ -1,4 +1,4 @@
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 
@@ -23,5 +23,5 @@ class Minimizable(StrategyBase):
     strategy_name = "org.platynui.strategies.Minimizable"
 
     @abstractmethod
-    def minimize(self):
+    def minimize(self) -> None:
         pass

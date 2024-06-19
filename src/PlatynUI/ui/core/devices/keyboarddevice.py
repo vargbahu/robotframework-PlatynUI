@@ -1,11 +1,11 @@
 import abc
-import collections
 import logging
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Iterator, List, Optional, Union
 
+from ....core.contextbase import ContextBase
 from ....core.exceptions import PlatyUiError
 from ....core.settings import Settings
-from .basekeyboarddevice import BaseKeyboardDevice, BaseKeyCode, InputType
+from .basekeyboarddevice import BaseKeyboardDevice, BaseKeyCode, InputType, Key
 from .inputdevice import InputDevice
 
 __all__ = [
@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 class KeyboardDevice(InputDevice):
-    __after_press_release_delay = None  # type: float
-    __after_release_key_delay = None  # type: float
-    __after_press_key_delay = None  # type: float
+    __after_press_release_delay: Optional[float] = None
+    __after_release_key_delay: Optional[float] = None
+    __after_press_key_delay: Optional[float] = None
 
     @property
     def after_press_key_delay(self) -> float:
@@ -31,7 +31,7 @@ class KeyboardDevice(InputDevice):
         return self.__after_press_key_delay
 
     @after_press_key_delay.setter
-    def after_press_key_delay(self, value: float):
+    def after_press_key_delay(self, value: float) -> None:
         self.__after_press_key_delay = value
 
     @property
@@ -41,7 +41,7 @@ class KeyboardDevice(InputDevice):
         return self.__after_release_key_delay
 
     @after_release_key_delay.setter
-    def after_release_key_delay(self, value: float):
+    def after_release_key_delay(self, value: float) -> None:
         self.__after_release_key_delay = value
 
     @property
@@ -51,13 +51,13 @@ class KeyboardDevice(InputDevice):
         return self.__after_press_release_delay
 
     @after_press_release_delay.setter
-    def after_press_release_delay(self, value: float):
+    def after_press_release_delay(self, value: float) -> None:
         self.__after_press_release_delay = value
 
-    def add_context(self, context):
+    def add_context(self, context: ContextBase) -> None:
         pass
 
-    def remove_context(self, context):
+    def remove_context(self, context: ContextBase) -> None:
         pass
 
     @abc.abstractmethod
@@ -65,16 +65,13 @@ class KeyboardDevice(InputDevice):
         pass
 
     @abc.abstractmethod
-    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
-        pass
+    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None: ...
 
     @abc.abstractmethod
-    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
-        pass
+    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None: ...
 
     @abc.abstractmethod
-    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
-        pass
+    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None: ...
 
 
 class KeyEvent:
@@ -82,10 +79,10 @@ class KeyEvent:
         self.key_code = key_code
         self.press = press
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "KeyEvent(key=%s, press=%s)" % (repr(self.key_code), repr(self.press))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__repr__()
 
 
@@ -109,7 +106,7 @@ class KeyConverter:
     def __init__(
         self,
         base_keyboard_device: BaseKeyboardDevice,
-        *keys: Iterable[Union[str, Any]],
+        *keys: Union[str, Any, Iterable[Any]],
         down: bool = True,
         up: bool = True,
     ):
@@ -119,17 +116,17 @@ class KeyConverter:
         self._down = down
         self._up = up
 
-    def __next_key(self, keys):
+    def __next_key(self, keys: str) -> Iterator[str]:
         for i in keys:
             yield i
             self._current_index += 1
 
-    def convert(self):
+    def convert(self) -> Iterator[KeyEvent]:
         for i in self.input:
             for j in self.__convert_single(i):
                 yield j
 
-    def __key_to_keycode(self, key) -> BaseKeyCode:
+    def __key_to_keycode(self, key: Key) -> BaseKeyCode:
         result = self.base_keyboard_device.key_to_keycode(key)
 
         if not result.valid:
@@ -139,7 +136,7 @@ class KeyConverter:
             )
         return result
 
-    def __convert_single(self, keys) -> Iterable[KeyEvent]:
+    def __convert_single(self, keys: Union[str, Any, Iterable[Any]]) -> Iterable[KeyEvent]:
         if isinstance(keys, str):
             g = self.__next_key(keys)
             for i in g:
@@ -193,12 +190,12 @@ class KeyConverter:
                     yield KeyEvent(self.__key_to_keycode(i), press=True)
                 if self._up:
                     yield KeyEvent(self.__key_to_keycode(i), press=False)
-        elif isinstance(keys, collections.Iterable):
+        elif isinstance(keys, Iterable):
             if self._down:
                 for i in keys:
                     yield KeyEvent(self.__key_to_keycode(i), press=True)
             if self._up:
-                for i in keys[::-1] if self._down else keys:
+                for i in list(keys)[::-1] if self._down else keys:
                     yield KeyEvent(self.__key_to_keycode(i), press=False)
         else:
             if self._down:
@@ -213,22 +210,22 @@ class DefaultKeyboardDevice(KeyboardDevice):
     def __init__(self, base_keyboard_device: BaseKeyboardDevice):
         self.__base_keyboard_device = base_keyboard_device
 
-        self.__pressed_keys = []
+        self.__pressed_keys: List[BaseKeyCode] = []
 
     def escape_text(self, value: str) -> str:
         return str.replace(value, "<", "<<")
 
     @property
-    def base_keyboard_device(self):
+    def base_keyboard_device(self) -> BaseKeyboardDevice:
         return self.__base_keyboard_device
 
-    def __del__(self):
+    def __del__(self) -> None:
         if len(self.__pressed_keys) > 0:
             logger.warning("there are pressed keys (%s), try to send key release", self.__pressed_keys, exc_info=True)
             for k in self.__pressed_keys:
                 self.base_keyboard_device.send_keycode(k, False)
 
-    def __send_key_event(self, key_event: KeyEvent, delay):
+    def __send_key_event(self, key_event: KeyEvent, delay: Optional[float]) -> None:
         if key_event.key_code.valid:
             if not self.base_keyboard_device.send_keycode(key_event.key_code, key_event.press):
                 raise KeyboardSendError(
@@ -249,7 +246,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
             if key_event.key_code in self.__pressed_keys:
                 self.__pressed_keys.remove(key_event.key_code)
 
-    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
+    def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None:
         self.base_keyboard_device.start_input(InputType.TYPE)
         try:
             for c in KeyConverter(self.base_keyboard_device, *keys, down=True, up=True).convert():
@@ -260,7 +257,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
         finally:
             self.base_keyboard_device.end_input()
 
-    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
+    def press_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None:
         self.base_keyboard_device.start_input(InputType.PRESS)
         try:
             for c in KeyConverter(self.base_keyboard_device, *keys, down=True, up=False).convert():
@@ -271,7 +268,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
         finally:
             self.base_keyboard_device.end_input()
 
-    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None):
+    def release_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None:
         self.base_keyboard_device.start_input(InputType.RELEASE)
         try:
             for c in KeyConverter(self.base_keyboard_device, *keys, down=False, up=True).convert():

@@ -1,4 +1,4 @@
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 
@@ -9,5 +9,5 @@ class Restorable(StrategyBase):
     strategy_name = "org.platynui.strategies.Restorable"
 
     @abstractmethod
-    def restore(self):
+    def restore(self) -> None:
         pass

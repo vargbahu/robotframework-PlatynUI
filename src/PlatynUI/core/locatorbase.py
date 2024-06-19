@@ -83,8 +83,13 @@ class LocatorBase(decorator.Decorator):
         return "LocatorBase()"
 
     def create_context(
-        self, context_parent: Optional["ContextBase"], context_type: Type["TContextBase"]
+        self, context_parent: Optional["ContextBase"], context_type: Optional[Type["TContextBase"]]
     ) -> "TContextBase":
+
+        if context_type is None:
+            from .contextbase import UnknownContext
+
+            context_type = cast(Type["TContextBase"], UnknownContext)
 
         if get_origin(context_type) is Union:
             args = typing.get_args(context_type)

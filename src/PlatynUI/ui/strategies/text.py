@@ -18,7 +18,7 @@ class Clearable(StrategyBase):
     strategy_name = "org.platynui.strategies.Clearable"
 
     @abstractmethod
-    def clear(self):
+    def clear(self) -> None:
         pass
 
 
@@ -26,7 +26,7 @@ class EditableText(StrategyBase):
     strategy_name = "org.platynui.strategies.EditableText"
 
     @abstractmethod
-    def set_text(self, value):
+    def set_text(self, value: str) -> None:
         pass
 
 

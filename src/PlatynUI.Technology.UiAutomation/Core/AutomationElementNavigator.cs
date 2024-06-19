@@ -77,11 +77,11 @@ internal class AutomationElementNavigator : ChildrenNavigatorBase<IUIAutomationE
         }
     }
 
-    private IReadOnlyList<IUIAutomationElement> GetChildren()
+    private List<IUIAutomationElement> GetChildren()
     {
         if (Parent == null)
         {
-            return Element != null ? new List<IUIAutomationElement> { Element } : new List<IUIAutomationElement>();
+            return Element != null ? [Element] : [];
         }
 
         if (_findVirtual && Parent.SupportsPatternId(UIA_PatternIds.UIA_ItemContainerPatternId))

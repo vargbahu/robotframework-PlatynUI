@@ -41,31 +41,30 @@ class CheckBox(AbstractButton):
     def state(self, value: ToggleState) -> None:
         self.set_state(value)
 
-    def set_state(self, state):
-        # noinspection PyTypeChecker
+    def set_state(self, state: ToggleState) -> None:
         for _ in ToggleState:
             if self.state == state:
                 break
             self.toggle()
 
-    def activate(self):
+    def activate(self) -> None:
         self.set_state(ToggleState.Checked)
 
-    def check(self):
+    def check(self) -> None:
         self.set_state(ToggleState.Checked)
 
     @property
-    def is_checked(self):
+    def is_checked(self) -> bool:
         return self.state == ToggleState.Checked
 
     @property
-    def is_unchecked(self):
+    def is_unchecked(self) -> bool:
         return self.state == ToggleState.Unchecked
 
-    def uncheck(self):
+    def uncheck(self) -> None:
         self.set_state(ToggleState.Unchecked)
 
-    def toggle(self):
+    def toggle(self) -> None:
         self.ensure_that(
             self._toplevel_parent_is_active,
             self._element_is_in_view,

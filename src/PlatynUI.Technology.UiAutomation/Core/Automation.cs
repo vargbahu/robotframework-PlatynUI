@@ -6,16 +6,10 @@ namespace PlatynUI.Ui.Technology.UIAutomation.Core;
 
 class Automation
 {
-    public readonly struct PropertyIdAndName
+    public readonly struct PropertyIdAndName(int? id, string name)
     {
-        public PropertyIdAndName(int id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
-
-        public readonly int Id;
-        public readonly string Name;
+        public readonly int? Id = id;
+        public readonly string Name = name;
     }
 
     public static IUIAutomation UiAutomation { get; } = new CUIAutomation();
@@ -239,6 +233,58 @@ class Automation
     {
         UiAutomation.PollForPotentialSupportedProperties(element, out _, out var names);
 
-        return names;
+        return [.. names.Append("Role").OrderBy(name => name)];
+    }
+
+    public static object? GetPropertyValue(IUIAutomationElement element, string propertyName)
+    {
+        if (propertyName == "Role")
+        {
+            return ControlTypeNameFromId(element.CurrentControlType);
+        }
+
+        UiAutomation.PollForPotentialSupportedProperties(element, out var ids, out var names);
+
+        var index = Array.IndexOf(names, propertyName);
+        if (index < 0)
+        {
+            throw new NotSupportedException($"Property {propertyName} is not supported");
+        }
+        var v = element.GetCurrentPropertyValueEx(ids[index], 0);
+
+        return ConvertPropertyValue(propertyName, v);
+    }
+
+    public static object? ConvertPropertyValue(string name, object value)
+    {
+        if (UiAutomation.CheckNotSupported(value) != 0)
+        {
+            return null;
+        }
+
+        switch (name)
+        {
+            case "RuntimeId":
+                return string.Join("-", ((int[])value).Select(id => id.ToString("X")));
+            case "BoundingRectangle":
+                if (value is double[] rect)
+                {
+                    return $"({rect[0]}, {rect[1]}) - ({rect[2]}, {rect[3]})";
+                }
+                break;
+            case "ClickablePoint":
+                if (value is double[] point)
+                {
+                    return $"({point[0]}, {point[1]})";
+                }
+                break;
+        }
+        return value switch
+        {
+            int[] array => string.Join(", ", array),
+            double[] array => string.Join(", ", array),
+            string[] array => string.Join(", ", array),
+            _ => value,
+        };
     }
 }

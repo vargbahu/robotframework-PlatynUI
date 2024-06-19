@@ -1,9 +1,11 @@
-from typing import List, Optional, Type
+from typing import List, Optional, Type, overload
 
 from PlatynUI.core import Adapter, AdapterFactory, AdapterProxyFactory, ContextBase, LocatorBase, TContextBase
+from PlatynUI.core.exceptions import AdapterNotFoundError
 
 from ..locator import Locator
 from .loader import DotNetInterface
+from .proxies.window_pattern import WindowPatternProxy
 from .technology import UiaTechnology
 from .uiaadapter import UiaAdapter
 
@@ -12,11 +14,30 @@ class UiaAdapterFactory(AdapterFactory):
     def __init__(self, technology: UiaTechnology) -> None:
         self._technology = technology
 
+    @overload
     def get_adapter(
         self,
-        parent: Optional[ContextBase],
-        context_type: Optional[Type[TContextBase]],
         locator: "LocatorBase",
+        parent: Optional["ContextBase"] = None,
+        context_type: Optional[Type["ContextBase"]] = None,
+    ) -> Adapter:
+        pass
+
+    @overload
+    def get_adapter(
+        self,
+        locator: "LocatorBase",
+        parent: Optional["ContextBase"] = None,
+        context_type: Optional[Type["ContextBase"]] = None,
+        raise_error: bool = True,
+    ) -> Optional["Adapter"]:
+        pass
+
+    def get_adapter(
+        self,
+        locator: "LocatorBase",
+        parent: Optional["ContextBase"] = None,
+        context_type: Optional[Type["ContextBase"]] = None,
         raise_error: bool = True,
     ) -> Optional["Adapter"]:
 
@@ -28,6 +49,12 @@ class UiaAdapterFactory(AdapterFactory):
 
         try:
             result = DotNetInterface.finder().FindSingleElement(uia_parent, path, False)
+            if result is None and raise_error:
+                raise AdapterNotFoundError(
+                    f"Element for '{path}' not found"
+                    if parent is None
+                    else f"Element for {path:r} not found in {parent}"
+                )
         except:  # noqa: E722
             if raise_error:
                 raise

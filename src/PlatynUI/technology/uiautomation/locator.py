@@ -32,6 +32,7 @@ class Locator(LocatorBase):
     position: Optional[int] = None
 
     __xpath_axis = {
+        LocatorScope.Root: "/",
         LocatorScope.Descendants: ".//",
         LocatorScope.Children: "",
         LocatorScope.Parent: "parent::",
@@ -179,9 +180,10 @@ class Locator(LocatorBase):
         if isinstance(context_parent, ui.DesktopBase):
             context_parent = None
 
-        return super().create_context(
-            context_parent=context_parent, context_type=ui.Element if context_type is None else context_type
-        )
+        if context_type is None:
+            context_type = cast(Type[TContextBase], ui.Element)
+
+        return super().create_context(context_parent=context_parent, context_type=context_type)
 
     def __repr__(self) -> str:
         if self.__last_path is not None:
@@ -409,7 +411,7 @@ class Locator(LocatorBase):
         return Locator(path="..")
 
     def create_top_level_locator(self, adapter: "Adapter") -> Optional["LocatorBase"]:
-        return Locator(runtime_id=adapter.runtime_id, scope=LocatorScope.AncestorOrSelf)
+        return Locator(runtime_id=adapter.runtime_id, scope=LocatorScope.Root)
 
     @staticmethod
     def xquery_repr(v: Any) -> str:

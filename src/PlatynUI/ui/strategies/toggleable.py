@@ -19,5 +19,5 @@ class Toggleable(StrategyBase):
     strategy_name = "org.platynui.strategies.Toggleable"
 
     @abstractmethod
-    def toggle(self):
+    def toggle(self) -> None:
         pass

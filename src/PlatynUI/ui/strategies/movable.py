@@ -10,5 +10,5 @@ class Movable(StrategyBase):
     strategy_name = "org.platynui.strategies.Movable"
 
     @abstractmethod
-    def move(self, point: Point):
+    def move(self, point: Point) -> None:
         pass

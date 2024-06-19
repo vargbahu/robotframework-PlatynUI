@@ -4,6 +4,7 @@ __all__ = ["LocatorScope"]
 
 
 class LocatorScope(Enum):
+    Root = 0
     Descendants = 1
     Children = 2
     Parent = 3

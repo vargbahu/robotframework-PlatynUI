@@ -1,17 +1,20 @@
 import inspect
-from typing import TYPE_CHECKING, Any, List, Optional, Protocol, Set, Type, overload
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Set, Type, overload
 
-from PlatynUI.core import Adapter, Technology, TStrategyBase
+from PlatynUI.core import Adapter, TStrategyBase
 from PlatynUI.core.adapterproxy import AdapterProxyFactory
 from PlatynUI.core.exceptions import AdapterNotSupportsStrategyError, NotAStrategyTypeError
+from PlatynUI.core.strategies import Properties
 from PlatynUI.core.types import Point, Rect
 from PlatynUI.technology.uiautomation.core.technology import UiaTechnology
 from PlatynUI.ui.strategies import Control, Element
 
 from .loader import DotNetInterface
 
+# pyright: reportMissingModuleSource=false
+
 if TYPE_CHECKING:
-    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement  # type: ignore
+    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement
 
 
 class UiaBase(Protocol):
@@ -86,11 +89,20 @@ class UiaElement(Element, UiaBase):
         return AdapterProxyFactory.find_proxy_for(UiaAdapter(result, self.technology))
 
 
-class UiaAdapter(Adapter, UiaElement):
+class UiaProperties(Properties, UiaBase):
+    def get_property_names(self) -> List[str]:
+        return list(DotNetInterface.adapter().GetSupportedPropertyNames(self.element))
+
+    def get_property_value(self, name: str) -> Any:
+        return DotNetInterface.adapter().GetPropertyValue(self.element, name)
+
+
+class UiaAdapter(Adapter, UiaElement, UiaProperties):
     def __init__(self, element: "IUIAutomationElement", technology: UiaTechnology) -> None:
         super().__init__()
         self._element: Optional["IUIAutomationElement"] = element
         self._technology = technology
+        self._strategies_cache: Dict[str, Any] = {}
 
     @property
     def element(self) -> "IUIAutomationElement":
@@ -195,7 +207,7 @@ class UiaAdapter(Adapter, UiaElement):
         return None
 
     @property
-    def technology(self) -> Technology:
+    def technology(self) -> UiaTechnology:
         return self._technology
 
     @property

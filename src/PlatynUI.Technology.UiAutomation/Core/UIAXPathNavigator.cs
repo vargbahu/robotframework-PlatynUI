@@ -70,8 +70,17 @@ public class UiaXPathNavigator : XPathNavigator
 
                     try
                     {
-                        var v = cp.GetCurrentPropertyValueEx(p.Id, 0);
-                        return v?.ToString() ?? string.Empty;
+                        if (p.Id == null)
+                        {
+                            if (p.Name == "Role")
+                                return Automation.ControlTypeNameFromId(cp.CurrentControlType);
+
+                            return string.Empty;
+                        }
+
+                        var v = cp.GetCurrentPropertyValueEx((int)p.Id, 0);
+
+                        return Automation.ConvertPropertyValue(p.Name, v)?.ToString() ?? string.Empty;
                     }
                     catch
                     {
@@ -308,18 +317,15 @@ public class UiaXPathNavigator : XPathNavigator
 
     public override bool IsSamePosition(XPathNavigator other)
     {
-        switch (other)
+        return other switch
         {
-            case UiaXPathNavigator o
-                when o._current is AutomationElementNavigator current
-                    && _current is AutomationElementNavigator current1:
-                return Automation.CompareElements(current.Parent, current1.Parent)
+            UiaXPathNavigator o
+                when o._current is AutomationElementNavigator current && _current is AutomationElementNavigator current1
+                => Automation.CompareElements(current.Parent, current1.Parent)
                     && current.CurrentIndex == current1.CurrentIndex
-                    && Automation.CompareElements(current.Current, current1.Current);
-            case UiaXPathNavigator o:
-                return _current == o._current;
-            default:
-                return false;
-        }
+                    && Automation.CompareElements(current.Current, current1.Current),
+            UiaXPathNavigator o => _current == o._current,
+            _ => false,
+        };
     }
 }

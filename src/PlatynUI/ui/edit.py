@@ -8,11 +8,15 @@ __all__ = ["Edit"]
 @context
 class Edit(Text):
 
-    @Text.text.setter
-    def text(self, value: str):
+    @property
+    def text(self) -> str:
+        return super().text
+
+    @text.setter
+    def text(self, value: str) -> None:
         self.set_text(value)
 
-    def set_text(self, value):
+    def set_text(self, value: str) -> None:
         self.ensure_that(
             self._toplevel_parent_is_active,
             self._element_is_in_view,
@@ -25,7 +29,7 @@ class Edit(Text):
         finally:
             self.ensure_that(self._application_is_ready, raise_exception=False)
 
-    def clear(self):
+    def clear(self) -> None:
         self.ensure_that(
             self._toplevel_parent_is_active,
             self._element_is_in_view,
@@ -38,7 +42,7 @@ class Edit(Text):
         finally:
             self.ensure_that(self._application_is_ready, raise_exception=False)
 
-    def is_multiline(self):
+    def is_multiline(self) -> bool:
         self.ensure_that(self._application_is_ready)
 
         return self.adapter.get_strategy(strategies.HasMultiLine).is_multi_line

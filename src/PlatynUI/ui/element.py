@@ -54,7 +54,7 @@ class Element(ContextBase):
         from .window import Window
 
         self.ensure_that(self._application_is_ready)
-        top_level_window = self.top_level_element
+        top_level_window = self.top_level_parent
         if isinstance(top_level_window, Window):
             return top_level_window.is_active
 
@@ -110,10 +110,7 @@ class Element(ContextBase):
         return strategy.is_top_level_element
 
     @property
-    def top_level_element(self) -> Optional["Element"]:
-        if self.locator is None:
-            return None
-
+    def top_level_parent(self) -> Optional["Element"]:
         self.ensure_that(self._adapter_exists)
 
         if not self.is_valid:
@@ -127,7 +124,7 @@ class Element(ContextBase):
         if loc is None:
             return None
 
-        result = loc.create_context(self, ContextFactory.find_context_class_for(parent))
+        result = loc.create_context(None, ContextFactory.find_context_class_for(parent))
         result.adapter = parent
 
         return result if isinstance(result, Element) else None
@@ -139,7 +136,7 @@ class Element(ContextBase):
         self.ensure_that(self._application_is_ready)
 
         if not self.is_top_level_element():
-            parent_window = self.top_level_element
+            parent_window = self.top_level_parent
             if isinstance(parent_window, Window):
                 return parent_window.activate()
 
@@ -157,7 +154,7 @@ class Element(ContextBase):
     def bring_to_view(self) -> bool:
         return self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
-    def highlight(self, rect: Rect = None, time=None):
+    def highlight(self, rect: Rect = None, time: Optional[float] = None) -> None:
         if time is None:
             time = Settings.current().element_highlight_time
         if rect is None:
@@ -190,11 +187,11 @@ class Element(ContextBase):
         def default_click_position(self) -> Point:
             return self._element.default_click_position
 
-        def before_action(self, action: MouseProxy.Action):
+        def before_action(self, action: MouseProxy.Action) -> None:
             self._element.ensure_that(self._element._toplevel_parent_is_active, self._element._element_is_in_view)
             self.mouse_device.add_context(self._element)
 
-        def after_action(self, action: MouseProxy.Action):
+        def after_action(self, action: MouseProxy.Action) -> None:
             self.mouse_device.remove_context(self._element)
             self._element.ensure_that(self._element._application_is_ready, raise_exception=False)
 

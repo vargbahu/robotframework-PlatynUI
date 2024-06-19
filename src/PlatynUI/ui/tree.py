@@ -1,7 +1,7 @@
 import typing
 
 from ..core import LocatorScope, context
-from ..core.strategies import *
+from ..core.strategies import Properties
 from . import Control, Item, strategies
 
 __all__ = ["Tree", "TreeItem"]
@@ -64,13 +64,13 @@ class TreeItem(Item):
 
         return True
 
-    def get_items(self, *args, **kwargs) -> typing.List["TreeItem"]:
+    def get_items(self, *args: typing.Any, **kwargs: typing.Any) -> typing.List["TreeItem"]:
         return self.get_all(TreeItem, scope=LocatorScope.Children, *args, **kwargs)
 
-    def iter_items(self, *args, **kwargs) -> typing.Iterator["TreeItem"]:
+    def iter_items(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Iterator["TreeItem"]:
         return self.iter_all(TreeItem, scope=LocatorScope.Children, *args, **kwargs)
 
-    def get_item(self, *args, **kwargs) -> "TreeItem":
+    def get_item(self, *args: typing.Any, **kwargs: typing.Any) -> "TreeItem":
         return self.get(TreeItem, scope=LocatorScope.Children, *args, **kwargs)
 
 

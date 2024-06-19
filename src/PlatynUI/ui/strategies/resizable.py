@@ -10,5 +10,4 @@ class Resizable(StrategyBase):
     strategy_name = "org.platynui.strategies.Resizable"
 
     @abstractmethod
-    def resize(self, size: Size):
-        pass
+    def resize(self, size: Size) -> None: ...

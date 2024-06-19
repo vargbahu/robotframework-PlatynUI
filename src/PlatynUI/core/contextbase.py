@@ -4,6 +4,8 @@ import weakref
 from abc import ABCMeta
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type, TypeVar, Union, overload
 
+from typing_extensions import Self
+
 from .adapter import Adapter
 from .exceptions import CannotEnsureError, NoLocatorDefinedError, PlatynUiFatalError, PlatyUiError
 from .locatorbase import LocatorBase
@@ -13,66 +15,6 @@ from .settings import Settings
 from .strategies import NativeProperties, Properties
 
 __all__ = ["ContextBase", "TContextBase", "context", "UnknownContext", "ContextFactory"]
-
-F = TypeVar("F", bound=Callable[..., Any])
-T = TypeVar("T")
-
-
-@overload
-def context(__cls: Type[T]) -> Type[T]: ...
-
-
-@overload
-def context(
-    *,
-    role: Optional[str] = None,
-    framework_id: Optional[str] = None,
-    class_name: Optional[str] = None,
-    tag_name: Optional[str] = None,
-    properties: Optional[Dict[str, str]] = None,
-    native_properties: Optional[Dict[str, str]] = None,
-    **decorator_kwargs: Any,
-) -> Callable[[Type[T]], Type[T]]: ...
-
-
-def context(
-    __cls: Optional[Type[T]] = None,
-    *,
-    role: Optional[str] = None,
-    framework_id: Optional[str] = None,
-    class_name: Optional[str] = None,
-    tag_name: Optional[str] = None,
-    properties: Optional[Dict[str, str]] = None,
-    native_properties: Optional[Dict[str, str]] = None,
-    prefix: Optional[str] = None,
-    **decorator_kwargs: Any,
-) -> Union[Type[T], Callable[[Type[T]], Type[T]]]:
-    def decorator(cls: Type[T]) -> Type[T]:
-
-        setattr(cls, "default_role", role or cls.__name__)
-
-        if prefix is not None:
-            setattr(cls, "default_prefix", prefix)
-
-        ContextFactory.register_context(
-            cls,
-            {
-                "role": cls.__name__ if role is None else role,
-                "framework_id": framework_id,
-                "class_name": class_name,
-                "tag_name": tag_name,
-                "properties": properties,
-                "native_properties": native_properties,
-                **decorator_kwargs,
-            },
-        )
-
-        return cls
-
-    if __cls is None:
-        return decorator
-
-    return decorator(__cls)
 
 
 class ContextBase(metaclass=ABCMeta):
@@ -108,7 +50,10 @@ class ContextBase(metaclass=ABCMeta):
         return "%s(locator=%s)" % (self.__class__.__name__, self.locator)
 
     @property
-    def locator(self) -> Optional[LocatorBase]:
+    def locator(self) -> LocatorBase:
+        if self._locator is None:
+            raise NoLocatorDefinedError(f"no locator defined for {self:r}")
+
         return self._locator
 
     @locator.setter
@@ -135,7 +80,8 @@ class ContextBase(metaclass=ABCMeta):
 
         result = self._try_get_adapter(True)
 
-        assert result is not None
+        if result is None:
+            raise PlatynUiFatalError("adapter is not valid")
 
         return result
 
@@ -158,9 +104,9 @@ class ContextBase(metaclass=ABCMeta):
     def _get_adapter(self, raise_exception: bool) -> Optional[Adapter]:
         self.ensure_that(self._parent_exists)
 
-        if self.locator is not None:
+        if self._locator is not None:
             return self.locator.technology.adapter_factory.get_adapter(
-                self.context_parent, type(self), self.locator, raise_exception
+                self.locator, self.context_parent, type(self), raise_exception
             )
         return None
 
@@ -207,7 +153,10 @@ class ContextBase(metaclass=ABCMeta):
     __thread_local = _ContextBaseLocal()
 
     def ensure_that(
-        self, *predicates: Callable[[], bool], timeout: Optional[float] = None, raise_exception: Optional[bool] = None
+        self,
+        *predicates: Optional[Callable[[], bool]],
+        timeout: Optional[float] = None,
+        raise_exception: Optional[bool] = None,
     ) -> bool:
         return ContextBase._ensure_that(
             self, *predicates, timeout=timeout, raise_exception=raise_exception, failed_func=lambda: self.invalidate()
@@ -369,14 +318,14 @@ class ContextBase(metaclass=ABCMeta):
 
         return self.adapter.runtime_id
 
-    def __enter__(self):
+    def __enter__(self) -> "Self":
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> False:
         pass
 
     def get(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> "TContextBase":
         if locator is None:
             if self.locator is None:
@@ -387,22 +336,22 @@ class ContextBase(metaclass=ABCMeta):
         return locator.copy().create_context(self, context_class)
 
     def ancestor(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> "TContextBase":
         return self.get(context_class, scope=LocatorScope.Ancestor, locator=locator, *args, **kwargs)
 
     def ancestors(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> List["TContextBase"]:
         return self.get_all(context_class, scope=LocatorScope.Ancestor, locator=locator, *args, **kwargs)
 
     def get_child(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> "TContextBase":
         return self.get(context_class, scope=LocatorScope.Children, locator=locator, *args, **kwargs)
 
     def iter_all(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> Iterator["TContextBase"]:
         if locator is None:
             if self.locator is None:
@@ -414,18 +363,18 @@ class ContextBase(metaclass=ABCMeta):
 
         for a in children:
             loc = locator.make_unique_locator(a)
-            res = loc.create_context(self, ContextFactory.find_context_class_for(a))
+            res = loc.create_context(self, ContextFactory.find_context_class_for(a, context_class))
             res.adapter = a
             if context_class is None or isinstance(res, context_class):
                 yield res
 
     def get_all(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> List["TContextBase"]:
         return list(self.iter_all(context_class, *args, locator=locator, **kwargs))
 
     def get_children(
-        self, context_class: Optional[Type["TContextBase"]], *args, locator: LocatorBase = None, **kwargs
+        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
     ) -> List["TContextBase"]:
         return self.get_all(context_class, scope=LocatorScope.Children, locator=locator, *args, **kwargs)
 
@@ -442,22 +391,22 @@ class ContextBase(metaclass=ABCMeta):
 
         loc = self.locator.create_parent_locator(parent)
 
-        result = loc.create_context(self, ContextFactory.find_context_class_for(parent))
+        result: "ContextBase" = loc.create_context(self, ContextFactory.find_context_class_for(parent))
         result.adapter = parent
 
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator["ContextBase"]:
         adapter = self.adapter
 
         if adapter is None or not adapter.valid:
-            return []
+            return
 
         if self.locator is not None:
 
             for a in adapter.children:
                 loc = self.locator.create_child_locator(a)
-                res = loc.create_context(self, ContextFactory.find_context_class_for(a))
+                res: ContextBase = loc.create_context(self, ContextFactory.find_context_class_for(a))
                 res.adapter = a
                 yield res
 
@@ -466,15 +415,23 @@ class ContextBase(metaclass=ABCMeta):
         return list(self)
 
     def get_properties(self) -> List[str]:
+        self.ensure_that(self._adapter_exists)
+
         return self.adapter.get_strategy(Properties).get_property_names()
 
     def get_property_value(self, name: str) -> Any:
+        self.ensure_that(self._adapter_exists)
+
         return self.adapter.get_strategy(Properties).get_property_value(name)
 
     def get_native_properties(self) -> List[str]:
+        self.ensure_that(self._adapter_exists)
+
         return self.adapter.get_strategy(NativeProperties).get_native_property_names()
 
     def get_native_property_value(self, name: str) -> Any:
+        self.ensure_that(self._adapter_exists)
+
         return self.adapter.get_strategy(NativeProperties).get_native_property_value(name)
 
 
@@ -494,12 +451,27 @@ class ContextFactory:
     registered_adapters: List[Entry] = []
 
     @classmethod
-    def register_context(cls, adapter_cls: Type[T], criterias: Dict[str, Any]) -> None:
+    def register_context(cls, adapter_cls: Type[ContextBase], criterias: Dict[str, Any]) -> None:
         cls.registered_adapters.append(ContextFactory.Entry(adapter_cls, criterias.copy()))
 
+    @overload
+    @classmethod
+    def find_context_class_for(cls, adapter: Adapter, context_type: Optional[Type[TContextBase]]) -> Type[TContextBase]:
+        pass
+
+    @overload
     @classmethod
     def find_context_class_for(cls, adapter: Adapter) -> Type[ContextBase]:
+        pass
+
+    @classmethod
+    def find_context_class_for(
+        cls, adapter: Adapter, context_type: Optional[Type[TContextBase]] = None
+    ) -> Type[Union[TContextBase, ContextBase]]:
         from .adapterproxy import WeightCalculator
+
+        if context_type is not None:
+            return context_type
 
         weights = []
         calculator = WeightCalculator(adapter)
@@ -515,17 +487,95 @@ class ContextFactory:
 
         return UnknownContext
 
+    @overload
     @classmethod
     def create_context(
         cls,
         locator: "LocatorBase",
+        context_type: Optional[Type[TContextBase]],
         parent: Optional["ContextBase"] = None,
-        context_type: Optional[Type["TContextBase"]] = None,
+    ) -> TContextBase:
+        pass
+
+    @overload
+    @classmethod
+    def create_context(
+        cls,
+        locator: "LocatorBase",
+        context_type: Optional[Type[TContextBase]] = None,
+        parent: Optional["ContextBase"] = None,
+    ) -> TContextBase:
+        pass
+
+    @classmethod
+    def create_context(
+        cls,
+        locator: "LocatorBase",
+        context_type: Optional[Type[TContextBase]] = None,
+        parent: Optional["ContextBase"] = None,
         raise_error: bool = True,
-    ) -> Union["TContextBase", ContextBase, None]:
-        adapter = locator.technology.adapter_factory.get_adapter(parent, context_type, locator, raise_error)
+    ) -> Optional[TContextBase]:
+        adapter = locator.technology.adapter_factory.get_adapter(locator, parent, context_type, raise_error)
         if adapter is None:
             return None
-        context_cls = cls.find_context_class_for(adapter) if context_type is None else context_type
 
-        return context_cls(locator, parent, adapter)
+        context_type = cls.find_context_class_for(adapter, context_type)
+
+        return context_type(locator, parent, adapter)
+
+
+@overload
+def context(__cls: Type[TContextBase]) -> Type[TContextBase]: ...
+
+
+@overload
+def context(
+    *,
+    role: Optional[str] = None,
+    framework_id: Optional[str] = None,
+    class_name: Optional[str] = None,
+    tag_name: Optional[str] = None,
+    properties: Optional[Dict[str, str]] = None,
+    native_properties: Optional[Dict[str, str]] = None,
+    **decorator_kwargs: Any,
+) -> Callable[[Type[TContextBase]], Type[TContextBase]]: ...
+
+
+def context(
+    __cls: Optional[Type[TContextBase]] = None,
+    *,
+    role: Optional[str] = None,
+    framework_id: Optional[str] = None,
+    class_name: Optional[str] = None,
+    tag_name: Optional[str] = None,
+    properties: Optional[Dict[str, str]] = None,
+    native_properties: Optional[Dict[str, str]] = None,
+    prefix: Optional[str] = None,
+    **decorator_kwargs: Any,
+) -> Union[Type[TContextBase], Callable[[Type[TContextBase]], Type[TContextBase]]]:
+    def decorator(cls: Type[TContextBase]) -> Type[TContextBase]:
+
+        setattr(cls, "default_role", role or cls.__name__)
+
+        if prefix is not None:
+            setattr(cls, "default_prefix", prefix)
+
+        ContextFactory.register_context(
+            cls,
+            {
+                "role": cls.__name__ if role is None else role,
+                "framework_id": framework_id,
+                "class_name": class_name,
+                "tag_name": tag_name,
+                "properties": properties,
+                "native_properties": native_properties,
+                **decorator_kwargs,
+            },
+        )
+
+        return cls
+
+    if __cls is None:
+        return decorator
+
+    return decorator(__cls)

@@ -22,9 +22,11 @@ internal class AutomationPropertyNavigator
 
     protected override IReadOnlyList<Automation.PropertyIdAndName> Children => _children ??= GetChildren();
 
-    private IReadOnlyList<Automation.PropertyIdAndName> GetChildren()
+    private List<Automation.PropertyIdAndName> GetChildren()
     {
-        return Element != null ? Automation.GetSupportedPropertyIdAndNames(Element).ToList() : [];
+        return Element != null
+            ? [new Automation.PropertyIdAndName(null, "Role"), .. Automation.GetSupportedPropertyIdAndNames(Element)]
+            : [];
     }
 
     public override ChildrenNavigatorBase<AutomationElementNavigator, Automation.PropertyIdAndName> Clone()

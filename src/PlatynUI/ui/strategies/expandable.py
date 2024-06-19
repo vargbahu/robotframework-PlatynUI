@@ -23,9 +23,9 @@ class Expandable(HasExpanded):
     strategy_name = "org.platynui.strategies.Expandable"
 
     @abstractmethod
-    def expand(self):
+    def expand(self) -> None:
         pass
 
     @abstractmethod
-    def collapse(self):
+    def collapse(self) -> None:
         pass

@@ -152,7 +152,8 @@ target-version = ['py38']
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -vv -rf"
+#addopts = "-ra -vv -rf"
+addopts = "-ra -rf --tb=short -vv"
 filterwarnings = "ignore:.*Using or importing the ABCs from 'collections' instead of from 'collections.abc'.*:DeprecationWarning"
 testpaths = ["tests"]
 junit_suite_name = "robotcode"
@@ -189,8 +190,8 @@ exclude = [
   "^playground/",
   "^scripts/",
 ]
-
 mypy_path = ["src", "typings"]
+disable_error_code = ["type-abstract"]
 
 # allow_untyped_calls = true
 
