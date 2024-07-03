@@ -2,7 +2,6 @@ import abc
 import logging
 from typing import Any, Iterable, Iterator, List, Optional, Union
 
-from ....core.contextbase import ContextBase
 from ....core.exceptions import PlatyUiError
 from ....core.settings import Settings
 from .basekeyboarddevice import BaseKeyboardDevice, BaseKeyCode, InputType, Key
@@ -54,10 +53,10 @@ class KeyboardDevice(InputDevice):
     def after_press_release_delay(self, value: float) -> None:
         self.__after_press_release_delay = value
 
-    def add_context(self, context: ContextBase) -> None:
+    def add_context(self, context: Any) -> None:
         pass
 
-    def remove_context(self, context: ContextBase) -> None:
+    def remove_context(self, context: Any) -> None:
         pass
 
     @abc.abstractmethod
@@ -210,7 +209,7 @@ class DefaultKeyboardDevice(KeyboardDevice):
     def __init__(self, base_keyboard_device: BaseKeyboardDevice):
         self.__base_keyboard_device = base_keyboard_device
 
-        self.__pressed_keys: List[BaseKeyCode] = []
+        self._pressed_keys: List[BaseKeyCode] = []
 
     def escape_text(self, value: str) -> str:
         return str.replace(value, "<", "<<")
@@ -220,9 +219,9 @@ class DefaultKeyboardDevice(KeyboardDevice):
         return self.__base_keyboard_device
 
     def __del__(self) -> None:
-        if len(self.__pressed_keys) > 0:
-            logger.warning("there are pressed keys (%s), try to send key release", self.__pressed_keys, exc_info=True)
-            for k in self.__pressed_keys:
+        if len(self._pressed_keys) > 0:
+            logger.warning("there are pressed keys (%s), try to send key release", self._pressed_keys, exc_info=True)
+            for k in self._pressed_keys:
                 self.base_keyboard_device.send_keycode(k, False)
 
     def __send_key_event(self, key_event: KeyEvent, delay: Optional[float]) -> None:
@@ -240,11 +239,11 @@ class DefaultKeyboardDevice(KeyboardDevice):
 
         if key_event.press:
             self.base_keyboard_device.delay(self.after_press_key_delay)
-            self.__pressed_keys.insert(0, key_event.key_code)
+            self._pressed_keys.insert(0, key_event.key_code)
         else:
             self.base_keyboard_device.delay(delay if delay is not None else self.after_release_key_delay)
-            if key_event.key_code in self.__pressed_keys:
-                self.__pressed_keys.remove(key_event.key_code)
+            if key_event.key_code in self._pressed_keys:
+                self._pressed_keys.remove(key_event.key_code)
 
     def type_keys(self, *keys: Union[str, Any, Iterable[Any]], delay: Optional[float] = None) -> None:
         self.base_keyboard_device.start_input(InputType.TYPE)

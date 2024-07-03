@@ -1,7 +1,9 @@
 from robotlibcore import keyword
 
+from PlatynUI.core.contextbase import ContextBase
+
 
 class ButtonKeywords:
     @keyword
-    def click_button(self, locator: str) -> None:
-        pass
+    def activate(self, locator: ContextBase) -> None:
+        locator.activate()

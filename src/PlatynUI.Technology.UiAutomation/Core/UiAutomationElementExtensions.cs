@@ -1,9 +1,9 @@
-﻿namespace PlatynUI.Ui.Technology.UIAutomation.Core
+﻿namespace PlatynUI.Technology.UIAutomation.Core
 {
     using System.Windows;
     using PlatynUI.Technology.UiAutomation.Client;
 
-    public static class UiAutomationElementExtensions
+    internal static class UiAutomationElementExtensions
     {
         public static bool TryGetCurrentPattern<T>(this IUIAutomationElement element, out T? pattern)
             where T : class

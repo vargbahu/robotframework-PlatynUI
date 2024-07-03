@@ -32,11 +32,11 @@ class Control(Element):
             super().__init__(keyboard_device)
             self._control = control
 
-        def before_action(self, action: KeyboardProxy.Action):
+        def before_action(self, action: KeyboardProxy.Action) -> None:
             self._control.ensure_that(self._control._control_has_focus)
             self.keyboard_device.add_context(self._control)
 
-        def after_action(self, action: KeyboardProxy.Action):
+        def after_action(self, action: KeyboardProxy.Action) -> None:
             self._control.ensure_that(self._control._application_is_ready, raise_exception=False)
             self.keyboard_device.remove_context(self._control)
 

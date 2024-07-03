@@ -206,3 +206,7 @@ selenium-screenshot-*.png
 # Ignore all local history of files
 .history
 .ionide
+
+# some local files
+types_playground/
+prof/

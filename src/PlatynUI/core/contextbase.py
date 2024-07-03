@@ -44,7 +44,7 @@ class ContextBase(metaclass=ABCMeta):
         if context_parent is not None and isinstance(context_parent, ContextBase):
             context_parent._context_children.add(self)
 
-        self.__adapter = adapter
+        self._adapter = adapter
 
     def __repr__(self) -> str:
         return "%s(locator=%s)" % (self.__class__.__name__, self.locator)
@@ -87,19 +87,19 @@ class ContextBase(metaclass=ABCMeta):
 
     @adapter.setter
     def adapter(self, v: Adapter) -> None:
-        self.__adapter = v
+        self._adapter = v
 
     def _try_get_adapter(self, raise_exception: bool = False) -> Optional[Adapter]:
-        if self.__adapter is not None and not self.__adapter.valid:
+        if self._adapter is not None and not self._adapter.valid:
             self.invalidate()
-        if self.__adapter is None:
-            self.__adapter = self._get_adapter(raise_exception)
-        return self.__adapter
+        if self._adapter is None:
+            self._adapter = self._get_adapter(raise_exception)
+        return self._adapter
 
     def invalidate(self) -> None:
         for c in self._context_children:
             c.invalidate()
-        self.__adapter = None
+        self._adapter = None
 
     def _get_adapter(self, raise_exception: bool) -> Optional[Adapter]:
         self.ensure_that(self._parent_exists)
@@ -159,7 +159,7 @@ class ContextBase(metaclass=ABCMeta):
         raise_exception: Optional[bool] = None,
     ) -> bool:
         return ContextBase._ensure_that(
-            self, *predicates, timeout=timeout, raise_exception=raise_exception, failed_func=lambda: self.invalidate()
+            self, *predicates, timeout=timeout, raise_exception=raise_exception, failed_func=self.invalidate
         )
 
     @staticmethod
@@ -241,6 +241,7 @@ class ContextBase(metaclass=ABCMeta):
 
                     if not result:
                         time.sleep(Settings.current().ensure_delay)
+
                         if failed_func is not None:
                             failed_func()
 
@@ -273,7 +274,7 @@ class ContextBase(metaclass=ABCMeta):
 
     @property
     def is_valid(self) -> bool:
-        return self.__adapter is not None and self.__adapter.valid
+        return self._adapter is not None and self._adapter.valid
 
     def exists(self, timeout: Optional[float] = None, raise_exception: bool = False) -> bool:
         if timeout is None:

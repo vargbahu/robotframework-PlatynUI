@@ -9,16 +9,14 @@ class Activatable(StrategyBase):
     strategy_name = "org.platynui.strategies.Activatable"
 
     @abstractmethod
-    def activate(self) -> None:
-        pass
+    def activate(self) -> None: ...
 
 
 class Deactivatable(StrategyBase):
     strategy_name = "org.platynui.strategies.Deactivatable"
 
     @abstractmethod
-    def deactivate(self) -> None:
-        pass
+    def deactivate(self) -> None: ...
 
 
 class HasIsActive(StrategyBase):
@@ -26,5 +24,4 @@ class HasIsActive(StrategyBase):
 
     @property
     @abstractmethod
-    def is_active(self) -> bool:
-        pass
+    def is_active(self) -> bool: ...

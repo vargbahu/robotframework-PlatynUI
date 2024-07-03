@@ -7,3 +7,6 @@ GetForegroundWindow
 GetWindow
 SwitchToThisWindow
 GetDoubleClickTime
+VIRTUAL_KEY
+VkKeyScan
+GetWindow

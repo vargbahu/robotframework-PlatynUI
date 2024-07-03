@@ -1,7 +1,6 @@
 from PlatynUI.core.contextbase import ContextFactory
-from PlatynUI.core.settings import Settings
 from PlatynUI.technology.uiautomation import Desktop, Locator, locator
-from PlatynUI.ui import Button, Edit, Element, Pane, Window
+from PlatynUI.ui import Button, Element, Pane, Window
 
 # mypy: disable-error-code="empty-body"
 
@@ -103,8 +102,28 @@ class Calculator(Window):
 
 def test_seventh() -> None:
     calc = Calculator()
-    calc.n9.activate()
-    calc.n1.activate()
-    calc.n2.activate()
+    desktop = Desktop()
+    desktop.mouse.move_to(x=calc.n1.bounding_rectangle.left, y=calc.n1.bounding_rectangle.top)
+    desktop.mouse.move_to(x=calc.n2.bounding_rectangle.left, y=calc.n2.bounding_rectangle.top)
+    desktop.mouse.move_to(x=calc.n3.bounding_rectangle.left, y=calc.n3.bounding_rectangle.top)
+
+    desktop.mouse.move_to(x=calc.n1.bounding_rectangle.left, y=calc.n1.bounding_rectangle.top)
+    desktop.mouse.move_to(x=calc.n2.bounding_rectangle.left, y=calc.n2.bounding_rectangle.top)
+    desktop.mouse.move_to(x=calc.n3.bounding_rectangle.left, y=calc.n3.bounding_rectangle.top)
+
+    # calc.n1.mouse.move_to()
+    # calc.n2.mouse.move_to()
+    # calc.n3.mouse.move_to()
+    # calc.n4.mouse.move_to()
+    # calc.n1.activate()
+    # calc.n2.activate()
+    # calc.n3.activate()
+    # calc.n4.activate()
+    # calc.n5.activate()
+    # calc.n6.activate()
+    # calc.n7.activate()
+    # calc.n8.activate()
+    # calc.n9.activate()
+    # calc.n0.activate()
 
     calc.n1.keyboard.type_keys("1234")

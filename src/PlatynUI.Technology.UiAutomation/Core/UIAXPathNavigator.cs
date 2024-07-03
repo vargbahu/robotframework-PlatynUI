@@ -1,4 +1,4 @@
-﻿namespace PlatynUI.Ui.Technology.UIAutomation.Core;
+﻿namespace PlatynUI.Technology.UIAutomation.Core;
 
 using System;
 using System.Xml;
@@ -6,7 +6,7 @@ using System.Xml.XPath;
 using PlatynUI.Technology.UiAutomation.Client;
 
 // ReSharper disable once InconsistentNaming
-public class UiaXPathNavigator : XPathNavigator
+internal class UiaXPathNavigator : XPathNavigator
 {
     private object? _current;
     private bool _findVirtual;

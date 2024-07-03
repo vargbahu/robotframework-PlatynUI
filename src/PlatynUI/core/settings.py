@@ -29,8 +29,8 @@ class Settings:
     mouse_multi_click_delay_multiplicator: float = 0.5
     mouse_press_release_delay: float = 0.010
     mouse_after_move_delay: float = 0.010
-    mouse_move_delay: float = 0.01
-    mouse_move_time: float = 0.4
+    mouse_move_delay: float = 0.010
+    mouse_move_time: float = 0.40
 
     keyboard_after_press_key_delay: float = 0.001
     keyboard_after_release_key_delay: float = 0.005

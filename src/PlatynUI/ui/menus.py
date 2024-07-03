@@ -1,5 +1,6 @@
 from typing import Optional
-from ..core import context, ContextBase
+
+from ..core import ContextBase, context
 from . import strategies
 from .control import Control
 from .desktopbase import DesktopBase

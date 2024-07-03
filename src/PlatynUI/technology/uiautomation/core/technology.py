@@ -5,14 +5,12 @@ from typing import Optional
 from PlatynUI.core import AdapterFactory
 from PlatynUI.ui.core import UiTechnology, WindowManager
 from PlatynUI.ui.core.devices import (
-    DefaultDisplayDevice,
     DefaultKeyboardDevice,
     DefaultMouseDevice,
     DisplayDevice,
     KeyboardDevice,
     MouseDevice,
 )
-
 
 __all__ = ["UiaTechnology", "get_technology"]
 
@@ -35,7 +33,9 @@ class UiaTechnology(UiTechnology):
 
     @property
     def keyboard_device(self) -> KeyboardDevice:
-        raise NotImplementedError
+        from .keyboarddevice import UiaKeyboardDevice
+
+        return DefaultKeyboardDevice(UiaKeyboardDevice())
 
     @property
     def display_device(self) -> DisplayDevice:

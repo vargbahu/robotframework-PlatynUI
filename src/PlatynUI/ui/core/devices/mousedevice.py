@@ -1,8 +1,7 @@
 import abc
 import time
-from typing import Iterator, Optional
+from typing import Any, Iterator, Optional
 
-from ....core.contextbase import ContextBase
 from ....core.settings import Settings
 from ....core.types import Point, Rect
 from .basemousedevice import BaseMouseDevice
@@ -102,10 +101,10 @@ class MouseDevice(InputDevice):
     def move_delay(self, value: Optional[float]) -> None:
         self.__move_delay = value
 
-    def add_context(self, context: ContextBase) -> None:
+    def add_context(self, context: Any) -> None:
         pass
 
-    def remove_context(self, context: ContextBase) -> None:
+    def remove_context(self, context: Any) -> None:
         pass
 
     @abc.abstractmethod

@@ -1,4 +1,3 @@
-import time
 from typing import Optional, cast
 
 from ...core import Adapter, AdapterProxy, Point, Rect, Size, adapter_proxy_for, wait_for
@@ -81,12 +80,12 @@ class EditProxy(TextProxy, strategies.Clearable, strategies.EditableText, strate
     def is_multi_line(self) -> bool:
         return self.adapter.get_strategy(strategies.HasMultiLine).is_multi_line
 
-    def set_text(self, value):
+    def set_text(self, value: str) -> None:
         self.clear()
         kbd = AdapterKeyboardProxy(self.adapter)
         kbd.type_keys(kbd.escape_text(value))
 
-    def clear(self):
+    def clear(self) -> None:
         AdapterKeyboardProxy(self.adapter).type_keys(
             "<Control+Home><Control+Shift+End><Delete>" if self.is_multi_line else "<Home><Shift+End><Delete>"
         )
@@ -94,13 +93,13 @@ class EditProxy(TextProxy, strategies.Clearable, strategies.EditableText, strate
 
 @adapter_proxy_for(role="Button")
 class ButtonProxy(ControlProxy, strategies.Activatable):
-    def activate(self):
+    def activate(self) -> None:
         AdapterMouseProxy(self.adapter).click()
 
 
 @adapter_proxy_for(role="MenuItem")
 class MenuItemProxy(ControlProxy, strategies.Activatable):
-    def activate(self):
+    def activate(self) -> None:
         with AdapterMouseProxy(self.adapter) as proxy:
             proxy.move_to(x=0, y=0)
             proxy.click()
@@ -112,7 +111,7 @@ class CheckBoxProxy(ControlProxy, strategies.HasToggleState, strategies.Toggleab
     def state(self) -> strategies.ToggleState:
         return self.adapter.get_strategy(strategies.HasToggleState).state
 
-    def toggle(self):
+    def toggle(self) -> None:
         AdapterMouseProxy(self.adapter).click()
 
 
@@ -128,11 +127,11 @@ class ItemProxy(
     strategies.HasIsActive,
 ):
 
-    def activate(self):
+    def activate(self) -> None:
         AdapterMouseProxy(self.adapter).click()
         wait_for(lambda: self.is_active)
 
-    def deactivate(self):
+    def deactivate(self) -> None:
         AdapterMouseProxy(self.adapter).click()
         wait_for(lambda: not self.is_active)
 
@@ -140,20 +139,20 @@ class ItemProxy(
     def is_active(self) -> bool:
         return self.adapter.get_strategy(strategies.HasIsActive).is_active
 
-    def cancel(self):
+    def cancel(self) -> None:
         AdapterKeyboardProxy(self.adapter).type_keys("<Escape>")
 
-    def accept(self):
+    def accept(self) -> None:
         AdapterKeyboardProxy(self.adapter).type_keys("<Enter>")
 
-    def open_editor(self):
+    def open_editor(self) -> None:
         AdapterMouseProxy(self.adapter).click(times=2)
         # cast(UiTechnology, self.adapter.technology).keyboard_device.type_keys("<F2>")
 
-    def clear(self):
+    def clear(self) -> None:
         AdapterKeyboardProxy(self.adapter).type_keys("<Home><Shift+End><Delete>")
 
-    def set_text(self, value):
+    def set_text(self, value: str) -> None:
         self.clear()
         with AdapterKeyboardProxy(self.adapter) as kbd:
             kbd.type_keys(kbd.escape_text(value))
@@ -166,7 +165,7 @@ class ItemProxy(
     def is_selected(self) -> bool:
         return self.adapter.get_strategy(strategies.HasSelected).is_selected
 
-    def select(self):
+    def select(self) -> None:
         AdapterMouseProxy(self.adapter).click()
         wait_for(lambda: self.is_selected)
 
@@ -196,11 +195,11 @@ class TreeItemProxy(ItemProxy, strategies.Expandable):
     def can_expand(self) -> bool:
         return self.adapter.get_strategy(strategies.HasExpanded).can_expand
 
-    def expand(self):
+    def expand(self) -> None:
         AdapterMouseProxy(self.adapter).click()
         wait_for(lambda: self.is_expanded)
 
-    def collapse(self):
+    def collapse(self) -> None:
         AdapterMouseProxy(self.adapter).click()
         wait_for(lambda: not self.is_expanded)
 
@@ -215,7 +214,7 @@ class ComboBoxProxy(ControlProxy, strategies.Expandable, strategies.EditableText
     def can_expand(self) -> bool:
         return self.adapter.get_strategy(strategies.HasExpanded).can_expand
 
-    def expand(self):
+    def expand(self) -> None:
         if self.is_expanded:
             return
 
@@ -225,7 +224,7 @@ class ComboBoxProxy(ControlProxy, strategies.Expandable, strategies.EditableText
             if wait_for(lambda: self.is_expanded):
                 break
 
-    def collapse(self):
+    def collapse(self) -> None:
         if not self.is_expanded:
             return
         for _ in range(2):
@@ -238,12 +237,12 @@ class ComboBoxProxy(ControlProxy, strategies.Expandable, strategies.EditableText
     def text(self) -> str:
         return self.adapter.get_strategy(strategies.Text).text
 
-    def set_text(self, value):
+    def set_text(self, value: str) -> None:
         self.clear()
         with AdapterKeyboardProxy(self.adapter) as kbd:
             kbd.type_keys(kbd.escape_text(value))
 
-    def clear(self):
+    def clear(self) -> None:
         AdapterKeyboardProxy(self.adapter).type_keys("<Home><Shift+End><Delete>")
 
 
@@ -278,7 +277,7 @@ class WindowProxy(
     def is_minimized(self) -> bool:
         return self.adapter.get_strategy(strategies.HasCanMinimize).is_minimized
 
-    def maximize(self):
+    def maximize(self) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -293,7 +292,7 @@ class WindowProxy(
 
         wait_for(lambda: self.is_maximized)
 
-    def minimize(self):
+    def minimize(self) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -308,7 +307,7 @@ class WindowProxy(
 
         wait_for(lambda: self.is_minimized)
 
-    def restore(self):
+    def restore(self) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -323,7 +322,7 @@ class WindowProxy(
 
         wait_for(lambda: not (self.is_maximized or self.is_maximized))
 
-    def activate(self):
+    def activate(self) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -353,7 +352,7 @@ class WindowProxy(
 
         return self.adapter.get_strategy(strategies.HasIsActive).is_active
 
-    def close(self):
+    def close(self) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -364,7 +363,7 @@ class WindowProxy(
         else:
             self.adapter.get_strategy(strategies.Closeable).close()
 
-    def move(self, pos: Point):
+    def move(self, pos: Point) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -376,9 +375,8 @@ class WindowProxy(
             )
         else:
             self.adapter.get_strategy(strategies.Movable).move(pos)
-        time.sleep(0.1)
 
-    def resize(self, size: Size):
+    def resize(self, size: Size) -> None:
         native_window = self.adapter.get_strategy(strategies.HasNativeWindowHandle, False)
         if (
             native_window is not None
@@ -390,4 +388,3 @@ class WindowProxy(
             )
         else:
             self.adapter.get_strategy(strategies.Resizable).resize(size)
-        time.sleep(0.1)

@@ -1,33 +1,19 @@
-import inspect
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Set, Type, overload
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, cast
 
-from PlatynUI.core import Adapter, TStrategyBase
+from PlatynUI.core import Adapter
 from PlatynUI.core.adapterproxy import AdapterProxyFactory
-from PlatynUI.core.exceptions import AdapterNotSupportsStrategyError, NotAStrategyTypeError
 from PlatynUI.core.strategies import Properties
 from PlatynUI.core.types import Point, Rect
 from PlatynUI.technology.uiautomation.core.technology import UiaTechnology
 from PlatynUI.ui.strategies import Control, Element
 
 from .loader import DotNetInterface
+from .uiabase import UiaBase
 
 # pyright: reportMissingModuleSource=false
 
 if TYPE_CHECKING:
-    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement
-
-
-class UiaBase(Protocol):
-    @property
-    def element(self) -> "IUIAutomationElement": ...
-
-    @property
-    def valid(self) -> bool: ...
-
-    def invalidate(self) -> None: ...
-
-    @property
-    def technology(self) -> UiaTechnology: ...
+    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement  # type: ignore
 
 
 class UiaElement(Element, UiaBase):
@@ -71,7 +57,8 @@ class UiaElement(Element, UiaBase):
         return self.element.CurrentIsOffscreen == 0
 
     def try_ensure_application_is_ready(self) -> bool:
-        raise NotImplementedError("try_ensure_application_is_ready")
+        #TODO: raise NotImplementedError("try_ensure_application_is_ready")
+        return True
 
     def try_ensure_toplevel_parent_is_active(self) -> bool:
         return DotNetInterface.adapter().TryEnsureTopLevelParentIsActive(self.element)
@@ -86,7 +73,7 @@ class UiaElement(Element, UiaBase):
         if result is None:
             return None
 
-        return AdapterProxyFactory.find_proxy_for(UiaAdapter(result, self.technology))
+        return AdapterProxyFactory.find_proxy_for(UiaAdapter(result, cast(UiaTechnology, self.technology)))
 
 
 class UiaProperties(Properties, UiaBase):
@@ -97,7 +84,7 @@ class UiaProperties(Properties, UiaBase):
         return DotNetInterface.adapter().GetPropertyValue(self.element, name)
 
 
-class UiaAdapter(Adapter, UiaElement, UiaProperties):
+class UiaAdapter(Adapter, UiaProperties, UiaElement):
     def __init__(self, element: "IUIAutomationElement", technology: UiaTechnology) -> None:
         super().__init__()
         self._element: Optional["IUIAutomationElement"] = element
@@ -128,6 +115,7 @@ class UiaAdapter(Adapter, UiaElement, UiaProperties):
         return self._element is not None
 
     def invalidate(self) -> None:
+        print(f"Invalidating element {self}")
         self._element = None
 
     @property
@@ -169,42 +157,6 @@ class UiaAdapter(Adapter, UiaElement, UiaProperties):
     @property
     def runtime_id(self) -> str:
         return DotNetInterface.adapter().GetRuntimeId(self.element)
-
-    @property
-    def supported_strategies(self) -> Set[str]:
-        if self.valid:
-            return {
-                m.strategy_name
-                for m in inspect.getmro(type(self))
-                if hasattr(m, "strategy_name") and m.strategy_name is not None
-            }
-
-        return set()
-
-    @overload
-    def get_strategy(self, strategy_type: Type[TStrategyBase]) -> TStrategyBase: ...
-
-    @overload
-    def get_strategy(self, strategy_type: Type[TStrategyBase], raise_exception: bool) -> Optional[TStrategyBase]: ...
-
-    def get_strategy(self, strategy_type: Type[TStrategyBase], raise_exception: bool = True) -> Optional[TStrategyBase]:
-        if hasattr(strategy_type, "strategy_name"):
-            strategy_name = getattr(strategy_type, "strategy_name")
-            if strategy_name is not None:
-                if isinstance(self, strategy_type):
-                    return self
-
-                if raise_exception:
-                    raise AdapterNotSupportsStrategyError(
-                        "adapter not supports the %s strategy" % strategy_name
-                        if strategy_name is not None
-                        else repr(strategy_type)
-                    )
-                return None
-
-        if raise_exception:
-            raise NotAStrategyTypeError("type %s is not a strategy type" % repr(strategy_type))
-        return None
 
     @property
     def technology(self) -> UiaTechnology:

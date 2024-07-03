@@ -2,7 +2,7 @@
 
 using System.Xml;
 using PlatynUI.Technology.UiAutomation.Client;
-using PlatynUI.Ui.Technology.UIAutomation.Core;
+using PlatynUI.Technology.UIAutomation.Core;
 
 public static class Finder
 {

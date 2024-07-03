@@ -1,6 +1,6 @@
 import enum
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, cast, overload
+from typing import Any, Optional, cast
 
 from ....core import Adapter, InvalidArgumentError
 from ....core.types import Point, Rect, VirtualPoint
@@ -92,7 +92,13 @@ class MouseProxy(metaclass=ABCMeta):
 
         return result
 
-    def press(self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None) -> Optional[Point]:
+    def press(
+        self,
+        pos: Point = None,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        button: Optional[MouseButton] = None,
+    ) -> Optional[Point]:
         self.before_action(MouseProxy.Action.PRESS)
 
         result = self.mouse_device.press(self._calc_mouse_point(pos, x, y), button=button)
@@ -102,7 +108,11 @@ class MouseProxy(metaclass=ABCMeta):
         return result
 
     def release(
-        self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None
+        self,
+        pos: Point = None,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        button: Optional[MouseButton] = None,
     ) -> Optional[Point]:
         self.before_action(MouseProxy.Action.RELEASE)
 
@@ -113,7 +123,12 @@ class MouseProxy(metaclass=ABCMeta):
         return result
 
     def click(
-        self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None, times: int = 1
+        self,
+        pos: Point = None,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        button: Optional[MouseButton] = None,
+        times: int = 1,
     ) -> Optional[Point]:
         self.before_action(MouseProxy.Action.CLICK)
 
@@ -124,7 +139,11 @@ class MouseProxy(metaclass=ABCMeta):
         return result
 
     def double_click(
-        self, pos: Point = None, x: float = None, y: float = None, button: MouseButton = None
+        self,
+        pos: Point = None,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        button: Optional[MouseButton] = None,
     ) -> Optional[Point]:
         self.before_action(MouseProxy.Action.DOUBLE_CLICK)
 

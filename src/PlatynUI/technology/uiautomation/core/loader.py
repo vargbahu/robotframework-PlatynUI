@@ -12,13 +12,15 @@ RUNTIME_ASSEMBLY_PATH = Path(__file__).parent / f"runtime/{ASSEMBLY_NAME}"
 
 
 if TYPE_CHECKING:
-    from PlatynUI.Technology.UiAutomation import Adapter, Finder, MouseDevice  # type: ignore
+    from PlatynUI.Technology.UiAutomation import Adapter, Finder, KeyboardDevice, MouseDevice, Patterns
 
 
 class DotNetInterface:
     _adapter: Optional["Adapter"] = None
     _finder: Optional["Finder"] = None
     _mouse_device: Optional["MouseDevice"] = None
+    _keyboard_device: Optional["KeyboardDevice"] = None
+    _patterns: Optional["Patterns"] = None
 
     __loaded = False
 
@@ -69,3 +71,25 @@ class DotNetInterface:
             cls._mouse_device = cast("MouseDevice", MouseDevice)
 
         return cls._mouse_device
+
+    @classmethod
+    def keyboard_device(cls) -> "KeyboardDevice":
+        if cls._keyboard_device is None:
+            cls._ensure_loaded()
+
+            from PlatynUI.Technology.UiAutomation import KeyboardDevice  # type: ignore
+
+            cls._keyboard_device = cast("KeyboardDevice", KeyboardDevice)
+
+        return cls._keyboard_device
+
+    @classmethod
+    def patterns(cls) -> "Patterns":
+        if cls._patterns is None:
+            cls._ensure_loaded()
+
+            from PlatynUI.Technology.UiAutomation import Patterns  # type: ignore
+
+            cls._patterns = cast("Patterns", Patterns)
+
+        return cls._patterns

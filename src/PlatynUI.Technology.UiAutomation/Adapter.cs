@@ -1,5 +1,5 @@
 using PlatynUI.Technology.UiAutomation.Client;
-using PlatynUI.Ui.Technology.UIAutomation.Core;
+using PlatynUI.Technology.UIAutomation.Core;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -28,7 +28,7 @@ public static class Adapter
         return false;
     }
 
-    public static Point GetClickablePoint(IUIAutomationElement element)
+    public static Point? GetClickablePoint(IUIAutomationElement element)
     {
         if (element.GetClickablePoint(out var tp) != 0)
         {

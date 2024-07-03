@@ -1,11 +1,19 @@
 from typing import List, Optional, Type, overload
 
-from PlatynUI.core import Adapter, AdapterFactory, AdapterProxyFactory, ContextBase, LocatorBase, TContextBase
+from PlatynUI.core import (
+    Adapter,
+    AdapterFactory,
+    AdapterProxy,
+    AdapterProxyFactory,
+    ContextBase,
+    LocatorBase,
+    TContextBase,
+)
 from PlatynUI.core.exceptions import AdapterNotFoundError
 
 from ..locator import Locator
+from .impls import *  # noqa: F403
 from .loader import DotNetInterface
-from .proxies.window_pattern import WindowPatternProxy
 from .technology import UiaTechnology
 from .uiaadapter import UiaAdapter
 
@@ -44,11 +52,16 @@ class UiaAdapterFactory(AdapterFactory):
         if not isinstance(locator, Locator):
             return None
 
-        uia_parent = parent.adapter.element if parent and isinstance(parent.adapter, UiaAdapter) else None
+        parent_adapter = parent.adapter if parent else None
+        while parent_adapter is not None and isinstance(parent_adapter, AdapterProxy):
+            parent_adapter = parent_adapter.adapter
+
+        uia_parent = parent_adapter.element if parent_adapter and isinstance(parent_adapter, UiaAdapter) else None
         path = locator.get_path(parent, context_type=context_type)
 
         result = None
         try:
+
             result = DotNetInterface.finder().FindSingleElement(uia_parent, path, False)
             if result is None and raise_error:
                 raise AdapterNotFoundError(

@@ -70,9 +70,9 @@ class Point:
 
 
 class VirtualPoint(Point):
-    def __init__(self, value: Any, func: Callable[["Rect"], Point]):
+    def __init__(self, name: Any, func: Callable[["Rect"], Point]):
         super().__init__()
-        self.value = value
+        self.name = name
         self.func = func
 
     @property
@@ -87,12 +87,12 @@ class VirtualPoint(Point):
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, VirtualPoint):
-            return bool(self.value == other.value)
+            return bool(self.name == other.name)
 
         raise NotImplementedError
 
     def __repr__(self) -> str:
-        return "VirtualPoint(%s)" % repr(self.value)
+        return "VirtualPoint(%s)" % repr(self.name)
 
 
 class Size:
@@ -398,6 +398,7 @@ class Rect:
         return Rect(self.left + dx, self.top + dy, self.width - dx, self.height - dy)
 
     TOP_LEFT = VirtualPoint("top_left", lambda r: r.top_left)
+    TOP_RIGHT = VirtualPoint("top_left", lambda r: Point(r.right, r.top))
     TOP = VirtualPoint("top", lambda r: Point(None, r.top))
     VMIDDLE = VirtualPoint("bottom", lambda r: Point(None, r.top + r.height // 2))
     HMIDDLE = VirtualPoint("right", lambda r: Point(r.left + r.width // 2, None))

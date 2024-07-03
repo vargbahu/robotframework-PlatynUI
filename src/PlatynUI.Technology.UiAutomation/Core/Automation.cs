@@ -2,9 +2,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using PlatynUI.Technology.UiAutomation.Client;
 
-namespace PlatynUI.Ui.Technology.UIAutomation.Core;
+namespace PlatynUI.Technology.UIAutomation.Core;
 
-class Automation
+internal class Automation
 {
     public readonly struct PropertyIdAndName(int? id, string name)
     {
@@ -286,5 +286,10 @@ class Automation
             string[] array => string.Join(", ", array),
             _ => value,
         };
+    }
+
+    public static IUIAutomationElement ElementFromHandle(IntPtr handle)
+    {
+        return UiAutomation.ElementFromHandle(handle);
     }
 }

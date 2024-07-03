@@ -1,27 +1,20 @@
 *** Settings ***
-Library     PlatynUI
-Library     PlatynUI.Extended
+Library         PlatynUI
+Variables       mapping.py
 
-Variables    mapping.py
 
 *** Test Cases ***
 first
-    # Activate    map:AppWindow.Button1
-    # Set Text    asdfsd
-    # Get Property    map:AppWindow.Button1    Name    Should Be   ölaksdjfölaksj
-    Activate   ${calculator.n1}
-    Select
-    Focus
-    Set Text
-    Set Value
-    Get Property
+    Activate    ${calculator}
+    Activate    ${calculator.clear}
+    Activate    ${calculator.n1}
+    Activate    ${calculator.n2}
+    Activate    ${calculator.n3}
+    Activate    ${calculator.n4}
+    Activate    ${calculator.plus}
+    Activate    ${calculator.n5}
+    Activate    ${calculator.n6}
+    Activate    ${calculator.n7}
+    Activate    ${calculator.n8}
 
-
-    CheckBox Toggle
-    Option Toggle
-
-    Is Enable
-    Is Visible
-    Is Selected
-
-    Button Activate
+    Activate    ${calculator.equal}

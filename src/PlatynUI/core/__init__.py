@@ -7,6 +7,7 @@ from .locatorbase import *
 from .locatorscope import *
 from .settings import *
 from .strategybase import *
+from .strategyimpl import *
 from .technology import *
 from .types import *
 from .wait_for import *
