@@ -1,4 +1,4 @@
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 
@@ -10,22 +10,18 @@ class HasExpanded(StrategyBase):
 
     @property
     @abstractmethod
-    def can_expand(self) -> bool:
-        pass
+    def can_expand(self) -> bool: ...
 
     @property
     @abstractmethod
-    def is_expanded(self) -> bool:
-        pass
+    def is_expanded(self) -> bool: ...
 
 
 class Expandable(HasExpanded):
     strategy_name = "org.platynui.strategies.Expandable"
 
     @abstractmethod
-    def expand(self) -> None:
-        pass
+    def expand(self) -> None: ...
 
     @abstractmethod
-    def collapse(self) -> None:
-        pass
+    def collapse(self) -> None: ...

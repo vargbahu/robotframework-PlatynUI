@@ -9,32 +9,24 @@ namespace WpfTestApp.Interop
     [ComImport]
     [Guid(IIDGuid.IFileOpenDialog)]
     [CoClass(typeof(FileOpenDialogRCW))]
-    internal interface NativeFileOpenDialog: IFileOpenDialog
-    {
-    }
+    internal interface NativeFileOpenDialog : IFileOpenDialog { }
 
     [ComImport]
     [Guid(IIDGuid.IFileSaveDialog)]
     [CoClass(typeof(FileSaveDialogRCW))]
-    internal interface NativeFileSaveDialog: IFileSaveDialog
-    {
-    }
+    internal interface NativeFileSaveDialog : IFileSaveDialog { }
 
     [ComImport]
     [ClassInterface(ClassInterfaceType.None)]
     [TypeLibType(TypeLibTypeFlags.FCanCreate)]
     [Guid(CLSIDGuid.FileOpenDialog)]
-    internal class FileOpenDialogRCW
-    {
-    }
+    internal class FileOpenDialogRCW { }
 
     [ComImport]
     [ClassInterface(ClassInterfaceType.None)]
     [TypeLibType(TypeLibTypeFlags.FCanCreate)]
     [Guid(CLSIDGuid.FileSaveDialog)]
-    internal class FileSaveDialogRCW
-    {
-    }
+    internal class FileSaveDialogRCW { }
 
     internal class IIDGuid
     {
@@ -48,9 +40,7 @@ namespace WpfTestApp.Interop
         internal const string IShellItem = "43826D1E-E718-42EE-BC55-A1E261C37BFE";
         internal const string IShellItemArray = "B63EA76D-1F85-456F-A19C-48159EFA858B";
 
-        private IIDGuid()
-        {
-        } // Avoid FxCop violation AvoidUninstantiatedInternalClasses
+        private IIDGuid() { } // Avoid FxCop violation AvoidUninstantiatedInternalClasses
     }
 
     internal class CLSIDGuid
@@ -58,9 +48,7 @@ namespace WpfTestApp.Interop
         internal const string FileOpenDialog = "DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7";
         internal const string FileSaveDialog = "C0B4E2F3-BA21-4773-8DBA-335EC946EB8B";
 
-        private CLSIDGuid()
-        {
-        } // Avoid FxCop violation AvoidUninstantiatedInternalClasses
+        private CLSIDGuid() { } // Avoid FxCop violation AvoidUninstantiatedInternalClasses
     }
 
     [ComImport]
@@ -77,8 +65,7 @@ namespace WpfTestApp.Interop
         SIATTRIBFLAGS_AND = 0x00000001, // if multiple items and the attributes together.
         SIATTRIBFLAGS_OR = 0x00000002, // if multiple items or the attributes together.
 
-        SIATTRIBFLAGS_APPCOMPAT =
-            0x00000003 // Call GetAttributes directly on the ShellFolder for multiple attributes
+        SIATTRIBFLAGS_APPCOMPAT = 0x00000003 // Call GetAttributes directly on the ShellFolder for multiple attributes
     }
 
     [ComImport]
@@ -88,9 +75,12 @@ namespace WpfTestApp.Interop
     {
         // Not supported: IBindCtx
 
-        void BindToHandler([In] [MarshalAs(UnmanagedType.Interface)]
-                           IntPtr pbc, [In] ref Guid rbhid,
-                           [In] ref Guid riid, out IntPtr ppvOut);
+        void BindToHandler(
+            [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pbc,
+            [In] ref Guid rbhid,
+            [In] ref Guid riid,
+            out IntPtr ppvOut
+        );
 
         void GetPropertyStore([In] int Flags, [In] ref Guid riid, out IntPtr ppv);
         void GetPropertyDescriptionList([In] ref PROPERTYKEY keyType, [In] ref Guid riid, out IntPtr ppv);
@@ -119,16 +109,16 @@ namespace WpfTestApp.Interop
         [PreserveSig]
         int Show([In] IntPtr parent);
 
-        void SetFileTypes([In] uint cFileTypes,
-                          [In] [MarshalAs(UnmanagedType.LPArray)]
-                          COMDLG_FILTERSPEC[] rgFilterSpec);
+        void SetFileTypes(
+            [In] uint cFileTypes,
+            [In] [MarshalAs(UnmanagedType.LPArray)] COMDLG_FILTERSPEC[] rgFilterSpec
+        );
 
         void SetFileTypeIndex([In] uint iFileType);
 
         void GetFileTypeIndex(out uint piFileType);
 
-        void Advise([In] [MarshalAs(UnmanagedType.Interface)]
-                    IFileDialogEvents pfde, out uint pdwCookie);
+        void Advise([In] [MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
 
         void Unadvise([In] uint dwCookie);
 
@@ -136,11 +126,9 @@ namespace WpfTestApp.Interop
 
         void GetOptions(out FOS pfos);
 
-        void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)]
-                              IShellItem psi);
+        void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
-        void SetFolder([In] [MarshalAs(UnmanagedType.Interface)]
-                       IShellItem psi);
+        void SetFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
         void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
@@ -158,8 +146,7 @@ namespace WpfTestApp.Interop
 
         void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-        void AddPlace([In] [MarshalAs(UnmanagedType.Interface)]
-                      IShellItem psi, int alignment);
+        void AddPlace([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, int alignment);
 
         void SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
 
@@ -175,7 +162,7 @@ namespace WpfTestApp.Interop
     [ComImport]
     [Guid(IIDGuid.IFileOpenDialog)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IFileOpenDialog: IFileDialog
+    internal interface IFileOpenDialog : IFileDialog
     {
         [PreserveSig]
         int Show([In] IntPtr parent);
@@ -186,8 +173,7 @@ namespace WpfTestApp.Interop
 
         void GetFileTypeIndex(out uint piFileType);
 
-        void Advise([In] [MarshalAs(UnmanagedType.Interface)]
-                    IFileDialogEvents pfde, out uint pdwCookie);
+        void Advise([In] [MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
 
         void Unadvise([In] uint dwCookie);
 
@@ -195,11 +181,9 @@ namespace WpfTestApp.Interop
 
         void GetOptions(out FOS pfos);
 
-        void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)]
-                              IShellItem psi);
+        void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
-        void SetFolder([In] [MarshalAs(UnmanagedType.Interface)]
-                       IShellItem psi);
+        void SetFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
         void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
@@ -217,8 +201,7 @@ namespace WpfTestApp.Interop
 
         void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-        void AddPlace([In] [MarshalAs(UnmanagedType.Interface)]
-                      IShellItem psi, FileDialogCustomPlace fdcp);
+        void AddPlace([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, FileDialogCustomPlace fdcp);
 
         void SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
 
@@ -238,7 +221,7 @@ namespace WpfTestApp.Interop
     [ComImport]
     [Guid(IIDGuid.IFileSaveDialog)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IFileSaveDialog: IFileDialog
+    internal interface IFileSaveDialog : IFileDialog
     {
         [PreserveSig]
         int Show([In] IntPtr parent);
@@ -249,8 +232,7 @@ namespace WpfTestApp.Interop
 
         void GetFileTypeIndex(out uint piFileType);
 
-        void Advise([In] [MarshalAs(UnmanagedType.Interface)]
-                    IFileDialogEvents pfde, out uint pdwCookie);
+        void Advise([In] [MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
 
         void Unadvise([In] uint dwCookie);
 
@@ -258,11 +240,9 @@ namespace WpfTestApp.Interop
 
         void GetOptions(out FOS pfos);
 
-        void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)]
-                              IShellItem psi);
+        void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
-        void SetFolder([In] [MarshalAs(UnmanagedType.Interface)]
-                       IShellItem psi);
+        void SetFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
         void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
@@ -280,8 +260,7 @@ namespace WpfTestApp.Interop
 
         void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-        void AddPlace([In] [MarshalAs(UnmanagedType.Interface)]
-                      IShellItem psi, FileDialogCustomPlace fdcp);
+        void AddPlace([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, FileDialogCustomPlace fdcp);
 
         void SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
 
@@ -293,25 +272,20 @@ namespace WpfTestApp.Interop
 
         void SetFilter([MarshalAs(UnmanagedType.Interface)] IntPtr pFilter);
 
-        void SetSaveAsItem([In] [MarshalAs(UnmanagedType.Interface)]
-                           IShellItem psi);
+        void SetSaveAsItem([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
-        void SetProperties([In] [MarshalAs(UnmanagedType.Interface)]
-                           IntPtr pStore);
+        void SetProperties([In] [MarshalAs(UnmanagedType.Interface)] IntPtr pStore);
 
-        void SetCollectedProperties([In] [MarshalAs(UnmanagedType.Interface)]
-                                    IntPtr pList, [In] int fAppendDefault);
+        void SetCollectedProperties([In] [MarshalAs(UnmanagedType.Interface)] IntPtr pList, [In] int fAppendDefault);
 
         void GetProperties([MarshalAs(UnmanagedType.Interface)] out IntPtr ppStore);
 
-        void ApplyProperties([In] [MarshalAs(UnmanagedType.Interface)]
-                             IShellItem psi,
-                             [In] [MarshalAs(UnmanagedType.Interface)]
-                             IntPtr pStore,
-                             [In] [ComAliasName("ShellObjects.wireHWND")]
-                             ref IntPtr hwnd,
-                             [In] [MarshalAs(UnmanagedType.Interface)]
-                             IntPtr pSink);
+        void ApplyProperties(
+            [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi,
+            [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pStore,
+            [In] [ComAliasName("ShellObjects.wireHWND")] ref IntPtr hwnd,
+            [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pSink
+        );
     }
 
     [ComImport]
@@ -324,33 +298,31 @@ namespace WpfTestApp.Interop
         // support this, we need to use the PreserveSig attribute to enable us to return
         // the proper HRESULT
         [PreserveSig]
-        int OnFileOk([In] [MarshalAs(UnmanagedType.Interface)]
-                     IFileDialog pfd);
+        int OnFileOk([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
         [PreserveSig]
-        int OnFolderChanging([In] [MarshalAs(UnmanagedType.Interface)]
-                             IFileDialog pfd,
-                             [In] [MarshalAs(UnmanagedType.Interface)]
-                             IShellItem psiFolder);
+        int OnFolderChanging(
+            [In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
+            [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psiFolder
+        );
 
-        void OnFolderChange([In] [MarshalAs(UnmanagedType.Interface)]
-                            IFileDialog pfd);
+        void OnFolderChange([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
-        void OnSelectionChange([In] [MarshalAs(UnmanagedType.Interface)]
-                               IFileDialog pfd);
+        void OnSelectionChange([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
-        void OnShareViolation([In] [MarshalAs(UnmanagedType.Interface)]
-                              IFileDialog pfd,
-                              [In] [MarshalAs(UnmanagedType.Interface)]
-                              IShellItem psi, out FDE_SHAREVIOLATION_RESPONSE pResponse);
+        void OnShareViolation(
+            [In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
+            [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi,
+            out FDE_SHAREVIOLATION_RESPONSE pResponse
+        );
 
-        void OnTypeChange([In] [MarshalAs(UnmanagedType.Interface)]
-                          IFileDialog pfd);
+        void OnTypeChange([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
-        void OnOverwrite([In] [MarshalAs(UnmanagedType.Interface)]
-                         IFileDialog pfd,
-                         [In] [MarshalAs(UnmanagedType.Interface)]
-                         IShellItem psi, out FDE_OVERWRITE_RESPONSE pResponse);
+        void OnOverwrite(
+            [In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
+            [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi,
+            out FDE_OVERWRITE_RESPONSE pResponse
+        );
     }
 
     [ComImport]
@@ -358,9 +330,12 @@ namespace WpfTestApp.Interop
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellItem
     {
-        void BindToHandler([In] [MarshalAs(UnmanagedType.Interface)]
-                           IntPtr pbc, [In] ref Guid bhid,
-                           [In] ref Guid riid, out IntPtr ppv);
+        void BindToHandler(
+            [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pbc,
+            [In] ref Guid bhid,
+            [In] ref Guid riid,
+            out IntPtr ppv
+        );
 
         void GetParent([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
@@ -368,11 +343,10 @@ namespace WpfTestApp.Interop
 
         void GetAttributes([In] uint sfgaoMask, out uint psfgaoAttribs);
 
-        void Compare([In] [MarshalAs(UnmanagedType.Interface)]
-                     IShellItem psi, [In] uint hint, out int piOrder);
+        void Compare([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, [In] uint hint, out int piOrder);
     }
 
-    internal enum SIGDN: uint
+    internal enum SIGDN : uint
     {
         SIGDN_NORMALDISPLAY = 0x00000000, // SHGDN_NORMAL
         SIGDN_PARENTRELATIVEPARSING = 0x80018001, // SHGDN_INFOLDER | SHGDN_FORPARSING
@@ -396,7 +370,7 @@ namespace WpfTestApp.Interop
     }
 
     [Flags]
-    internal enum FOS: uint
+    internal enum FOS : uint
     {
         FOS_OVERWRITEPROMPT = 0x00000002,
         FOS_STRICTFILETYPES = 0x00000004,

@@ -190,7 +190,7 @@ selenium-screenshot-*.png
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
+# !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -206,6 +206,9 @@ selenium-screenshot-*.png
 # Ignore all local history of files
 .history
 .ionide
+
+### Visual Studio ###
+.vs/
 
 # some local files
 types_playground/

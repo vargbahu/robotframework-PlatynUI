@@ -5,6 +5,7 @@ from typing import Optional
 from PlatynUI.core import AdapterFactory
 from PlatynUI.ui.core import UiTechnology, WindowManager
 from PlatynUI.ui.core.devices import (
+    DefaultDisplayDevice,
     DefaultKeyboardDevice,
     DefaultMouseDevice,
     DisplayDevice,
@@ -39,7 +40,9 @@ class UiaTechnology(UiTechnology):
 
     @property
     def display_device(self) -> DisplayDevice:
-        raise NotImplementedError
+        from .displaydevice import UiaDisplayDevice
+
+        return DefaultDisplayDevice(UiaDisplayDevice())
 
     @property
     def window_manager(self) -> WindowManager:

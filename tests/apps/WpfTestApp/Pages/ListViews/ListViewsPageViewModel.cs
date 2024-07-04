@@ -18,7 +18,7 @@
         public string SureName { get; set; }
     }
 
-    internal class SimpleItemConverter: IValueConverter
+    internal class SimpleItemConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -53,7 +53,7 @@
     }
 
     [Export(typeof(TabPageBase))]
-    public class ListViewsPageViewModel: TabPageBase
+    public class ListViewsPageViewModel : TabPageBase
     {
         private ComplexItem _selectedComplexItem;
         private SimpleItem _selectedSimpleItem;
@@ -76,39 +76,37 @@
         }
 
         private ListViewsPageViewModel()
-            : base("List Views")
-        {
-        }
+            : base("List Views") { }
 
         public SimpleItem[] SimpleItems { get; } =
-        {
-            new SimpleItem("Tyrion", "Lennister"),
-            new SimpleItem("Cersei", "Baratheon"),
-            new SimpleItem("Jaime", "Lennister"),
-            new SimpleItem("Daenerys", "Targaryen"),
-            new SimpleItem("Jorah", "Mormont"),
-            new SimpleItem("Jon", "Snow"),
-            new SimpleItem("Sansa", "Stark"),
-            new SimpleItem("Arya", "Stark"),
-            new SimpleItem("Brandon", "Stark"),
-            new SimpleItem("Theon", "Greyjoy"),
-            new SimpleItem("Sandor", "Clegane"),
-            new SimpleItem("Joffrey", "Baratheon"),
-            new SimpleItem("Catelyn", "Stark"),
-            new SimpleItem("Robb", "Stark"),
-            new SimpleItem("Khal", "Drogo"),
-            new SimpleItem("Eddard", "Stark"),
-            new SimpleItem("Robert", "Baratheon"),
-            new SimpleItem("Viserys", "Targaryen"),
-            new SimpleItem("Petyr", "Baelish"),
-            new SimpleItem("Samwell", "Tarly"),
-            new SimpleItem("Davos", "Seaworth"),
-            new SimpleItem("Stannis", "Baratheon"),
-            new SimpleItem("Jeor", "Mormont"),
-            new SimpleItem("Margaery", "Baratheon"),
-            new SimpleItem("Tywin", "Lennister"),
-            new SimpleItem("Talisa", "Stark")
-        };
+            {
+                new SimpleItem("Tyrion", "Lennister"),
+                new SimpleItem("Cersei", "Baratheon"),
+                new SimpleItem("Jaime", "Lennister"),
+                new SimpleItem("Daenerys", "Targaryen"),
+                new SimpleItem("Jorah", "Mormont"),
+                new SimpleItem("Jon", "Snow"),
+                new SimpleItem("Sansa", "Stark"),
+                new SimpleItem("Arya", "Stark"),
+                new SimpleItem("Brandon", "Stark"),
+                new SimpleItem("Theon", "Greyjoy"),
+                new SimpleItem("Sandor", "Clegane"),
+                new SimpleItem("Joffrey", "Baratheon"),
+                new SimpleItem("Catelyn", "Stark"),
+                new SimpleItem("Robb", "Stark"),
+                new SimpleItem("Khal", "Drogo"),
+                new SimpleItem("Eddard", "Stark"),
+                new SimpleItem("Robert", "Baratheon"),
+                new SimpleItem("Viserys", "Targaryen"),
+                new SimpleItem("Petyr", "Baelish"),
+                new SimpleItem("Samwell", "Tarly"),
+                new SimpleItem("Davos", "Seaworth"),
+                new SimpleItem("Stannis", "Baratheon"),
+                new SimpleItem("Jeor", "Mormont"),
+                new SimpleItem("Margaery", "Baratheon"),
+                new SimpleItem("Tywin", "Lennister"),
+                new SimpleItem("Talisa", "Stark")
+            };
 
         public SimpleItem SelectedSimpleItem
         {
@@ -126,34 +124,34 @@
         }
 
         public ComplexItem[] ComplexItems { get; } =
-        {
-            new ComplexItem("Tyrion", "Lennister", 40),
-            new ComplexItem("Cersei", "Baratheon", 36),
-            new ComplexItem("Jaime", "Lennister", 42),
-            new ComplexItem("Daenerys", "Targaryen", 25),
-            new ComplexItem("Jorah", "Mormont", 23),
-            new ComplexItem("Jon", "Snow", 28),
-            new ComplexItem("Sansa", "Stark", 21),
-            new ComplexItem("Arya", "Stark", 16),
-            new ComplexItem("Brandon", "Stark", 15),
-            new ComplexItem("Theon", "Greyjoy", 29),
-            new ComplexItem("Sandor", "Clegane", 62),
-            new ComplexItem("Joffrey", "Baratheon", 18),
-            new ComplexItem("Catelyn", "Stark", 52),
-            new ComplexItem("Robb", "Stark", 30),
-            new ComplexItem("Khal", "Drogo", 30),
-            new ComplexItem("Eddard", "Stark", 53),
-            new ComplexItem("Robert", "Baratheon", 34),
-            new ComplexItem("Viserys", "Targaryen", 45),
-            new ComplexItem("Petyr", "Baelish", 45),
-            new ComplexItem("Samwell", "Tarly", 28),
-            new ComplexItem("Davos", "Seaworth", 32),
-            new ComplexItem("Stannis", "Baratheon", 63),
-            new ComplexItem("Jeor", "Mormont", 45),
-            new ComplexItem("Margaery", "Baratheon", 45),
-            new ComplexItem("Tywin", "Lennister", 35),
-            new ComplexItem("Talisa", "Stark", 45)
-        };
+            {
+                new ComplexItem("Tyrion", "Lennister", 40),
+                new ComplexItem("Cersei", "Baratheon", 36),
+                new ComplexItem("Jaime", "Lennister", 42),
+                new ComplexItem("Daenerys", "Targaryen", 25),
+                new ComplexItem("Jorah", "Mormont", 23),
+                new ComplexItem("Jon", "Snow", 28),
+                new ComplexItem("Sansa", "Stark", 21),
+                new ComplexItem("Arya", "Stark", 16),
+                new ComplexItem("Brandon", "Stark", 15),
+                new ComplexItem("Theon", "Greyjoy", 29),
+                new ComplexItem("Sandor", "Clegane", 62),
+                new ComplexItem("Joffrey", "Baratheon", 18),
+                new ComplexItem("Catelyn", "Stark", 52),
+                new ComplexItem("Robb", "Stark", 30),
+                new ComplexItem("Khal", "Drogo", 30),
+                new ComplexItem("Eddard", "Stark", 53),
+                new ComplexItem("Robert", "Baratheon", 34),
+                new ComplexItem("Viserys", "Targaryen", 45),
+                new ComplexItem("Petyr", "Baelish", 45),
+                new ComplexItem("Samwell", "Tarly", 28),
+                new ComplexItem("Davos", "Seaworth", 32),
+                new ComplexItem("Stannis", "Baratheon", 63),
+                new ComplexItem("Jeor", "Mormont", 45),
+                new ComplexItem("Margaery", "Baratheon", 45),
+                new ComplexItem("Tywin", "Lennister", 35),
+                new ComplexItem("Talisa", "Stark", 45)
+            };
 
         public ComplexItem SelectedComplexItem
         {

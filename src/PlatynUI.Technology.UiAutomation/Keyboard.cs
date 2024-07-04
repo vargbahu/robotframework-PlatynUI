@@ -1,10 +1,8 @@
-namespace PlatynUI.Technology.UiAutomation;
-
-using System;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
-using Windows.Win32.UI.WindowsAndMessaging;
+
+namespace PlatynUI.Technology.UiAutomation;
 
 public class VirtualKey
 {
@@ -12,69 +10,30 @@ public class VirtualKey
         StringComparer.OrdinalIgnoreCase
     );
 
-    /// <summary>
-    ///     The back key
-    /// </summary>
     public static readonly VirtualKey Back = new(VIRTUAL_KEY.VK_BACK);
 
-    /// <summary>
-    ///     The tab key
-    /// </summary>
     public static readonly VirtualKey Tab = new(VIRTUAL_KEY.VK_TAB);
 
-    /// <summary>
-    ///     The clear key
-    /// </summary>
     public static readonly VirtualKey Clear = new(VIRTUAL_KEY.VK_CLEAR);
 
-    /// <summary>
-    ///     The return key
-    /// </summary>
     public static readonly VirtualKey Return = new(VIRTUAL_KEY.VK_RETURN);
 
-    /// <summary>
-    ///     The enter key
-    /// </summary>
     public static readonly VirtualKey Enter = new(VIRTUAL_KEY.VK_RETURN, true);
 
-    /// <summary>
-    ///     The shift key
-    /// </summary>
     public static readonly VirtualKey Shift = new(VIRTUAL_KEY.VK_SHIFT);
 
-    /// <summary>
-    ///     The control key
-    /// </summary>
     public static readonly VirtualKey Control = new(VIRTUAL_KEY.VK_CONTROL);
 
-    /// <summary>
-    ///     The control key
-    /// </summary>
     public static readonly VirtualKey Ctrl = new(VIRTUAL_KEY.VK_CONTROL);
 
-    /// <summary>
-    ///     The menu key
-    /// </summary>
     public static readonly VirtualKey Menu = new(VIRTUAL_KEY.VK_MENU);
 
-    /// <summary>
-    ///     The alt key
-    /// </summary>
     public static readonly VirtualKey Alt = new(Menu);
 
-    /// <summary>
-    ///     The alt gr key
-    /// </summary>
     public static readonly VirtualKey AltGr = new(Control, Menu);
 
-    /// <summary>
-    ///     The pause key
-    /// </summary>
     public static readonly VirtualKey Pause = new(VIRTUAL_KEY.VK_PAUSE);
 
-    /// <summary>
-    ///     The capital key
-    /// </summary>
     public static readonly VirtualKey Capital = new(VIRTUAL_KEY.VK_CAPITAL);
 
     // TODO Keycodes
@@ -86,9 +45,9 @@ public class VirtualKey
     //    HANJA = 0x19,
     //    KANJI = 0x19,
 
-    /// <summary>
-    ///     The escape key
-    /// </summary>
+
+
+
     public static readonly VirtualKey Escape = new(VIRTUAL_KEY.VK_ESCAPE);
 
     // TODO Keycodes
@@ -97,444 +56,183 @@ public class VirtualKey
     //    ACCEPT = 0x1E,
     //    MODECHANGE = 0x1F
 
-    /// <summary>
-    ///     The space key
-    /// </summary>
+
+
+
     public static readonly VirtualKey Space = new(VIRTUAL_KEY.VK_SPACE);
 
-    /// <summary>
-    ///     The prior key
-    /// </summary>
     public static readonly VirtualKey Prior = new(VIRTUAL_KEY.VK_PRIOR, true);
 
-    /// <summary>
-    ///     The next key
-    /// </summary>
     public static readonly VirtualKey Next = new(VIRTUAL_KEY.VK_NEXT, true);
 
-    /// <summary>
-    ///     The page up key
-    /// </summary>
     public static readonly VirtualKey PageUp = Prior;
 
-    /// <summary>
-    ///     The page down key
-    /// </summary>
     public static readonly VirtualKey PageDown = Next;
 
-    /// <summary>
-    ///     The end key
-    /// </summary>
     public static readonly VirtualKey End = new(VIRTUAL_KEY.VK_END, true);
 
-    /// <summary>
-    ///     The home key
-    /// </summary>
     public static readonly VirtualKey Home = new(VIRTUAL_KEY.VK_HOME, true);
 
-    /// <summary>
-    ///     The left key
-    /// </summary>
     public static readonly VirtualKey Left = new(VIRTUAL_KEY.VK_LEFT, true);
 
-    /// <summary>
-    ///     Up key
-    /// </summary>
     public static readonly VirtualKey Up = new(VIRTUAL_KEY.VK_UP, true);
 
-    /// <summary>
-    ///     The right key
-    /// </summary>
     public static readonly VirtualKey Right = new(VIRTUAL_KEY.VK_RIGHT, true);
 
-    /// <summary>
-    ///     The Down key
-    /// </summary>
     public static readonly VirtualKey Down = new(VIRTUAL_KEY.VK_DOWN, true);
 
-    /// <summary>
-    ///     The select key
-    /// </summary>
     public static readonly VirtualKey Select = new(VIRTUAL_KEY.VK_SELECT);
 
-    /// <summary>
-    ///     The print key
-    /// </summary>
     public static readonly VirtualKey Print = new(VIRTUAL_KEY.VK_PRINT);
 
-    /// <summary>
-    ///     The execute key
-    /// </summary>
     public static readonly VirtualKey Execute = new(VIRTUAL_KEY.VK_EXECUTE);
 
-    /// <summary>
-    ///     The snapshot key
-    /// </summary>
     public static readonly VirtualKey Snapshot = new(VIRTUAL_KEY.VK_SNAPSHOT);
 
-    /// <summary>
-    ///     The insert key
-    /// </summary>
     public static readonly VirtualKey Insert = new(VIRTUAL_KEY.VK_INSERT, true);
 
-    /// <summary>
-    ///     The delete key
-    /// </summary>
     public static readonly VirtualKey Delete = new(VIRTUAL_KEY.VK_DELETE, true);
 
-    /// <summary>
-    ///     The help key
-    /// </summary>
     public static readonly VirtualKey Help = new(VIRTUAL_KEY.VK_HELP);
 
-    /// <summary>
-    ///     The lwin key
-    /// </summary>
     public static readonly VirtualKey Lwin = new(VIRTUAL_KEY.VK_LWIN);
 
-    /// <summary>
-    ///     The rwin key
-    /// </summary>
     public static readonly VirtualKey Rwin = new(VIRTUAL_KEY.VK_RWIN);
 
-    /// <summary>
-    ///     The apps key
-    /// </summary>
     public static readonly VirtualKey Apps = new(VIRTUAL_KEY.VK_APPS);
 
-    /// <summary>
-    ///     The sleep key
-    /// </summary>
     public static readonly VirtualKey Sleep = new(VIRTUAL_KEY.VK_SLEEP);
 
-    /// <summary>
-    ///     The numpad0 key
-    /// </summary>
     public static readonly VirtualKey Numpad0 = new(VIRTUAL_KEY.VK_NUMPAD0);
 
-    /// <summary>
-    ///     The numpad1 key
-    /// </summary>
     public static readonly VirtualKey Numpad1 = new(VIRTUAL_KEY.VK_NUMPAD1);
 
-    /// <summary>
-    ///     The numpad2 key
-    /// </summary>
     public static readonly VirtualKey Numpad2 = new(VIRTUAL_KEY.VK_NUMPAD2);
 
-    /// <summary>
-    ///     The numpad3 key
-    /// </summary>
     public static readonly VirtualKey Numpad3 = new(VIRTUAL_KEY.VK_NUMPAD3);
 
-    /// <summary>
-    ///     The numpad4 key
-    /// </summary>
     public static readonly VirtualKey Numpad4 = new(VIRTUAL_KEY.VK_NUMPAD4);
 
-    /// <summary>
-    ///     The numpad5 key
-    /// </summary>
     public static readonly VirtualKey Numpad5 = new(VIRTUAL_KEY.VK_NUMPAD5);
 
-    /// <summary>
-    ///     The numpad6 key
-    /// </summary>
     public static readonly VirtualKey Numpad6 = new(VIRTUAL_KEY.VK_NUMPAD6);
 
-    /// <summary>
-    ///     The numpad7 key
-    /// </summary>
     public static readonly VirtualKey Numpad7 = new(VIRTUAL_KEY.VK_NUMPAD7);
 
-    /// <summary>
-    ///     The numpad8 key
-    /// </summary>
     public static readonly VirtualKey Numpad8 = new(VIRTUAL_KEY.VK_NUMPAD8);
 
-    /// <summary>
-    ///     The numpad9 key
-    /// </summary>
     public static readonly VirtualKey Numpad9 = new(VIRTUAL_KEY.VK_NUMPAD9);
 
-    /// <summary>
-    ///     The multiply key
-    /// </summary>
     public static readonly VirtualKey Multiply = new(VIRTUAL_KEY.VK_MULTIPLY);
 
-    /// <summary>
-    ///     The add key
-    /// </summary>
     public static readonly VirtualKey Add = new(VIRTUAL_KEY.VK_ADD);
 
-    /// <summary>
-    ///     The separator key
-    /// </summary>
     public static readonly VirtualKey Separator = new(VIRTUAL_KEY.VK_SEPARATOR);
 
-    /// <summary>
-    ///     The subtract key
-    /// </summary>
     public static readonly VirtualKey Subtract = new(VIRTUAL_KEY.VK_SUBTRACT);
 
-    /// <summary>
-    ///     The decimal key
-    /// </summary>
     public static readonly VirtualKey Decimal = new(VIRTUAL_KEY.VK_DECIMAL);
 
-    /// <summary>
-    ///     The divide key
-    /// </summary>
     public static readonly VirtualKey Divide = new(VIRTUAL_KEY.VK_DIVIDE);
 
-    /// <summary>
-    ///     The f1 key
-    /// </summary>
     public static readonly VirtualKey F1 = new(VIRTUAL_KEY.VK_F1);
 
-    /// <summary>
-    ///     The f2 key
-    /// </summary>
     public static readonly VirtualKey F2 = new(VIRTUAL_KEY.VK_F2);
 
-    /// <summary>
-    ///     The f3 key
-    /// </summary>
     public static readonly VirtualKey F3 = new(VIRTUAL_KEY.VK_F3);
 
-    /// <summary>
-    ///     The f4 key
-    /// </summary>
     public static readonly VirtualKey F4 = new(VIRTUAL_KEY.VK_F4);
 
-    /// <summary>
-    ///     The f5 key
-    /// </summary>
     public static readonly VirtualKey F5 = new(VIRTUAL_KEY.VK_F5);
 
-    /// <summary>
-    ///     The f6 key
-    /// </summary>
     public static readonly VirtualKey F6 = new(VIRTUAL_KEY.VK_F6);
 
-    /// <summary>
-    ///     The f7 key
-    /// </summary>
     public static readonly VirtualKey F7 = new(VIRTUAL_KEY.VK_F7);
 
-    /// <summary>
-    ///     The f8 key
-    /// </summary>
     public static readonly VirtualKey F8 = new(VIRTUAL_KEY.VK_F8);
 
-    /// <summary>
-    ///     The f9 key
-    /// </summary>
     public static readonly VirtualKey F9 = new(VIRTUAL_KEY.VK_F9);
 
-    /// <summary>
-    ///     The F10 key
-    /// </summary>
     public static readonly VirtualKey F10 = new(VIRTUAL_KEY.VK_F10);
 
-    /// <summary>
-    ///     The F11 key
-    /// </summary>
     public static readonly VirtualKey F11 = new(VIRTUAL_KEY.VK_F11);
 
-    /// <summary>
-    ///     The F12 key
-    /// </summary>
     public static readonly VirtualKey F12 = new(VIRTUAL_KEY.VK_F12);
 
-    /// <summary>
-    ///     The F13 key
-    /// </summary>
     public static readonly VirtualKey F13 = new(VIRTUAL_KEY.VK_F13);
 
-    /// <summary>
-    ///     The F14 key
-    /// </summary>
     public static readonly VirtualKey F14 = new(VIRTUAL_KEY.VK_F14);
 
-    /// <summary>
-    ///     The F15 key
-    /// </summary>
     public static readonly VirtualKey F15 = new(VIRTUAL_KEY.VK_F15);
 
-    /// <summary>
-    ///     The F16 key
-    /// </summary>
     public static readonly VirtualKey F16 = new(VIRTUAL_KEY.VK_F16);
 
-    /// <summary>
-    ///     The F17 key
-    /// </summary>
     public static readonly VirtualKey F17 = new(VIRTUAL_KEY.VK_F17);
 
-    /// <summary>
-    ///     The F18 key
-    /// </summary>
     public static readonly VirtualKey F18 = new(VIRTUAL_KEY.VK_F18);
 
-    /// <summary>
-    ///     The F19
-    /// </summary>
     public static readonly VirtualKey F19 = new(VIRTUAL_KEY.VK_F19);
 
-    /// <summary>
-    ///     The F20 key
-    /// </summary>
     public static readonly VirtualKey F20 = new(VIRTUAL_KEY.VK_F20);
 
-    /// <summary>
-    ///     The F21 key
-    /// </summary>
     public static readonly VirtualKey F21 = new(VIRTUAL_KEY.VK_F21);
 
-    /// <summary>
-    ///     The F22 key
-    /// </summary>
     public static readonly VirtualKey F22 = new(VIRTUAL_KEY.VK_F22);
 
-    /// <summary>
-    ///     The F23 key
-    /// </summary>
     public static readonly VirtualKey F23 = new(VIRTUAL_KEY.VK_F23);
 
-    /// <summary>
-    ///     The F24 key
-    /// </summary>
     public static readonly VirtualKey F24 = new(VIRTUAL_KEY.VK_F24);
 
-    /// <summary>
-    ///     The numlock key
-    /// </summary>
     public static readonly VirtualKey Numlock = new(VIRTUAL_KEY.VK_NUMLOCK);
 
-    /// <summary>
-    ///     The scroll key
-    /// </summary>
     public static readonly VirtualKey Scroll = new(VIRTUAL_KEY.VK_SCROLL);
 
-    /// <summary>
-    ///     The lshift key
-    /// </summary>
     public static readonly VirtualKey Lshift = new(VIRTUAL_KEY.VK_LSHIFT);
 
-    /// <summary>
-    ///     The rshift key
-    /// </summary>
     public static readonly VirtualKey Rshift = new(VIRTUAL_KEY.VK_RSHIFT);
 
-    /// <summary>
-    ///     The lcontrol key
-    /// </summary>
     public static readonly VirtualKey Lcontrol = new(VIRTUAL_KEY.VK_LCONTROL);
 
-    /// <summary>
-    ///     The rcontrol key
-    /// </summary>
     public static readonly VirtualKey Rcontrol = new(VIRTUAL_KEY.VK_RCONTROL);
 
-    /// <summary>
-    ///     The lmenu key
-    /// </summary>
     public static readonly VirtualKey Lmenu = new(VIRTUAL_KEY.VK_LMENU);
 
-    /// <summary>
-    ///     The rmenu key
-    /// </summary>
     public static readonly VirtualKey Rmenu = new(VIRTUAL_KEY.VK_RMENU);
 
-    /// <summary>
-    ///     The browser back key
-    /// </summary>
     public static readonly VirtualKey BrowserBack = new(VIRTUAL_KEY.VK_BROWSER_BACK);
 
-    /// <summary>
-    ///     The browser forward key
-    /// </summary>
     public static readonly VirtualKey BrowserForward = new(VIRTUAL_KEY.VK_BROWSER_FORWARD);
 
-    /// <summary>
-    ///     The browser refresh key
-    /// </summary>
     public static readonly VirtualKey BrowserRefresh = new(VIRTUAL_KEY.VK_BROWSER_REFRESH);
 
-    /// <summary>
-    ///     The browser stop key
-    /// </summary>
     public static readonly VirtualKey BrowserStop = new(VIRTUAL_KEY.VK_BROWSER_STOP);
 
-    /// <summary>
-    ///     The browser search key
-    /// </summary>
     public static readonly VirtualKey BrowserSearch = new(VIRTUAL_KEY.VK_BROWSER_SEARCH);
 
-    /// <summary>
-    ///     The browser favorites key
-    /// </summary>
     public static readonly VirtualKey BrowserFavorites = new(VIRTUAL_KEY.VK_BROWSER_FAVORITES);
 
-    /// <summary>
-    ///     The browser home key
-    /// </summary>
     public static readonly VirtualKey BrowserHome = new(VIRTUAL_KEY.VK_BROWSER_HOME);
 
-    /// <summary>
-    ///     The volume mute key
-    /// </summary>
     public static readonly VirtualKey VolumeMute = new(VIRTUAL_KEY.VK_VOLUME_MUTE);
 
-    /// <summary>
-    ///     The volume down key
-    /// </summary>
     public static readonly VirtualKey VolumeDown = new(VIRTUAL_KEY.VK_VOLUME_DOWN);
 
-    /// <summary>
-    ///     The volume up key
-    /// </summary>
     public static readonly VirtualKey VolumeUp = new(VIRTUAL_KEY.VK_VOLUME_UP);
 
-    /// <summary>
-    ///     The media next track key
-    /// </summary>
     public static readonly VirtualKey MediaNextTrack = new(VIRTUAL_KEY.VK_MEDIA_NEXT_TRACK);
 
-    /// <summary>
-    ///     The media previous track key
-    /// </summary>
     public static readonly VirtualKey MediaPrevTrack = new(VIRTUAL_KEY.VK_MEDIA_PREV_TRACK);
 
-    /// <summary>
-    ///     The media stop key
-    /// </summary>
     public static readonly VirtualKey MediaStop = new(VIRTUAL_KEY.VK_MEDIA_STOP);
 
-    /// <summary>
-    ///     The media play pause key
-    /// </summary>
     public static readonly VirtualKey MediaPlayPause = new(VIRTUAL_KEY.VK_MEDIA_PLAY_PAUSE);
 
-    /// <summary>
-    ///     The launch mail key
-    /// </summary>
     public static readonly VirtualKey LaunchMail = new(VIRTUAL_KEY.VK_LAUNCH_MAIL);
 
-    /// <summary>
-    ///     The launch media select key
-    /// </summary>
     public static readonly VirtualKey LaunchMediaSelect = new(VIRTUAL_KEY.VK_LAUNCH_MEDIA_SELECT);
 
-    /// <summary>
-    ///     The launch app1 key
-    /// </summary>
     public static readonly VirtualKey LaunchApp1 = new(VIRTUAL_KEY.VK_LAUNCH_APP1);
 
-    /// <summary>
-    ///     The launch app2 key
-    /// </summary>
     public static readonly VirtualKey LaunchApp2 = new(VIRTUAL_KEY.VK_LAUNCH_APP2);
 
     /* TODO Keycodes

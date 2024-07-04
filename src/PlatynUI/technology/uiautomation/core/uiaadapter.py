@@ -5,7 +5,7 @@ from PlatynUI.core.adapterproxy import AdapterProxyFactory
 from PlatynUI.core.strategies import Properties
 from PlatynUI.core.types import Point, Rect
 from PlatynUI.technology.uiautomation.core.technology import UiaTechnology
-from PlatynUI.ui.strategies import Control, Element
+from PlatynUI.ui.strategies import Element
 
 from .loader import DotNetInterface
 from .uiabase import UiaBase
@@ -28,11 +28,27 @@ class UiaElement(Element, UiaBase):
 
     @property
     def is_visible(self) -> bool:
-        return not self.element.CurrentIsOffscreen == 0
+        return self.element.CurrentIsOffscreen == 0
 
     @property
     def is_in_view(self) -> bool:
-        raise NotImplementedError("is_in_view")
+        if not self.valid:
+            return False
+
+        br = self.bounding_rectangle
+        vr = self.visible_rectangle
+
+        # check if the element is 1/3 visible
+        if vr.width < br.width / 3 or vr.height < br.height / 3:
+            return False
+
+        top_level_parent = self.top_level_parent
+        if top_level_parent is None or not top_level_parent.supports_strategy(Element):
+            # TODO: check screen bounds
+            return True
+
+        center = vr.center
+        return bool(center and top_level_parent.get_strategy(Element).bounding_rectangle.contains(center))
 
     @property
     def toplevel_parent_is_active(self) -> bool:
@@ -45,19 +61,37 @@ class UiaElement(Element, UiaBase):
 
     @property
     def visible_rectangle(self) -> Rect:
-        raise NotImplementedError("visible_rectangle")
+        result = self.bounding_rectangle
+
+        top_level_parent = self.top_level_parent
+        if top_level_parent is None or not top_level_parent.supports_strategy(Element):
+            return result
+
+        return top_level_parent.get_strategy(Element).bounding_rectangle.intersected(result)
 
     @property
     def default_click_position(self) -> Point:
         p = DotNetInterface.adapter().GetClickablePoint(self.element)
+        if p is None:
+            return Point()
+
         return Point(p.X, p.Y)
+
+    @property
+    def top_level_parent(self) -> Optional[Adapter]:
+        result = DotNetInterface.adapter().GetTopLevelParent(self.element)
+
+        if result is None:
+            return None
+
+        return AdapterProxyFactory.find_proxy_for(UiaAdapter(result, cast(UiaTechnology, self.technology)))
 
     def try_ensure_visible(self) -> bool:
         # TODO: Implement this if parent toplevel is out of view
         return self.element.CurrentIsOffscreen == 0
 
     def try_ensure_application_is_ready(self) -> bool:
-        #TODO: raise NotImplementedError("try_ensure_application_is_ready")
+        # TODO: raise NotImplementedError("try_ensure_application_is_ready")
         return True
 
     def try_ensure_toplevel_parent_is_active(self) -> bool:
@@ -66,14 +100,6 @@ class UiaElement(Element, UiaBase):
     def try_bring_into_view(self) -> bool:
         # TODO: Implement this if element toplevel is out of view and can be scrolled
         return True
-
-    def top_level_parent(self) -> Optional[Adapter]:
-        result = DotNetInterface.adapter().GetTopLevelParent(self.element)
-
-        if result is None:
-            return None
-
-        return AdapterProxyFactory.find_proxy_for(UiaAdapter(result, cast(UiaTechnology, self.technology)))
 
 
 class UiaProperties(Properties, UiaBase):

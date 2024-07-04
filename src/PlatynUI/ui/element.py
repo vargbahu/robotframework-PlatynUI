@@ -116,7 +116,7 @@ class Element(ContextBase):
         if not self.is_valid:
             return None
 
-        parent = self.adapter.get_strategy(strategies.Element).top_level_parent()
+        parent = self.adapter.get_strategy(strategies.Element).top_level_parent
         if parent is None:
             return None
 
@@ -154,7 +154,7 @@ class Element(ContextBase):
     def bring_to_view(self) -> bool:
         return self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
-    def highlight(self, rect: Rect = None, time: Optional[float] = None) -> None:
+    def highlight(self, rect: Optional[Rect] = None, time: Optional[float] = None) -> None:
         if time is None:
             time = Settings.current().element_highlight_time
         if rect is None:

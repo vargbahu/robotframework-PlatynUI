@@ -4,12 +4,10 @@
     using System.Windows;
 
     [Export(typeof(TabPageBase))]
-    public class SimpleControlsPageViewModel: TabPageBase
+    public class SimpleControlsPageViewModel : TabPageBase
     {
         private SimpleControlsPageViewModel()
-            : base("SimpleControls")
-        {
-        }
+            : base("SimpleControls") { }
 
         public void DoSomething()
         {

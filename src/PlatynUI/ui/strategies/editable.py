@@ -1,4 +1,4 @@
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 
@@ -10,4 +10,4 @@ class Editable(StrategyBase):
 
     @property
     @abstractmethod
-    def is_editable(self) -> bool: pass
+    def is_editable(self) -> bool: ...

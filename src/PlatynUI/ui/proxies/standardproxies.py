@@ -53,8 +53,9 @@ class ElementProxy(AdapterProxy, strategies.Element):
     def is_readonly(self) -> bool:
         return self.adapter.get_strategy(strategies.Element).is_readonly
 
+    @property
     def top_level_parent(self) -> Optional[Adapter]:
-        return self.adapter.get_strategy(strategies.Element).top_level_parent()
+        return self.adapter.get_strategy(strategies.Element).top_level_parent
 
 
 @adapter_proxy_for(role="Control")

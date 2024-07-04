@@ -4,7 +4,7 @@
     using System.Diagnostics;
     using Caliburn.Micro;
 
-    public class DebugLogger: ILog
+    public class DebugLogger : ILog
     {
         private readonly Type _type;
 

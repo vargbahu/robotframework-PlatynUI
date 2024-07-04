@@ -70,7 +70,6 @@ namespace WpfTestApp
             MessageBox.Show("Eighth activated");
         }
 
-
         public void ClickMe()
         {
             MessageBox.Show(TheMessage, "A Message");
@@ -79,16 +78,18 @@ namespace WpfTestApp
         public async void ShowSettings()
         {
             await (Application.Current.MainWindow as MetroWindow).ShowMessageAsync(
-                                                                                   "sorry this is not implemented at the moment",
-                                                                                   "This should be the settings");
+                "sorry this is not implemented at the moment",
+                "This should be the settings"
+            );
         }
 
         public async void DeployCupcakes()
         {
-            await (Application.Current.MainWindow as MetroWindow).ShowMessageAsync("Hope it tastes good",
-                                                                                   "CupCakes deployed",
-                                                                                   MessageDialogStyle
-                                                                                       .AffirmativeAndNegative);
+            await (Application.Current.MainWindow as MetroWindow).ShowMessageAsync(
+                "Hope it tastes good",
+                "CupCakes deployed",
+                MessageDialogStyle.AffirmativeAndNegative
+            );
         }
     }
 }

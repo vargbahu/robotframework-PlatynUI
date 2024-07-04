@@ -3,11 +3,9 @@
     using System.ComponentModel.Composition;
 
     [Export(typeof(TabPageBase))]
-    public class TextsPageViewModel: TabPageBase
+    public class TextsPageViewModel : TabPageBase
     {
         private TextsPageViewModel()
-            : base("Texts")
-        {
-        }
+            : base("Texts") { }
     }
 }

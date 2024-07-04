@@ -37,6 +37,10 @@ class Element(StrategyBase):
         raise NotImplementedError
 
     @property
+    def top_level_parent(self) -> Optional[Adapter]:
+        raise NotImplementedError
+
+    @property
     def default_click_position(self) -> Point:
         raise NotImplementedError
 
@@ -50,9 +54,6 @@ class Element(StrategyBase):
         raise NotImplementedError
 
     def try_bring_into_view(self) -> bool:
-        raise NotImplementedError
-
-    def top_level_parent(self) -> Optional[Adapter]:
         raise NotImplementedError
 
 

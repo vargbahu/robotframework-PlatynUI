@@ -29,11 +29,12 @@
         SHAREABLE = 0x00008000,
         BROWSEFILEJUNCTIONS = 0x00010000
     }
+
     // ReSharper restore InconsistentNaming
 
 
     [Export(typeof(TabPageBase))]
-    public class ButtonsPageViewModel: TabPageBase
+    public class ButtonsPageViewModel : TabPageBase
     {
         private bool _canDoSomething = true;
         private bool _canDoSomethingOther = true;
@@ -43,9 +44,7 @@
         private string _selectedOption;
 
         private ButtonsPageViewModel()
-            : base("Buttons")
-        {
-        }
+            : base("Buttons") { }
 
         public bool CanDoSomething
         {
@@ -164,7 +163,7 @@
 
         public void OpenFile()
         {
-            var dialog = new OpenFileDialog {Title = "Select a file"};
+            var dialog = new OpenFileDialog { Title = "Select a file" };
 
             if (dialog.ShowDialog() == true)
             {
@@ -175,12 +174,14 @@
         public void OpenFolder()
         {
             dynamic dialog = Activator.CreateInstance(
-                                                      Type.GetTypeFromCLSID(new
-                                                                                Guid("13709620-C279-11CE-A49E-444553540000")));
+                Type.GetTypeFromCLSID(new Guid("13709620-C279-11CE-A49E-444553540000"))
+            );
 
-            var b = dialog.BrowseForFolder(new WindowInteropHelper(Application.Current.MainWindow).Handle.ToInt32(),
-                                           "Select a folder",
-                                           (int) (BIF.RETURNONLYFSDIRS | BIF.USENEWUI));
+            var b = dialog.BrowseForFolder(
+                new WindowInteropHelper(Application.Current.MainWindow).Handle.ToInt32(),
+                "Select a folder",
+                (int)(BIF.RETURNONLYFSDIRS | BIF.USENEWUI)
+            );
 
             if (b != null)
             {

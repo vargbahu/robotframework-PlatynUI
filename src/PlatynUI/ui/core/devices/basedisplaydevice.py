@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import ClassVar
+from typing import ClassVar, Optional
 
 from ....core.strategybase import StrategyBase
 from ....core.types import Rect
@@ -19,7 +19,7 @@ class BaseDisplayDevice(StrategyBase):
     def bounding_rectangle(self) -> Rect: ...
 
     @abstractmethod
-    def highlight_rect(self, rect: Rect, timeout: int): ...
+    def highlight_rect(self, rect: Rect, time: float) -> None: ...
 
     @abstractmethod
-    def get_screenshot(self, rect: Rect, format="png", quality=-1) -> bytearray: ...
+    def get_screenshot(self, rect: Rect, format: str, quality: Optional[int]) -> bytearray: ...

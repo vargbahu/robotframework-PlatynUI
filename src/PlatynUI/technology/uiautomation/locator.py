@@ -351,6 +351,7 @@ class Locator(LocatorBase):
                 "scope",
                 "runtime_id",
                 "position",
+                "use_default_prefix"
             ]:
 
                 v = getattr(self, n)
@@ -393,6 +394,7 @@ class Locator(LocatorBase):
         result.runtime_id = self.runtime_id
         result.attributes = self.attributes.copy()
         result.custom_attributes = self.custom_attributes.copy()
+        result.use_default_prefix = self.use_default_prefix
 
         return result
 

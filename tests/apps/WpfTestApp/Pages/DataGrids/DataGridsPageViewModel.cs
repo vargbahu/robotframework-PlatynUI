@@ -14,7 +14,7 @@
     }
 
     [Export(typeof(TabPageBase))]
-    public class DataGridsPageViewModel: TabPageBase
+    public class DataGridsPageViewModel : TabPageBase
     {
         private ObservableCollection<DataItem> _dataItems = new ObservableCollection<DataItem>
         {
@@ -71,9 +71,7 @@
         };
 
         private DataGridsPageViewModel()
-            : base("DataGrids")
-        {
-        }
+            : base("DataGrids") { }
 
         public ObservableCollection<DataItem> DataItems
         {
@@ -109,7 +107,7 @@
         }
     }
 
-    public class DataItem: PropertyChangedBase
+    public class DataItem : PropertyChangedBase
     {
         private DateTime _birthDay;
         private DataEnum _dataEnum;

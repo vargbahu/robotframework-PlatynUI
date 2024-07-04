@@ -13,33 +13,7 @@ public enum MouseButton : int
     Middle = 2,
 
     X1 = 3,
-    //X2
-}
-
-public class Point(double x, double y)
-{
-    public double X { get; set; } = x;
-    public double Y { get; set; } = y;
-
-    public override string ToString() => $"({X}, {Y})";
-}
-
-public class Size(double width, double height)
-{
-    public double Width { get; set; } = width;
-    public double Height { get; set; } = height;
-
-    public override string ToString() => $"({Width}, {Height})";
-}
-
-public class Rect(double x, double y, double width, double height)
-{
-    public double X { get; set; } = x;
-    public double Y { get; set; } = y;
-    public double Width { get; set; } = width;
-    public double Height { get; set; } = height;
-
-    public override string ToString() => $"({X}, {Y}, {Width}, {Height})";
+    X2
 }
 
 public static class MouseDevice

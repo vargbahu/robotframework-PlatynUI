@@ -5,7 +5,7 @@
     using System.ComponentModel.Composition;
 
     [Export(typeof(TabPageBase))]
-    public class ListsPageViewModel: TabPageBase
+    public class ListsPageViewModel : TabPageBase
     {
         private ObservableCollection<string> _multiSelectableListBoxItems = new ObservableCollection<string>
         {

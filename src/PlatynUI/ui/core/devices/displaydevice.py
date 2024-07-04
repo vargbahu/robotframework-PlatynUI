@@ -22,7 +22,7 @@ class DisplayDevice(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def highlight_rect(self, rect: Rect, timeout: float) -> None:
+    def highlight_rect(self, rect: Rect, time: float) -> None:
         pass
 
     @abstractmethod
@@ -54,12 +54,12 @@ class DefaultDisplayDevice(DisplayDevice):
     def bounding_rectangle(self) -> Rect:
         return self.__base_display_device.bounding_rectangle
 
-    def highlight_rect(self, rect: Rect, timeout: float) -> None:
-        self.__base_display_device.highlight_rect(rect, int(timeout * 1000))
+    def highlight_rect(self, rect: Rect, time: float) -> None:
+        self.__base_display_device.highlight_rect(rect, time)
 
     @staticmethod
     def __timestamp() -> str:
-        return "_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S%f")
+        return "_" + datetime.datetime.now().isoformat()  # noqa: DTZ005
 
     def get_screenshot(self, rect: Rect, format: Optional[str] = None, quality: Optional[int] = None) -> bytearray:
         return self.__base_display_device.get_screenshot(
@@ -71,7 +71,7 @@ class DefaultDisplayDevice(DisplayDevice):
     def save_screenshot(
         self,
         filename: Optional[str] = None,
-        rect: Rect = None,
+        rect: Optional[Rect] = None,
         format: Optional[str] = None,
         quality: Optional[int] = None,
     ) -> str:

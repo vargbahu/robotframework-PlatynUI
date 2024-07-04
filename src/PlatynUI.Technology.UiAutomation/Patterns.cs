@@ -1,13 +1,10 @@
-namespace PlatynUI.Technology.UiAutomation;
-
-using System;
-using System.Runtime.InteropServices;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UIAutomation.Core;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
+
+namespace PlatynUI.Technology.UiAutomation;
 
 public static class Patterns
 {
@@ -40,8 +37,7 @@ public static class Patterns
                     return h == PInvoke.GetForegroundWindow();
                 }
 
-                return element.CurrentIsKeyboardFocusable != 0
-                    && element.CurrentHasKeyboardFocus == 0;
+                return element.CurrentIsKeyboardFocusable != 0 && element.CurrentHasKeyboardFocus == 0;
             }
         }
 

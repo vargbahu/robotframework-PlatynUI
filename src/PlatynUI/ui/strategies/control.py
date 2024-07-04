@@ -10,9 +10,7 @@ class Control(StrategyBase):
 
     @property
     @abstractmethod
-    def has_focus(self) -> bool:
-        pass
+    def has_focus(self) -> bool: ...
 
     @abstractmethod
-    def try_ensure_focused(self)-> bool:
-        pass
+    def try_ensure_focused(self) -> bool: ...

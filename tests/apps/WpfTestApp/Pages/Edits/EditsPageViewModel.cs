@@ -3,11 +3,9 @@
     using System.ComponentModel.Composition;
 
     [Export(typeof(TabPageBase))]
-    public class EditsPageViewModel: TabPageBase
+    public class EditsPageViewModel : TabPageBase
     {
         private EditsPageViewModel()
-            : base("Edits")
-        {
-        }
+            : base("Edits") { }
     }
 }

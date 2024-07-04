@@ -1,8 +1,8 @@
-﻿namespace PlatynUI.Technology.UiAutomation;
-
-using System.Xml;
+﻿using System.Xml;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UIAutomation.Core;
+
+namespace PlatynUI.Technology.UiAutomation;
 
 public static class Finder
 {

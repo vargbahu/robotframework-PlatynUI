@@ -21,8 +21,8 @@ __all__ = ["WindowPatternImpl"]
 
 @strategy_impl_for(technology=UiaTechnology, properties={"IsWindowPatternAvailable": True})
 class WindowPatternImpl(
-    Control,
     StrategyImpl,
+    Control,
     Minimizable,
     HasCanMinimize,
     HasCanMaximize,

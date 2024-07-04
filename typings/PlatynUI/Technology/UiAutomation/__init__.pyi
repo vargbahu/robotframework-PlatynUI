@@ -4,7 +4,7 @@ from System import Array_1
 
 class Adapter(abc.ABC):
     @staticmethod
-    def GetClickablePoint(element: IUIAutomationElement) -> typing.Optional[Point]: ...
+    def GetClickablePoint(element: IUIAutomationElement) -> typing.Optional[typing.Optional[Point]]: ...
     @staticmethod
     def GetPropertyValue(element: IUIAutomationElement, propertyName: str) -> typing.Optional[typing.Any]: ...
     @staticmethod
@@ -19,6 +19,13 @@ class Adapter(abc.ABC):
     def IsReadOnly(element: IUIAutomationElement) -> bool: ...
     @staticmethod
     def TryEnsureTopLevelParentIsActive(element: typing.Optional[IUIAutomationElement]) -> bool: ...
+
+
+class DisplayDevice(abc.ABC):
+    @staticmethod
+    def GetBoundingRectangle() -> Rect: ...
+    @staticmethod
+    def HighlightRect(x: float, y: float, width: float, height: float, time: float) -> None: ...
 
 
 class Finder(abc.ABC):
@@ -58,6 +65,7 @@ class MouseButton(typing.SupportsInt):
     Right : MouseButton # 1
     Middle : MouseButton # 2
     X1 : MouseButton # 3
+    X2 : MouseButton # 4
 
 
 class MouseDevice(abc.ABC):
@@ -144,6 +152,7 @@ class Point:
 
 class Rect:
     def __init__(self, x: float, y: float, width: float, height: float) -> None: ...
+    Empty : Rect
     @property
     def Height(self) -> float: ...
     @Height.setter
@@ -160,7 +169,21 @@ class Rect:
     def Y(self) -> float: ...
     @Y.setter
     def Y(self, value: float) -> float: ...
+    def GetHashCode(self) -> int: ...
+    def __eq__(self, rect1: Rect, rect2: Rect) -> bool: ...
+    def __ne__(self, rect1: Rect, rect2: Rect) -> bool: ...
     def ToString(self) -> str: ...
+    # Skipped Equals due to it being static, abstract and generic.
+
+    Equals : Equals_MethodGroup
+    class Equals_MethodGroup:
+        @typing.overload
+        def __call__(self, value: Rect) -> bool:...
+        @typing.overload
+        def __call__(self, o: typing.Optional[typing.Any]) -> bool:...
+        @typing.overload
+        def __call__(self, rect1: Rect, rect2: Rect) -> bool:...
+
 
 
 class Size:

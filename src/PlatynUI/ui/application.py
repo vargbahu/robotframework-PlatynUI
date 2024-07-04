@@ -6,6 +6,8 @@ __all__ = ["Application"]
 
 @context
 class Application(ContextBase):
+    default_prefix = "app"
+
     @property
     def application_name(self) -> str:
         return self.adapter.get_strategy(strategies.Application).application_name

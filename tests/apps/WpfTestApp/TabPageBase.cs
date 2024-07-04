@@ -2,7 +2,7 @@
 {
     using Caliburn.Micro;
 
-    public abstract class TabPageBase: Screen
+    public abstract class TabPageBase : Screen
     {
         private bool _isEnabled = true;
 

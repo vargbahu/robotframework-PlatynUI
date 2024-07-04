@@ -30,9 +30,7 @@
         }
 
         public Bootstrapper()
-            : this(true)
-        {
-        }
+            : this(true) { }
 
         public Bootstrapper(bool useApplication)
             : base(useApplication)
@@ -50,12 +48,7 @@
                     exeDir = ".";
                 }
 
-                return new[]
-                {
-                    exeDir,
-                    Path.Combine(exeDir, "Internal"),
-                    Path.Combine(exeDir, "Modules")
-                };
+                return new[] { exeDir, Path.Combine(exeDir, "Internal"), Path.Combine(exeDir, "Modules") };
             }
         }
 
@@ -81,12 +74,10 @@
 
                 var directoryCatalog = new DirectoryCatalog(d);
                 AssemblySource.Instance.AddRange(
-                                                 directoryCatalog.Parts
-                                                                 .Select(part => ReflectionModelServices
-                                                                                 .GetPartType(part).Value.Assembly)
-                                                                 .Where(assembly =>
-                                                                            !AssemblySource
-                                                                             .Instance.Contains(assembly)));
+                    directoryCatalog
+                        .Parts.Select(part => ReflectionModelServices.GetPartType(part).Value.Assembly)
+                        .Where(assembly => !AssemblySource.Instance.Contains(assembly))
+                );
             }
 
             // Prioritise the executable assembly. This allows the client project to override exports, including IShell.
@@ -97,10 +88,10 @@
 
             // Now get all other assemblies (excluding the priority assemblies).
             var mainCatalog = new AggregateCatalog(
-                                                   AssemblySource.Instance
-                                                                 .Where(assembly =>
-                                                                            !priorityAssemblies.Contains(assembly))
-                                                                 .Select(x => new AssemblyCatalog(x)));
+                AssemblySource
+                    .Instance.Where(assembly => !priorityAssemblies.Contains(assembly))
+                    .Select(x => new AssemblyCatalog(x))
+            );
             var mainProvider = new CatalogExportProvider(mainCatalog);
 
             _container = new CompositionContainer(priorityProvider, mainProvider);
@@ -154,17 +145,14 @@
             _container.SatisfyImportsOnce(instance);
         }
 
-
         protected override IEnumerable<Assembly> SelectAssemblies()
         {
             return [Assembly.GetEntryAssembly()];
         }
 
-
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
             await DisplayRootViewForAsync<ShellViewModel>();
         }
-
     }
 }
