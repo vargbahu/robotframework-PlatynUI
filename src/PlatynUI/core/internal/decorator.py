@@ -3,7 +3,7 @@ import inspect
 from abc import ABCMeta
 from typing import Any, Callable, Optional, TypeVar, Union, overload
 
-__all__ = ["Decorator", "FuncDecorator"]
+__all__ = ["Decorator"]
 
 TCallable = TypeVar("TCallable", bound=Callable[..., Any])
 
@@ -146,20 +146,3 @@ class Decorator(metaclass=ABCMeta):
 
     def decorate_instance(self, instance, *decorator_args, **decorator_kwargs):
         raise RuntimeError("decorator {} does not support instance decoration".format(self.__class__.__name__))
-
-
-class FuncDecorator(Decorator):
-    def decorate(self, func, *decorator_args, **decorator_kwargs):
-        """
-        override this in a child class with your own logic, it must return a
-        function that calls self.func
-
-        func -- callback -- the function being decorated
-        decorator_args -- tuple -- the arguments passed into the decorator (eg, @dec(1, 2))
-        decorator_kwargs -- dict -- the named args passed into the decorator (eg, @dec(foo=1))
-        """
-
-        return func
-
-    def decorate_func(self, *args, **kwargs):
-        return self.decorate(*args, **kwargs)

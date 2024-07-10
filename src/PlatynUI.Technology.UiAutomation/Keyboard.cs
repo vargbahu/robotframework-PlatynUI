@@ -375,20 +375,29 @@ public static class KeyboardDevice
         if (key == null)
             return new Keycode(key, null, false, "Key is null");
 
-        if (key is string keystr)
+        switch (key)
         {
-            if (VirtualKey.Keys.TryGetValue(keystr, out var virtualKey))
-                return new Keycode(key, virtualKey, true, null);
-            if (keystr.Length == 1)
+            case string keystr:
             {
-                return new Keycode(key, ToVirtualKeyCodes(keystr[0]), true, null);
+                if (VirtualKey.Keys.TryGetValue(keystr, out var virtualKey))
+                    return new Keycode(key, virtualKey, true, null);
+
+                if (keystr.Length == 1 && keystr[0] <= '\x007f')
+                {
+                    return new Keycode(key, ToVirtualKeyCodes(keystr[0]), true, null);
+                }
+
+                return new Keycode(key, key, true, null);
             }
+
+            case char keychar:
+                return new Keycode(key, ToVirtualKeyCodes(keychar), true, null);
         }
 
         return new Keycode(key, null, false, "Unknown key");
     }
 
-    public static bool SendKeyCode(object keyCode, bool pressed)
+    public static unsafe bool SendKeyCode(object keyCode, bool pressed)
     {
         if (keyCode is VirtualKey virtualKey)
         {
@@ -407,7 +416,8 @@ public static class KeyboardDevice
                         ki =
                         {
                             wVk = (VIRTUAL_KEY)it.Value,
-                            wScan = 0,
+                            wScan = (ushort)
+                                PInvoke.MapVirtualKeyEx(it.Value, MAP_VIRTUAL_KEY_TYPE.MAPVK_VK_TO_VSC, HKL.Null),
                             dwFlags =
                                 (it.Extended ? KEYBD_EVENT_FLAGS.KEYEVENTF_EXTENDEDKEY : 0)
                                 | (pressed ? 0 : KEYBD_EVENT_FLAGS.KEYEVENTF_KEYUP),
@@ -415,7 +425,44 @@ public static class KeyboardDevice
                     }
                 };
 
-                PInvoke.SendInput(new Span<INPUT>(ref inputs), Marshal.SizeOf(inputs));
+                PInvoke.SendInput(1, &inputs, Marshal.SizeOf<INPUT>());
+            }
+
+            return true;
+        }
+        else if (keyCode is string keystr)
+        {
+            var keys = keystr.Select((x) => new { Value = x });
+            if (!pressed)
+            {
+                keys = keys.Reverse();
+            }
+
+            var inputs = new List<INPUT>();
+            foreach (var it in keys)
+            {
+                inputs.Add(
+                    new INPUT
+                    {
+                        type = INPUT_TYPE.INPUT_KEYBOARD,
+                        Anonymous =
+                        {
+                            ki =
+                            {
+                                wVk = 0,
+                                wScan = it.Value,
+                                dwFlags =
+                                    KEYBD_EVENT_FLAGS.KEYEVENTF_UNICODE
+                                    | (pressed ? 0 : KEYBD_EVENT_FLAGS.KEYEVENTF_KEYUP),
+                            }
+                        }
+                    }
+                );
+                var inpArray = inputs.ToArray();
+                fixed (INPUT* inpArrayPtr = inpArray)
+                {
+                    PInvoke.SendInput((uint)inpArray.Length, inpArrayPtr, Marshal.SizeOf<INPUT>());
+                }
             }
 
             return true;

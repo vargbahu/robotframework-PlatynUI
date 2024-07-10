@@ -131,14 +131,7 @@ class Element(ContextBase):
 
     @predicate("parent top level parent of element {0} is active")
     def _toplevel_parent_is_active(self) -> bool:
-        from .window import Window
-
         self.ensure_that(self._application_is_ready)
-
-        if not self.is_top_level_element():
-            parent_window = self.top_level_parent
-            if isinstance(parent_window, Window):
-                return parent_window.activate()
 
         return self.adapter.get_strategy(strategies.Element).try_ensure_toplevel_parent_is_active()
 
@@ -248,15 +241,23 @@ class Element(ContextBase):
     def display(self) -> DisplayDevice:
         return cast(UiTechnology, self.adapter.technology).display_device
 
-    def _before_get_screenshot(self):
+    def _before_get_screenshot(self) -> None:
         self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view)
 
-    def get_screenshot(self, rect: Rect = None, format: str = None, quality: int = None) -> bytearray:
+    def get_screenshot(
+        self, rect: Optional[Rect] = None, format: Optional[str] = None, quality: Optional[int] = None
+    ) -> bytearray:
         self._before_get_screenshot()
 
         return self.display.get_screenshot(rect if rect is not None else self.bounding_rectangle, format, quality)
 
-    def save_screenshot(self, filename: str = None, rect: Rect = None, format: str = None, quality: int = None) -> str:
+    def save_screenshot(
+        self,
+        filename: Optional[str] = None,
+        rect: Optional[Rect] = None,
+        format: Optional[str] = None,
+        quality: Optional[int] = None,
+    ) -> str:
         self._before_get_screenshot()
 
         return self.display.save_screenshot(

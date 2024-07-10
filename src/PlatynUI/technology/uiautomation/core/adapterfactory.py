@@ -61,7 +61,6 @@ class UiaAdapterFactory(AdapterFactory):
 
         result = None
         try:
-
             result = DotNetInterface.finder().FindSingleElement(uia_parent, path, False)
             if result is None and raise_error:
                 raise AdapterNotFoundError(
@@ -69,7 +68,7 @@ class UiaAdapterFactory(AdapterFactory):
                     if parent is None
                     else f"Element for {path:r} not found in {parent}"
                 )
-        except BaseException:
+        except AdapterNotFoundError:
             if raise_error:
                 raise
 

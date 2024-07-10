@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "C#: Playground Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/Playground/Playground.csproj",
+        },
+
+        {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",

@@ -189,6 +189,7 @@ exclude = [
   "^out/",
   "^playground/",
   "^scripts/",
+  "^typings/",
 ]
 mypy_path = ["src", "typings"]
 disable_error_code = ["type-abstract"]
@@ -201,7 +202,7 @@ ignore_missing_imports = true
 no_implicit_reexport = false
 
 [[tool.mypy.overrides]]
-module = ["Sytem", "Internal", "Microsoft", "PlatynUI.Technology.UiAutomation"]
+module = ["Sytem.*", "Microsoft.*", "PlatynUI.Technology.UiAutomation", "typings.*"]
 ignore_errors = true
 
 # pyright

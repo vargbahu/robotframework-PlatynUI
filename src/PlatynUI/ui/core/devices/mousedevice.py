@@ -4,6 +4,7 @@ from typing import Any, Iterator, Optional
 
 from ....core.settings import Settings
 from ....core.types import Point, Rect
+from ....robot.reporting import report_as_keyword
 from .basemousedevice import BaseMouseDevice
 from .inputdevice import InputDevice
 from .mousebutton import MouseButton
@@ -156,10 +157,11 @@ class DefaultMouseDevice(MouseDevice):
         return self.__base_mouse_device.get_position()
 
     def _generate_move_events(self, start_pos: Point, end_pos: Point) -> Iterator[Point]:
-        end_time = time.time() + self.move_time
+        start_time = time.monotonic()
+        end_time = start_time + self.move_time
 
         while True:
-            current_time = end_time - time.time()
+            current_time = end_time - time.monotonic()
             if current_time > 0:
                 step = current_time / self.move_time
 
@@ -167,6 +169,7 @@ class DefaultMouseDevice(MouseDevice):
             else:
                 break
 
+    @report_as_keyword
     def move_to(
         self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, raise_exception: bool = True
     ) -> Point:
@@ -183,7 +186,7 @@ class DefaultMouseDevice(MouseDevice):
             pos.y = y
 
         if pos and pos != start_pos:
-            if self.move_time > 0:
+            if self.move_time > 0 and self.move_delay < self.move_time:
                 for p in self._generate_move_events(start_pos, pos):
                     self.__base_mouse_device.move_to(p)
                     self.delay(self.move_delay)
@@ -198,6 +201,7 @@ class DefaultMouseDevice(MouseDevice):
 
         return pos
 
+    @report_as_keyword
     def press(
         self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
     ) -> Optional[Point]:
@@ -213,6 +217,7 @@ class DefaultMouseDevice(MouseDevice):
 
         return result
 
+    @report_as_keyword
     def release(
         self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
     ) -> Optional[Point]:
@@ -237,12 +242,13 @@ class DefaultMouseDevice(MouseDevice):
 
         return Rect(p.x - size.width / 2, p.y - size.height / 2, size.width, size.height)
 
+    @report_as_keyword
     def click(
         self,
         pos: Point = Point(),
         x: Optional[float] = None,
         y: Optional[float] = None,
-        button: MouseButton = None,
+        button: Optional[MouseButton] = None,
         times: int = 1,
     ) -> Optional[Point]:
         last_click_time_span = time.time() - self._last_click_time

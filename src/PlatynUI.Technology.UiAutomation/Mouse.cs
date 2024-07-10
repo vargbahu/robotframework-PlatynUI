@@ -108,7 +108,7 @@ public static class MouseDevice
         SendMouseInput(0, 0, 0, flags);
     }
 
-    private static void SendMouseInput(int dx, int dy, uint mouseData, MOUSE_EVENT_FLAGS dwFlags)
+    private static unsafe void SendMouseInput(int dx, int dy, uint mouseData, MOUSE_EVENT_FLAGS dwFlags)
     {
         var inputs = new INPUT
         {
@@ -127,6 +127,6 @@ public static class MouseDevice
             }
         };
 
-        PInvoke.SendInput(new Span<INPUT>(ref inputs), Marshal.SizeOf(inputs));
+        PInvoke.SendInput(1, &inputs, Marshal.SizeOf<INPUT>());
     }
 }

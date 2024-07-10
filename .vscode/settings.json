@@ -52,5 +52,8 @@
     "robotcode.debug.attachPython": true,
     "[csharp]": {
         "editor.defaultFormatter": "csharpier.csharpier-vscode"
-    }
+    },
+    "csharp.debug.justMyCode": false,
+    "csharp.debug.symbolOptions.searchMicrosoftSymbolServer": true,
+    "csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": true
 }

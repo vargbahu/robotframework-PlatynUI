@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UIAutomation.Core;
 using Windows.Win32;
@@ -69,15 +70,18 @@ public static class Adapter
         }
 
         var topLevelParent = GetTopLevelParent(element);
+
         if (topLevelParent == null)
         {
+            Console.WriteLine("Top level parent not found");
             return false;
         }
 
-        var h = topLevelParent.CurrentNativeWindowHandle;
-        if (h != IntPtr.Zero)
+        var topLevelWindowHandle = topLevelParent.CurrentNativeWindowHandle;
+        var foregroundWindowHandle = PInvoke.GetForegroundWindow();
+        if (topLevelWindowHandle != IntPtr.Zero)
         {
-            var topLevelElement = Automation.UiAutomation.ElementFromHandle(h);
+            var topLevelElement = Automation.UiAutomation.ElementFromHandle(topLevelWindowHandle);
             if (topLevelElement.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var pattern))
             {
                 if (
@@ -88,27 +92,37 @@ public static class Adapter
                 {
                     return false;
                 }
+            }
 
-                var foregroundWindow = PInvoke.GetForegroundWindow();
-                if (h != foregroundWindow)
+            if (topLevelWindowHandle != foregroundWindowHandle)
+            {
+                var s = PInvoke.GetWindow(foregroundWindowHandle, GET_WINDOW_CMD.GW_OWNER);
+                if (s == topLevelWindowHandle)
                 {
-                    var s = PInvoke.GetWindow(foregroundWindow, GET_WINDOW_CMD.GW_OWNER);
-                    if (s == h)
+                    var foregroundElement = Automation.UiAutomation.ElementFromHandle(foregroundWindowHandle);
+                    if (foregroundElement.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var pattern1))
                     {
-                        var foregroundElement = Automation.UiAutomation.ElementFromHandle(foregroundWindow);
-                        if (foregroundElement.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var pattern1))
+                        if (pattern1 != null && pattern1.CurrentIsModal != 0)
                         {
-                            if (pattern1 != null && pattern1.CurrentIsModal != 0)
-                            {
-                                return false;
-                            }
+                            return false;
                         }
                     }
-
-                    PInvoke.SwitchToThisWindow((HWND)h, false);
-
-                    return true;
                 }
+
+                PInvoke.SwitchToThisWindow((HWND)topLevelWindowHandle, false);
+
+                Stopwatch sw = new();
+                sw.Start();
+                while (PInvoke.GetForegroundWindow() != topLevelWindowHandle && sw.ElapsedMilliseconds < 5000)
+                {
+                    Thread.Sleep(100);
+                }
+
+                return PInvoke.GetForegroundWindow() != topLevelWindowHandle;
+            }
+            else
+            {
+                return true;
             }
         }
 

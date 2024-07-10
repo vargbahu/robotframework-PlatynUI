@@ -31,15 +31,9 @@ internal class Line : IDisposable
                 cbSize = (uint)Marshal.SizeOf<WNDCLASSEXW>(),
                 style = WNDCLASS_STYLES.CS_SAVEBITS | WNDCLASS_STYLES.CS_VREDRAW | WNDCLASS_STYLES.CS_HREDRAW,
                 lpfnWndProc = MyWndProc,
-                cbClsExtra = 0,
-                cbWndExtra = 0,
                 hInstance = (HINSTANCE)hInst.DangerousGetHandle(),
-                hIcon = (HICON)0,
-                hCursor = (HCURSOR)0,
                 hbrBackground = CreateSolidBrush(new COLORREF(0x000000ff)),
-                lpszMenuName = null,
                 lpszClassName = pClassname,
-                hIconSm = (HICON)0
             };
 
             _lineClassAtom = RegisterClassEx(lineClassEx);
@@ -121,7 +115,7 @@ internal class Line : IDisposable
 
         DestroyWindow(_handle);
 
-        _handle = (HWND)0;
+        _handle = default;
 
         _disposed = true;
     }

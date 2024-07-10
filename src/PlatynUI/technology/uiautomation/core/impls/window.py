@@ -51,7 +51,7 @@ class WindowPatternImpl(
 
     @property
     def can_minimize(self) -> bool:
-        raise self.window_pattern.CanMinimize
+        return self.window_pattern.CanMinimize
 
     @property
     def is_minimized(self) -> bool:

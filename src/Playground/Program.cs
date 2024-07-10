@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
+using PlatynUI.Technology.UiAutomation;
 
-foreach (var p in Process.GetProcesses()) {
-    Console.WriteLine(p.ProcessName);
-}
+Console.OutputEncoding = System.Text.Encoding.Unicode;
+
+Console.WriteLine(KeyboardDevice.KeyToKeyCode("🐑"));
+Console.WriteLine("🐑");

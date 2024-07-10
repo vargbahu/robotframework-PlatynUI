@@ -20,7 +20,7 @@ class ControlImpl(StrategyImpl, Control):
 
     @property
     def has_focus(self) -> bool:
-        return self.element.CurrentHasKeyboardFocus
+        return bool(self.element.CurrentHasKeyboardFocus)
 
     def try_ensure_focused(self) -> bool:
         if self.has_focus:

@@ -10,12 +10,10 @@ internal class AutomationPropertyNavigator
 {
     private IReadOnlyList<Automation.PropertyIdAndName>? _children;
 
-    public AutomationPropertyNavigator(AutomationElementNavigator? parent)
+    public AutomationPropertyNavigator(AutomationElementNavigator parent)
         : base(parent)
     {
-        ArgumentNullException.ThrowIfNull(parent, nameof(parent));
-
-        Element = parent.Current;
+        Element = parent?.Current ?? throw new ArgumentNullException(nameof(parent));
     }
 
     public IUIAutomationElement? Element { get; }
@@ -31,7 +29,7 @@ internal class AutomationPropertyNavigator
 
     public override ChildrenNavigatorBase<AutomationElementNavigator, Automation.PropertyIdAndName> Clone()
     {
-        return new AutomationPropertyNavigator(Parent)
+        return new AutomationPropertyNavigator(Parent!)
         {
             _children = _children,
             CurrentIndex = CurrentIndex,

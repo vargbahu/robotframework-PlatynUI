@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using System.Xml.XPath;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UIAutomation.Core;
 
@@ -6,16 +7,13 @@ namespace PlatynUI.Technology.UiAutomation;
 
 public static class Finder
 {
-    static readonly NameTable nameTable;
-    static readonly XmlNamespaceManager nsmgr;
+    static readonly UiaXsltContext xsltContext = new();
 
     static Finder()
     {
-        nameTable = new NameTable();
-        nsmgr = new XmlNamespaceManager(nameTable);
-        nsmgr.AddNamespace("native", "http://platynui.io/native");
-        nsmgr.AddNamespace("element", "http://platynui.io/element");
-        nsmgr.AddNamespace("item", "http://platynui.io/item");
+        xsltContext.AddNamespace("native", "http://platynui.io/native");
+        xsltContext.AddNamespace("element", "http://platynui.io/element");
+        xsltContext.AddNamespace("item", "http://platynui.io/item");
     }
 
     public static IUIAutomationElement? FindSingleElement(
@@ -25,7 +23,9 @@ public static class Finder
     )
     {
         var navigator = new UiaXPathNavigator(parent, findVirtual);
-        var root = navigator.SelectSingleNode(xpath, nsmgr);
+        var expression = XPathExpression.Compile(xpath, xsltContext);
+
+        var root = navigator.SelectSingleNode(expression);
 
         return root?.UnderlyingObject as IUIAutomationElement;
     }

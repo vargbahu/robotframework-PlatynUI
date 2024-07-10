@@ -13,7 +13,7 @@ from .uiabase import UiaBase
 # pyright: reportMissingModuleSource=false
 
 if TYPE_CHECKING:
-    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement  # type: ignore
+    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement
 
 
 class UiaElement(Element, UiaBase):

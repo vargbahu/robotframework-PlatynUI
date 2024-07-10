@@ -251,10 +251,22 @@ class Rect:
         return Point(self.left, self.top)
 
     @property
+    def top_right(self) -> Point:
+        if not self:
+            return Point()
+        return Point(self.right, self.top)
+
+    @property
     def bottom_right(self) -> Point:
         if not self:
             return Point()
         return Point(self.right, self.bottom)
+
+    @property
+    def bottom_left(self) -> Point:
+        if not self:
+            return Point()
+        return Point(self.left, self.bottom)
 
     @property
     def center(self) -> Point:

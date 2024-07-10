@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, TypeVar
+from typing import Any, Literal, Optional, TypeVar
 
 __all__ = ["Settings"]
 
@@ -29,8 +29,8 @@ class Settings:
     mouse_multi_click_delay_multiplicator: float = 0.5
     mouse_press_release_delay: float = 0.010
     mouse_after_move_delay: float = 0.010
-    mouse_move_delay: float = 0.010
-    mouse_move_time: float = 0.40
+    mouse_move_delay: float = 0.001
+    mouse_move_time: float = 0.4
 
     keyboard_after_press_key_delay: float = 0.001
     keyboard_after_release_key_delay: float = 0.005
@@ -56,7 +56,7 @@ class Settings:
         _current = self
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> False:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> Literal[False]:
         global _current
         _current = self._old
         del self._old

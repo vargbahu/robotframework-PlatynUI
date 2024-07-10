@@ -13,6 +13,7 @@ from .locatorscope import LocatorScope
 from .predicate import predicate
 from .settings import Settings
 from .strategies import NativeProperties, Properties
+from .weight_calculator import WeightCalculator
 
 __all__ = ["ContextBase", "TContextBase", "context", "UnknownContext", "ContextFactory"]
 
@@ -352,7 +353,11 @@ class ContextBase(metaclass=ABCMeta):
         return self.get(context_class, scope=LocatorScope.Children, locator=locator, *args, **kwargs)
 
     def iter_all(
-        self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any
+        self,
+        context_class: Optional[Type["TContextBase"]],
+        *args: Any,
+        locator: Optional[LocatorBase] = None,
+        **kwargs: Any,
     ) -> Iterator["TContextBase"]:
         if locator is None:
             if self.locator is None:
@@ -469,7 +474,6 @@ class ContextFactory:
     def find_context_class_for(
         cls, adapter: Adapter, context_type: Optional[Type[TContextBase]] = None
     ) -> Type[Union[TContextBase, ContextBase]]:
-        from .adapterproxy import WeightCalculator
 
         if context_type is not None:
             return context_type

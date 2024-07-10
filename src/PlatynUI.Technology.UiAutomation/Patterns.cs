@@ -110,4 +110,73 @@ public static class Patterns
         }
         throw new NotSupportedException();
     }
+
+    public class NativeWindowPattern(IUIAutomationElement element)
+    {
+        public IUIAutomationElement Element { get; } = element;
+
+        public bool IsActive
+        {
+            get
+            {
+                var h = Element.CurrentNativeWindowHandle;
+                if (h != IntPtr.Zero)
+                {
+                    return h == PInvoke.GetForegroundWindow();
+                }
+
+                return Element.CurrentIsKeyboardFocusable != 0 && Element.CurrentHasKeyboardFocus == 0;
+            }
+        }
+
+        public virtual void Activate()
+        {
+            if (IsActive)
+            {
+                return;
+            }
+
+            var h = Element.CurrentNativeWindowHandle;
+            if (h != IntPtr.Zero)
+            {
+                var foregroundWindow = PInvoke.GetForegroundWindow();
+                if (h != foregroundWindow)
+                {
+                    var s = PInvoke.GetWindow(foregroundWindow, GET_WINDOW_CMD.GW_OWNER);
+                    if (s == h)
+                    {
+                        var foregroundElement = Automation.ElementFromHandle(foregroundWindow);
+                        if (foregroundElement.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var pattern1))
+                        {
+                            if (pattern1?.CurrentIsModal != 0)
+                            {
+                                return;
+                            }
+                        }
+                    }
+
+                    PInvoke.SwitchToThisWindow((HWND)h, false);
+                    return;
+                }
+            }
+
+            if (Element.CurrentIsKeyboardFocusable != 0 && Element.CurrentHasKeyboardFocus == 0)
+            {
+                Element.SetFocus();
+                return;
+            }
+
+            throw new NotSupportedException("Don't know how to activate this");
+        }
+    }
+
+    public static NativeWindowPattern GetNativeWindowPattern(IUIAutomationElement element)
+    {
+        if (element.CurrentNativeWindowHandle != IntPtr.Zero)
+        {
+            return new NativeWindowPattern(element);
+        }
+
+        throw new NotSupportedException();
+    }
 }

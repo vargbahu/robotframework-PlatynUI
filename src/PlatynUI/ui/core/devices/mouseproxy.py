@@ -171,8 +171,8 @@ class AdapterMouseProxy(MouseProxy):
     def default_click_position(self) -> Point:
         return self._adapter.get_strategy(strategies.Element).default_click_position
 
-    def before_action(self, action: MouseProxy.Action):
+    def before_action(self, action: MouseProxy.Action) -> None:
         self.mouse_device.add_context(self._adapter)
 
-    def after_action(self, action: MouseProxy.Action):
+    def after_action(self, action: MouseProxy.Action) -> None:
         self.mouse_device.remove_context(self._adapter)

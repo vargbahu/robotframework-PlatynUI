@@ -6,7 +6,7 @@ Variables       mapping.py
 *** Test Cases ***
 first
     Activate    ${calculator}
-    Activate    ${calculator.clear}
+    Clear
     Activate    ${calculator.n1}
     Activate    ${calculator.n2}
     Activate    ${calculator.n3}
@@ -18,3 +18,8 @@ first
     Activate    ${calculator.n8}
 
     Activate    ${calculator.equal}
+
+
+*** Keywords ***
+Clear
+    Activate    ${calculator.clear}

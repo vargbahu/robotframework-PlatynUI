@@ -1,11 +1,9 @@
-﻿namespace PlatynUI.Technology.UIAutomation.Core;
-
-using System;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.XPath;
 using PlatynUI.Technology.UiAutomation.Client;
 
-// ReSharper disable once InconsistentNaming
+namespace PlatynUI.Technology.UIAutomation.Core;
+
 internal class UiaXPathNavigator : XPathNavigator
 {
     private object? _current;
@@ -27,8 +25,6 @@ internal class UiaXPathNavigator : XPathNavigator
 
     protected UiaXPathNavigator(UiaXPathNavigator other)
     {
-        ArgumentNullException.ThrowIfNull(other, nameof(other));
-
         if (other._current is AutomationElementNavigator navigator)
         {
             _current = navigator.Clone();
@@ -55,8 +51,6 @@ internal class UiaXPathNavigator : XPathNavigator
         {
             switch (_current)
             {
-                case AutomationElementNavigator _:
-                    return string.Empty;
                 case AutomationPropertyNavigator navigator:
                 {
                     var cp = navigator.Element;
@@ -87,6 +81,8 @@ internal class UiaXPathNavigator : XPathNavigator
                         return string.Empty;
                     }
                 }
+                case AutomationElementNavigator _:
+                    return string.Empty;
                 default:
                     return string.Empty;
             }
@@ -183,6 +179,16 @@ internal class UiaXPathNavigator : XPathNavigator
     public override XPathNavigator Clone()
     {
         return new UiaXPathNavigator(this);
+    }
+
+    public override bool MoveToAttribute(string localName, string namespaceURI)
+    {
+        return base.MoveToAttribute(localName, namespaceURI);
+    }
+
+    public override bool MoveToNext(XPathNodeType type)
+    {
+        return base.MoveToNext(type);
     }
 
     public override bool MoveToFirstAttribute()
@@ -295,6 +301,10 @@ internal class UiaXPathNavigator : XPathNavigator
             {
                 _current = navigator.Clone();
             }
+            else if (o._current is AutomationPropertyNavigator propNavigator)
+            {
+                _current = propNavigator.Clone();
+            }
             else
             {
                 throw new NotSupportedException();
@@ -327,5 +337,10 @@ internal class UiaXPathNavigator : XPathNavigator
             UiaXPathNavigator o => _current == o._current,
             _ => false,
         };
+    }
+
+    public override string GetAttribute(string localName, string namespaceURI)
+    {
+        return base.GetAttribute(localName, namespaceURI);
     }
 }
