@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "robotframework-platynui"
 dynamic = ["version"]
-description = ''
+description = 'PlatynUI is a library for Robot Framework that enables easy and cross-platform desktop UI automation with a comprehensive set of keywords for interacting with desktop applications.'
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "Apache-2.0" }
 keywords = []
-authors = [{ name = "Daniel Biehl", email = "dbiehl@live.de" }]
+authors = [{ name = "Daniel Biehl", email = "daniel.biehl@imbus.de" }]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 3 - Alpha",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -21,6 +21,8 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
+  "Framework :: Robot Framework :: Library",
+  "Programming Language :: C#",
 ]
 dependencies = [
   "typing-extensions",
@@ -209,7 +211,12 @@ ignore_missing_imports = true
 no_implicit_reexport = false
 
 [[tool.mypy.overrides]]
-module = ["Sytem.*", "Microsoft.*", "PlatynUI.Technology.UiAutomation", "typings.*"]
+module = [
+  "Sytem.*",
+  "Microsoft.*",
+  "PlatynUI.Technology.UiAutomation.*",
+  "typings.*",
+]
 ignore_errors = true
 
 # pyright
