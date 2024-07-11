@@ -68,6 +68,10 @@ dependencies = [
 # features = ["all"]
 # pre-install-commands = ["install-packages"]
 
+[tool.hatch.envs.default.scripts]
+build-runtime = "dotnet build -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
+clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
+
 [tool.hatch.envs.types]
 extra-dependencies = ["mypy>=1.0.0"]
 [tool.hatch.envs.types.scripts]
