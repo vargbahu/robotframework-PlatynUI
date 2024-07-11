@@ -2,7 +2,7 @@
 using System.Xml.XPath;
 using PlatynUI.Technology.UiAutomation.Client;
 
-namespace PlatynUI.Technology.UIAutomation.Core;
+namespace PlatynUI.Technology.UiAutomation.Core;
 
 internal class UiaXPathNavigator : XPathNavigator
 {
@@ -64,10 +64,26 @@ internal class UiaXPathNavigator : XPathNavigator
 
                     try
                     {
-                        if (p.Id == null)
+                        if (p.Id == -1)
                         {
                             if (p.Name == "Role")
                                 return Automation.ControlTypeNameFromId(cp.CurrentControlType);
+
+                            return string.Empty;
+                        }
+                        else if (p.Id == -2)
+                        {
+                            if (p.Name == "ProcessName")
+                            {
+                                try
+                                {
+                                    return System.Diagnostics.Process.GetProcessById(cp.CurrentProcessId).ProcessName;
+                                }
+                                catch
+                                {
+                                    // DO NOTHING
+                                }
+                            }
 
                             return string.Empty;
                         }

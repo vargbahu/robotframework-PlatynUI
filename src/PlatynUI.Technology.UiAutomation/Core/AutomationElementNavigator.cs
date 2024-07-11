@@ -1,4 +1,4 @@
-namespace PlatynUI.Technology.UIAutomation.Core;
+namespace PlatynUI.Technology.UiAutomation.Core;
 
 using System;
 using System.Collections.Generic;

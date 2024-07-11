@@ -1,7 +1,8 @@
-﻿using System.Xml;
+﻿using System.Diagnostics;
+using System.Xml;
 using System.Xml.XPath;
 using PlatynUI.Technology.UiAutomation.Client;
-using PlatynUI.Technology.UIAutomation.Core;
+using PlatynUI.Technology.UiAutomation.Core;
 
 namespace PlatynUI.Technology.UiAutomation;
 
@@ -22,10 +23,13 @@ public static class Finder
         bool findVirtual = false
     )
     {
+        var stopwatch = Stopwatch.StartNew();
+
         var navigator = new UiaXPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var root = navigator.SelectSingleNode(expression);
+        Debug.WriteLine($"XPath '{xpath}' search took {stopwatch.ElapsedMilliseconds}ms");
 
         return root?.UnderlyingObject as IUIAutomationElement;
     }

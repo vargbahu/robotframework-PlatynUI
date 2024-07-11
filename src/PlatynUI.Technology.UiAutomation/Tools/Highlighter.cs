@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.UI.HiDpi;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -6,7 +6,7 @@ using Timer = System.Timers.Timer;
 
 namespace PlatynUI.Technology.UiAutomation.Tools;
 
-internal class Highlighter : IDisposable
+public class Highlighter : IDisposable
 {
     private const int Gap = 1;
     private const int Width = 3;
@@ -44,12 +44,15 @@ internal class Highlighter : IDisposable
             {
 #pragma warning disable CA1416 // Validate platform compatibility
 
-                ;
-                if (Environment.OSVersion.Version >= DPI_AWARE_MIN_WINDOWS_VERSION)
+                try
                 {
                     PInvoke.SetThreadDpiAwarenessContext(
                         DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
                     );
+                }
+                catch (EntryPointNotFoundException)
+                {
+                    System.Diagnostics.Debug.WriteLine("SetThreadDpiAwarenessContext not found");
                 }
 
 #pragma warning restore CA1416 // Validate platform compatibility

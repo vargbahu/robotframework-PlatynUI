@@ -1,4 +1,4 @@
-namespace PlatynUI.Technology.UIAutomation.Core;
+namespace PlatynUI.Technology.UiAutomation.Core;
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,12 @@ internal class AutomationPropertyNavigator
     private List<Automation.PropertyIdAndName> GetChildren()
     {
         return Element != null
-            ? [new Automation.PropertyIdAndName(null, "Role"), .. Automation.GetSupportedPropertyIdAndNames(Element)]
+            ?
+            [
+                new Automation.PropertyIdAndName(-1, "Role"),
+                new Automation.PropertyIdAndName(-2, "ProcessName"),
+                .. Automation.GetSupportedPropertyIdAndNames(Element)
+            ]
             : [];
     }
 

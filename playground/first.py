@@ -204,16 +204,17 @@ def word_test() -> None:
     word.highlight()
     readme = Path(__file__).parent.parent / "README.md"
     readme_text = readme.read_text()
-    # word.keyboard.type_keys("Hallo Weltöäü🐑🤔")
+    word.keyboard.type_keys("Hallo Weltöäü🐑🤔")
     word.keyboard.type_keys(readme_text)
 
 word_test()
 
 def highlight_test() -> None:
     word = WordWindow()
+    word.focus()
     word.highlight()
-    for w in word.children:
-        w.highlight()
+    # for w in word.children:
+    #     w.highlight()
 
 #highlight_test()
 

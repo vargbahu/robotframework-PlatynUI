@@ -3,7 +3,7 @@ using System.Xml.XPath;
 using System.Xml.Xsl;
 using PlatynUI.Technology.UiAutomation.Client;
 
-namespace PlatynUI.Technology.UIAutomation.Core;
+namespace PlatynUI.Technology.UiAutomation.Core;
 
 public class UiaXsltContext : XsltContext
 {

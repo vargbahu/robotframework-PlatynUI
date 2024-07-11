@@ -2,19 +2,22 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using PlatynUI.Technology.UiAutomation.Client;
 
-namespace PlatynUI.Technology.UIAutomation.Core;
+namespace PlatynUI.Technology.UiAutomation.Core;
 
-internal class Automation
+public class Automation
 {
-    public readonly struct PropertyIdAndName(int? id, string name)
+    public readonly struct PropertyIdAndName(int id, string name)
     {
-        public readonly int? Id = id;
+        public readonly int Id = id;
         public readonly string Name = name;
     }
 
     public static IUIAutomation UiAutomation { get; } = new CUIAutomation();
 
     public static IUIAutomationElement RootElement => UiAutomation.GetRootElement();
+
+    public static IUIAutomationElement FromPoint(Point point) =>
+        UiAutomation.ElementFromPoint(new tagPOINT { x = (int)point.X, y = (int)point.Y });
 
     public static object NotSupportedValue => UiAutomation.ReservedNotSupportedValue;
 
@@ -25,7 +28,14 @@ internal class Automation
             return false;
         }
 
-        return UiAutomation.CompareElements(e1, e2) != 0;
+        try
+        {
+            return UiAutomation.CompareElements(e1, e2) != 0;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static string GetTypeGuid(MemberInfo type)
@@ -117,7 +127,7 @@ internal class Automation
             return [];
         }
 
-        return ids.Select((t, i) => new PropertyIdAndName(t, names[i])).ToArray();
+        return ids.Select((t, i) => new PropertyIdAndName(t, names[i])).Where(n => n.Id > 0).ToArray();
     }
 
     public static IUIAutomationTreeWalker RawViewWalker => UiAutomation.RawViewWalker;
