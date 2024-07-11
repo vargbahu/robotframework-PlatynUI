@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-build-scripts"]
 build-backend = "hatchling.build"
 
 [project]
@@ -49,6 +49,14 @@ dev-mode-dirs = ["src"]
 only-include = ["src/PlatynUI"]
 sources = ["src"]
 
+[tool.hatch.build.targets.sdist]
+exclude = ["src/PlatynUI/technology/uiautomation/runtime"]
+
+
+[[tool.hatch.build.hooks.build-scripts.scripts]]
+commands = ["hatch run clean-runtime", "hatch run build-runtime"]
+artifacts = {}
+
 [tool.hatch.envs.default]
 installer = "uv"
 dependencies = [
@@ -71,7 +79,7 @@ dependencies = [
 # pre-install-commands = ["install-packages"]
 
 [tool.hatch.envs.default.scripts]
-build-runtime = "dotnet build -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
+build-runtime = "dotnet publish -c release -f net8.0-windows -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
 clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
 
 [tool.hatch.envs.types]
