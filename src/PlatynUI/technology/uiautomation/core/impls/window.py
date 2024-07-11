@@ -20,6 +20,7 @@ __all__ = ["WindowPatternImpl"]
 
 
 @strategy_impl_for(technology=UiaTechnology, properties={"IsWindowPatternAvailable": True})
+@strategy_impl_for(technology=UiaTechnology, role="Window")
 class WindowPatternImpl(
     StrategyImpl,
     Control,

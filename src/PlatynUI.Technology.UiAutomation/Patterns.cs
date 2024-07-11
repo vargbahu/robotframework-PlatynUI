@@ -99,7 +99,7 @@ public static class Patterns
         }
     }
 
-    public static WindowPattern GetWindowPattern(IUIAutomationElement element)
+    public static WindowPattern? GetWindowPattern(IUIAutomationElement element)
     {
         if (element.TryGetCurrentPattern(out IUIAutomationWindowPattern? pattern))
         {
@@ -108,7 +108,7 @@ public static class Patterns
                 return new WindowPattern(element, pattern);
             }
         }
-        throw new NotSupportedException();
+        return null;
     }
 
     public class NativeWindowPattern(IUIAutomationElement element)

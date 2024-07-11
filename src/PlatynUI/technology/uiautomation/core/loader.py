@@ -4,15 +4,6 @@ from typing import TYPE_CHECKING, Optional, cast
 __all__ = ["DotNetInterface"]
 
 
-ASSEMBLY_NAME = "PlatynUI.Technology.UiAutomation.dll"
-DEBUG_ASSEMBLY_PATH = (
-    Path(__file__).parent
-    / f"../../../../PlatynUI.Technology.UiAutomation/bin/Debug/net8.0-windows/{ASSEMBLY_NAME}"
-    # Path(__file__).parent
-    # / f"../../../../PlatynUI.Technology.UiAutomation/bin/Debug/net481/{ASSEMBLY_NAME}"
-)
-RUNTIME_ASSEMBLY_PATH = Path(__file__).parent / f"runtime/{ASSEMBLY_NAME}"
-
 # pyright: reportMissingModuleSource=false
 
 if TYPE_CHECKING:
@@ -38,6 +29,14 @@ class DotNetInterface:
 
     @classmethod
     def _ensure_loaded(cls) -> None:
+        assembly_name = "PlatynUI.Technology.UiAutomation.dll"
+        debug_assembly_path = (
+            Path(__file__).parent
+            / f"../../../../PlatynUI.Technology.UiAutomation/bin/Debug/net8.0-windows/{assembly_name}"
+            # Path(__file__).parent
+            # / f"../../../../PlatynUI.Technology.UiAutomation/bin/Debug/net481/{ASSEMBLY_NAME}"
+        )
+        runtime_assembly_path = Path(__file__).parent.parent / f"runtime/{assembly_name}"
 
         if cls.__loaded:
             return
@@ -46,10 +45,10 @@ class DotNetInterface:
 
         import clr
 
-        if DEBUG_ASSEMBLY_PATH.exists():
-            clr.AddReference(str(DEBUG_ASSEMBLY_PATH))
-        elif RUNTIME_ASSEMBLY_PATH.exists():
-            clr.AddReference(str(RUNTIME_ASSEMBLY_PATH))
+        if debug_assembly_path.exists():
+            clr.AddReference(str(debug_assembly_path))
+        elif runtime_assembly_path.exists():
+            clr.AddReference(str(runtime_assembly_path))
 
     @classmethod
     def adapter(cls) -> "Adapter":
