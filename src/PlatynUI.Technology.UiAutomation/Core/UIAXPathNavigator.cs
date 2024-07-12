@@ -106,6 +106,62 @@ internal class UiaXPathNavigator : XPathNavigator
         }
     }
 
+    public override object TypedValue
+    {
+        get
+        {
+            switch (_current)
+            {
+                case AutomationPropertyNavigator navigator:
+                {
+                    var cp = navigator.Element;
+
+                    if (cp == null)
+                    {
+                        return base.TypedValue;
+                    }
+
+                    var p = navigator.Current;
+
+                    try
+                    {
+                        if (p.Id == -1)
+                        {
+                            if (p.Name == "Role")
+                                return Automation.ControlTypeNameFromId(cp.CurrentControlType);
+
+                            return base.TypedValue;
+                        }
+                        else if (p.Id == -2)
+                        {
+                            if (p.Name == "ProcessName")
+                            {
+                                try
+                                {
+                                    return System.Diagnostics.Process.GetProcessById(cp.CurrentProcessId).ProcessName;
+                                }
+                                catch
+                                {
+                                    // DO NOTHING
+                                }
+                            }
+
+                            return base.TypedValue;
+                        }
+
+                        var v = cp.GetCurrentPropertyValueEx((int)p.Id, 0);
+
+                        return v;
+                    }
+                    catch
+                    {
+                        return base.TypedValue;
+                    }
+                }
+            }
+            return base.TypedValue;
+        }
+    }
     public override XmlNameTable NameTable => _nameTable;
 
     public override XPathNodeType NodeType
@@ -136,9 +192,15 @@ internal class UiaXPathNavigator : XPathNavigator
                     {
                         throw new NotSupportedException();
                     }
-
-                    var result = Automation.ControlTypeNameFromId(navigator.Current.CurrentControlType);
-                    return result;
+                    try
+                    {
+                        var result = Automation.ControlTypeNameFromId(navigator.Current.CurrentControlType);
+                        return result;
+                    }
+                    catch
+                    {
+                        return "UnknownError";
+                    }
                 case AutomationPropertyNavigator navigator:
                     return navigator.Current.Name;
                 default:

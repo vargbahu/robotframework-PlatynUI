@@ -6,11 +6,9 @@
         xmlns:cal="http://www.caliburnproject.org"
         Title="{Binding Title}"
         mc:Ignorable="d"
-        d:DesignHeight="300"
-        d:DesignWidth="300"
         AutomationProperties.AutomationId="Shell"
-        Width="800"
-        Height="600"
+        Width="633"
+        Height="437"
         ResizeMode="CanResizeWithGrip"
         Topmost="{Binding Topmost}"
         Cursor="{Binding Cursor}">
@@ -54,6 +52,10 @@
                               IsChecked="{Binding Topmost}">Always on top</ToggleButton>
             </ToolBar>
         </ToolBarPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock x:Name="ResultsCount"/>
+            <TextBlock x:Name="LastErrorMessage"/>
+        </StatusBar>
         <Grid Margin="6"
               DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
@@ -68,80 +70,108 @@
                     Grid.Column="1"
                     Width="50">Search</Button>
         </Grid>
-        <StatusBar DockPanel.Dock="Bottom">
-            <TextBlock>OK</TextBlock>
-        </StatusBar>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <TreeView x:Name="RootElement"
-                          ItemsSource="{Binding RootElement}"
-                          cal:Message.Attach="[Event SelectedItemChanged] = [Action SetSelectedItem($this.SelectedItem)]">
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                            <HierarchicalDataTemplate.ItemContainerStyle>
-                                <Style TargetType="TreeViewItem">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="150"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <TreeView x:Name="RootElement"
+                              ItemsSource="{Binding RootElement}"
+                              cal:Message.Attach="[Event SelectedItemChanged] = [Action SetSelectedItem($this.SelectedItem)]">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                <HierarchicalDataTemplate.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem">
 
-                                    <Setter Property="IsExpanded"
-                                            Value="{Binding IsExpanded}"/>
-                                    <Setter Property="IsSelected"
-                                            Value="{Binding IsSelected}"/>
-                                    <EventSetter Event="Selected"
-                                            Handler="TreeViewSelectedItemChanged"/>
+                                        <Setter Property="IsExpanded"
+                                                Value="{Binding IsExpanded}"/>
+                                        <Setter Property="IsSelected"
+                                                Value="{Binding IsSelected}"/>
+                                        <EventSetter Event="Selected"
+                                                     Handler="TreeViewSelectedItemChanged"/>
 
-                                </Style>
-                            </HierarchicalDataTemplate.ItemContainerStyle>
+                                    </Style>
+                                </HierarchicalDataTemplate.ItemContainerStyle>
 
-                            <DockPanel LastChildFill="True">
-                                <!-- <Image DockPanel.Dock="Left"
+                                <DockPanel LastChildFill="True">
+                                    <!-- <Image DockPanel.Dock="Left"
                                        Source="{Binding IconSource}"/> -->
-                                <TextBlock DockPanel.Dock="Right"
-                                           Text="{Binding DisplayName}"
-                                           Margin="3"/>
-                            </DockPanel>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-                    <TreeView.ItemContainerStyle>
-                        <Style TargetType="TreeViewItem">
-                            <Setter Property="IsExpanded"
-                                    Value="{Binding IsExpanded}"/>
-                            <Setter Property="IsSelected"
-                                    Value="{Binding IsSelected}"/>
-                        </Style>
-                    </TreeView.ItemContainerStyle>
-                </TreeView>
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Text="{Binding DisplayName}"
+                                               Margin="3"/>
+                                </DockPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded"
+                                        Value="{Binding IsExpanded}"/>
+                                <Setter Property="IsSelected"
+                                        Value="{Binding IsSelected}"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                </Grid>
+                <GridSplitter Grid.Column="1"
+                              HorizontalAlignment="Stretch"/>
+                <Grid Grid.Column="2">
+                    <DataGrid x:Name="Properties"
+                              ItemsSource="{Binding Path=SelectedElement.Properties}"
+                              AutoGenerateColumns="False"
+                              CanUserSortColumns="True"
+                              GridLinesVisibility="Vertical"
+                              VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                              AlternatingRowBackground="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn  Header="Name"
+                                                 Width="Auto"
+                                                 Binding="{Binding Name}"
+                                                 SortDirection="Ascending"
+                                                 IsReadOnly="True"
+                                                 CanUserReorder="False"/>
+                            <DataGridTextColumn  Header="Value"
+                                                 Width="Auto"
+                                                 Binding="{Binding Value}"
+                                                 IsReadOnly="True"
+                                                 CanUserSort="False"
+                                                 CanUserReorder="False"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </Grid>
-            <GridSplitter Grid.Column="1"
-                          HorizontalAlignment="Stretch"/>
-            <Grid Grid.Column="2">
+            <GridSplitter Grid.Row="1"
+                          HorizontalAlignment="Stretch"
+                          ResizeDirection="Rows"/>
+            <Grid Grid.Row="2">
+                <GroupBox Header="Results">
+                    <ListBox x:Name="ResultsList"
+                             ItemsSource="{Binding Results}"
+                             SelectedItem="{Binding SelectedFindResult, Mode=TwoWay}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="IsSelected"
+                                        Value="{Binding IsSelected}"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DisplayName}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </GroupBox>
+            </Grid>
 
-                <DataGrid x:Name="Properties"
-                          ItemsSource="{Binding Path=SelectedElement.Properties}"
-                          AutoGenerateColumns="False"
-                          CanUserSortColumns="True"
-                          GridLinesVisibility="Vertical"
-                          VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                          AlternatingRowBackground="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn  Header="Name"
-                                             Width="Auto"
-                                             Binding="{Binding Name}"
-                                             SortDirection="Ascending"
-                                             IsReadOnly="True"
-                                             CanUserReorder="False"/>
-                        <DataGridTextColumn  Header="Value"
-                                             Width="Auto"
-                                             Binding="{Binding Value}"
-                                             IsReadOnly="True"
-                                             CanUserSort="False"
-                                             CanUserReorder="False"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
         </Grid>
 
     </DockPanel>

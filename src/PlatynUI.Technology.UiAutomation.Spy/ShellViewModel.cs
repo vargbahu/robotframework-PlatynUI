@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -62,7 +63,9 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
                 element = element.Realize();
                 if (element.CurrentProcessId != UiAutomationElementExtensions.CurrentProcessId)
                 {
-                    SelectElement(false, element);
+                    var e = FindElement(element);
+                    if (e != null)
+                        SelectElement(false, e);
                 }
             }
         }
@@ -190,42 +193,162 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
         }
     }
 
-    public void SearchXPath(bool focus = false)
+    ObservableCollection<FindResult> _results = [];
+
+    public ObservableCollection<FindResult> Results
     {
+        get { return _results; }
+        set
+        {
+            if (Equals(value, _results))
+            {
+                return;
+            }
+
+            _results = value;
+            NotifyOfPropertyChange();
+        }
+    }
+
+    FindResult? _selectedFindResult = null;
+
+    public FindResult? SelectedFindResult
+    {
+        get { return _selectedFindResult; }
+        set
+        {
+            if (Equals(value, _selectedFindResult))
+            {
+                return;
+            }
+            _selectedFindResult = value;
+            if (value != null)
+            {
+                SelectElement(false, value.Element);
+            }
+            NotifyOfPropertyChange();
+        }
+    }
+
+    string _resultsCount = "";
+    public string ResultsCount
+    {
+        get { return _resultsCount; }
+        set
+        {
+            if (value == _resultsCount)
+            {
+                return;
+            }
+            _resultsCount = value;
+            NotifyOfPropertyChange();
+        }
+    }
+
+    string _lastErrorMessage = "";
+    public string LastErrorMessage
+    {
+        get { return _lastErrorMessage; }
+        set
+        {
+            if (value == _lastErrorMessage)
+            {
+                return;
+            }
+            _lastErrorMessage = value;
+            NotifyOfPropertyChange();
+        }
+    }
+
+    CancellationTokenSource? _searchCancellationTokenSource;
+
+    public async void SearchXPath(bool focus = false)
+    {
+        if (_searchCancellationTokenSource != null)
+        {
+            _searchCancellationTokenSource.Cancel();
+            _searchCancellationTokenSource = null;
+            return;
+        }
         if (string.IsNullOrWhiteSpace(XPath))
         {
             return;
         }
+        _searchCancellationTokenSource = new();
+        var myCancellationTokenSource = _searchCancellationTokenSource;
+        var token = _searchCancellationTokenSource.Token;
         try
         {
-            Cursor = Cursors.Wait;
-            try
-            {
-                var element = Finder.FindSingleElement(null, XPath.Trim(), true);
-                if (element != null)
-                    SelectElement(focus, element);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"Element not found {ex.Message}",
-                    "Search XPath",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
-            }
+            LastErrorMessage = "";
+            await Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(
+                            () =>
+                            {
+                                Results.Clear();
+                                ResultsCount = "";
+                            },
+                            DispatcherPriority.Normal,
+                            token
+                        );
+
+                        var results = Finder.EnumAllElements(null, XPath.Trim(), true);
+
+                        var first = true;
+                        foreach (var element in results)
+                        {
+                            if (token.IsCancellationRequested)
+                            {
+                                break;
+                            }
+                            var e = FindElement(element);
+                            if (e != null)
+                            {
+                                var result = new FindResult(e);
+
+                                await Application.Current.Dispatcher.InvokeAsync(
+                                    () =>
+                                    {
+                                        Results.Add(result);
+                                        ResultsCount = $"{Results.Count} Elements";
+                                        if (first)
+                                        {
+                                            first = false;
+                                            result.IsSelected = true;
+                                            SelectElement(focus, result.Element);
+                                        }
+                                    },
+                                    DispatcherPriority.Normal,
+                                    token
+                                );
+                            }
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        LastErrorMessage = "Canceled";
+                    }
+                    catch (Exception ex)
+                    {
+                        LastErrorMessage = $"{ex.GetType().Name}: {ex.Message}";
+                    }
+                },
+                token
+            );
         }
         finally
         {
-            Cursor = Cursors.Arrow;
+            _searchCancellationTokenSource = null;
+            myCancellationTokenSource.Dispose();
+            ResultsCount = $"{Results.Count} Elements";
         }
     }
 
-    private void SelectElement(bool focus, IUIAutomationElement element)
+    private ElementBase? FindElement(IUIAutomationElement element)
     {
-        var stopwatch = Stopwatch.StartNew();
-        stopwatch.Start();
-
         var parents = new List<IUIAutomationElement>();
         var parent = element.GetCurrentParent();
 
@@ -238,19 +361,16 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
         parents.Insert(0, (RootElement.Children.First() as UiaElement)!.AutomationElement);
 
         var currentElement = RootElement;
-        ElementBase? lastParent = null;
+
         foreach (var parentElement in parents)
         {
             var foundElement = currentElement.FindAutomationElement(parentElement);
-            lastParent = foundElement;
 
             if (foundElement == null)
             {
                 break;
             }
 
-            foundElement.IsExpanded = true;
-            currentElement.IsSelected = true;
             currentElement = foundElement;
         }
 
@@ -259,19 +379,28 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
             currentElement = currentElement!.FindAutomationElement(element);
         }
 
-        currentElement ??= lastParent;
+        return currentElement;
+    }
 
-        if (currentElement != null)
+    private void SelectElement(bool focus, ElementBase element)
+    {
+        var parents = new List<ElementBase>();
+        var parent = element.Parent;
+
+        while (parent != null)
         {
-            currentElement.IsSelected = true;
-            if (focus)
-            {
-                // TODO: Bring the window to the front
-                element.SetFocus();
-            }
+            parents.Insert(0, parent);
+            parent = parent.Parent;
         }
 
-        Debug.WriteLine($"SelectElement took {stopwatch.ElapsedMilliseconds} ms");
+        parents.Insert(0, RootElement);
+
+        foreach (var parentElement in parents)
+        {
+            parentElement.IsExpanded = true;
+        }
+
+        element.IsSelected = true;
     }
 
     public void HandleAutomationEvent(

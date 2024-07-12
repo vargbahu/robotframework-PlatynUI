@@ -192,7 +192,14 @@ public class Automation
     public static bool SupportsPattern<T>(IUIAutomationElement element)
         where T : class
     {
-        return KnownPatternIds.TryGetValue(GetTypeGuid(typeof(T)), out var id) && SupportsPatternId(element, id);
+        try
+        {
+            return KnownPatternIds.TryGetValue(GetTypeGuid(typeof(T)), out var id) && SupportsPatternId(element, id);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public static string[] GetSupportedPatternNames(IUIAutomationElement element)

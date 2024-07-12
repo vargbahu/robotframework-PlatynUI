@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Xml;
 using System.Xml.XPath;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
@@ -28,9 +27,92 @@ public static class Finder
         var navigator = new UiaXPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
-        var root = navigator.SelectSingleNode(expression);
+        var node = navigator.SelectSingleNode(expression);
         Debug.WriteLine($"XPath '{xpath}' search took {stopwatch.ElapsedMilliseconds}ms");
 
-        return root?.UnderlyingObject as IUIAutomationElement;
+        return node?.UnderlyingObject as IUIAutomationElement;
+    }
+
+    public static List<IUIAutomationElement> FindAllElements(
+        IUIAutomationElement? parent,
+        string xpath,
+        bool findVirtual = false
+    )
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var expression = XPathExpression.Compile(xpath, xsltContext);
+
+        var nodes = navigator.Select(expression);
+        Debug.WriteLine($"XPath '{xpath}' search took {stopwatch.ElapsedMilliseconds}ms");
+
+        var result = new List<IUIAutomationElement>();
+        while (nodes.MoveNext())
+        {
+            if (nodes.Current is XPathNavigator node)
+            {
+                if (node?.UnderlyingObject is IUIAutomationElement element)
+                    result.Add(element);
+            }
+        }
+        return result;
+    }
+
+    public static IEnumerable<IUIAutomationElement> EnumAllElements(
+        IUIAutomationElement? parent,
+        string xpath,
+        bool findVirtual = false
+    )
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var expression = XPathExpression.Compile(xpath, xsltContext);
+
+        var nodes = navigator.Select(expression);
+        Debug.WriteLine($"XPath '{xpath}' search took {stopwatch.ElapsedMilliseconds}ms");
+
+        while (nodes.MoveNext())
+        {
+            if (nodes.Current is XPathNavigator node)
+            {
+                if (node?.UnderlyingObject is IUIAutomationElement element)
+                    yield return element;
+            }
+        }
+    }
+
+    public static List<object?> Evaluate(IUIAutomationElement? parent, string xpath, bool findVirtual = false)
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var expression = XPathExpression.Compile(xpath, xsltContext);
+
+        var nodes = navigator.Evaluate(expression);
+        Debug.WriteLine($"XPath '{xpath}' search took {stopwatch.ElapsedMilliseconds}ms");
+
+        var result = new List<object?>();
+        if (nodes is XPathNodeIterator iterator)
+            while (iterator!.MoveNext())
+            {
+                if (iterator.Current is XPathNavigator node)
+                {
+                    if (node?.UnderlyingObject is IUIAutomationElement element)
+                        result.Add(element);
+                    else
+                        result.Add(node?.TypedValue);
+                }
+                else
+                {
+                    result.Add(iterator!.Current!.TypedValue);
+                }
+            }
+        else
+        {
+            result.Add(nodes);
+        }
+        return result;
     }
 }

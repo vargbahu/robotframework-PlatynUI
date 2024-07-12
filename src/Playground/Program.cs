@@ -1,6 +1,11 @@
 using PlatynUI.Technology.UiAutomation;
 
-Console.OutputEncoding = System.Text.Encoding.Unicode;
+//Console.OutputEncoding = System.Text.Encoding.Unicode;
 
-Console.WriteLine(KeyboardDevice.KeyToKeyCode("🐑"));
-Console.WriteLine("🐑");
+var result = Finder.Evaluate(null, "/Window/text()");
+// var result = Finder.Evaluate(null, "1+2");
+
+foreach (var item in result)
+{
+    Console.WriteLine($"{item} {item?.GetType()}");
+}

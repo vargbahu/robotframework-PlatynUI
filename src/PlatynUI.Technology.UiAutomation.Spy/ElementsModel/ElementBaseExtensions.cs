@@ -15,6 +15,7 @@ static class ElementBaseExtensions
         }
 
         elementBase.Refresh();
+
         return FindElementOnce(elementBase, element);
     }
 

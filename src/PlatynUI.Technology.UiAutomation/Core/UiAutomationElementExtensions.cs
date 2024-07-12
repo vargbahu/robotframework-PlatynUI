@@ -32,7 +32,14 @@ public static class UiAutomationElementExtensions
 
     public static bool SupportsPatternId(this IUIAutomationElement element, int id)
     {
-        return Automation.SupportsPatternId(element, id);
+        try
+        {
+            return Automation.SupportsPatternId(element, id);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public static bool SupportsPattern<T>(this IUIAutomationElement element)
@@ -128,7 +135,15 @@ public static class UiAutomationElementExtensions
             yield break;
         }
 
-        var r = walker.GetFirstChildElement(element);
+        IUIAutomationElement? r;
+        try
+        {
+            r = walker.GetFirstChildElement(element);
+        }
+        catch
+        {
+            r = null;
+        }
         if (r == null)
         {
             yield break;
@@ -146,7 +161,14 @@ public static class UiAutomationElementExtensions
 
         while (r != null)
         {
-            r = walker.GetNextSiblingElement(r);
+            try
+            {
+                r = walker.GetNextSiblingElement(r);
+            }
+            catch
+            {
+                r = null;
+            }
             if (r != null)
             {
                 r.Realize();

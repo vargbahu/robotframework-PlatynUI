@@ -34,15 +34,13 @@ public class Highlighter : IDisposable
         _holderCreatedEvent.WaitOne(5000);
     }
 
-    private static readonly Version DPI_AWARE_MIN_WINDOWS_VERSION = new("10.0.14393");
-
     protected void StartWndThread()
     {
         if (_thread == null)
         {
             _thread = new Thread(() =>
             {
-                Thread.CurrentThread.Name = "HighlighterThread";
+                //Thread.CurrentThread.Name = "HighlighterThread";
 
 #pragma warning disable CA1416 // Validate platform compatibility
 
