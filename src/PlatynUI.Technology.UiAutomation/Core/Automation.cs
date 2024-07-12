@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using PlatynUI.Technology.UiAutomation.Client;
@@ -16,8 +17,27 @@ public class Automation
 
     public static IUIAutomationElement RootElement => UiAutomation.GetRootElement();
 
-    public static IUIAutomationElement FromPoint(Point point) =>
-        UiAutomation.ElementFromPoint(new tagPOINT { x = (int)point.X, y = (int)point.Y });
+    public static IUIAutomationElement GetCachedRootElement()
+    {
+        var request = UiAutomation.CreateCacheRequest();
+        request.AutomationElementMode = AutomationElementMode.AutomationElementMode_Full;
+        request.TreeScope = TreeScope.TreeScope_Subtree;
+        request.TreeFilter = UiAutomation.CreateTrueCondition();
+        return UiAutomation.GetRootElementBuildCache(request);
+    }
+
+    public static IUIAutomationElement? FromPoint(Point point)
+    {
+        try
+        {
+            return UiAutomation.ElementFromPoint(new tagPOINT { x = (int)point.X, y = (int)point.Y });
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"Failed to get element from point {point.X}, {point.Y}: {e.Message}");
+        }
+        return null;
+    }
 
     public static object NotSupportedValue => UiAutomation.ReservedNotSupportedValue;
 
@@ -32,8 +52,9 @@ public class Automation
         {
             return UiAutomation.CompareElements(e1, e2) != 0;
         }
-        catch
+        catch (Exception e)
         {
+            Debug.WriteLine($"Failed to compare elements: {e.Message}");
             return false;
         }
     }

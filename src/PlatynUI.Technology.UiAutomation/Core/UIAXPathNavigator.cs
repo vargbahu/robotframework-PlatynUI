@@ -15,6 +15,7 @@ internal class UiaXPathNavigator : XPathNavigator
     public UiaXPathNavigator(IUIAutomationElement? element = null, bool findVirtual = false)
     {
         element ??= Automation.RootElement;
+        //element ??= Automation.GetCachedRootElement();
 
         _findVirtual = findVirtual;
 
@@ -111,20 +112,16 @@ internal class UiaXPathNavigator : XPathNavigator
     {
         get
         {
-            switch (_current)
+            return _current switch
             {
-                case AutomationElementNavigator elementNavigator when elementNavigator.Current == null:
-                    return XPathNodeType.All;
-                case AutomationElementNavigator elementNavigator
-                    when Automation.CompareElements(elementNavigator.Current, Automation.RootElement):
-                    return XPathNodeType.Root;
-                case AutomationElementNavigator _:
-                    return XPathNodeType.Element;
-                case AutomationPropertyNavigator _:
-                    return XPathNodeType.Attribute;
-                default:
-                    return XPathNodeType.All;
-            }
+                AutomationElementNavigator elementNavigator when elementNavigator.Current == null => XPathNodeType.All,
+                AutomationElementNavigator elementNavigator
+                    when Automation.CompareElements(elementNavigator.Current, Automation.RootElement)
+                    => XPathNodeType.Root,
+                AutomationElementNavigator _ => XPathNodeType.Element,
+                AutomationPropertyNavigator _ => XPathNodeType.Attribute,
+                _ => XPathNodeType.All,
+            };
         }
     }
 
@@ -140,7 +137,8 @@ internal class UiaXPathNavigator : XPathNavigator
                         throw new NotSupportedException();
                     }
 
-                    return Automation.ControlTypeNameFromId(navigator.Current.CurrentControlType);
+                    var result = Automation.ControlTypeNameFromId(navigator.Current.CurrentControlType);
+                    return result;
                 case AutomationPropertyNavigator navigator:
                     return navigator.Current.Name;
                 default:
@@ -150,6 +148,16 @@ internal class UiaXPathNavigator : XPathNavigator
     }
 
     public override string Name => LocalName;
+
+    public override string? LookupNamespace(string prefix)
+    {
+        return base.LookupNamespace(prefix);
+    }
+
+    public override bool MoveToNamespace(string name)
+    {
+        return base.MoveToNamespace(name);
+    }
 
     public override string NamespaceURI => _nameTable.Get(string.Empty) ?? string.Empty;
 
@@ -266,6 +274,16 @@ internal class UiaXPathNavigator : XPathNavigator
         }
 
         return false;
+    }
+
+    public override string GetNamespace(string name)
+    {
+        return base.GetNamespace(name);
+    }
+
+    public override IDictionary<string, string> GetNamespacesInScope(XmlNamespaceScope scope)
+    {
+        return base.GetNamespacesInScope(scope);
     }
 
     public override bool MoveToFirstChild()

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using PlatynUI.Technology.UiAutomation.Client;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
@@ -95,5 +96,107 @@ public static class UiAutomationElementExtensions
     public static Rect ToRect(this tagRECT rect)
     {
         return new Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+    }
+
+#pragma warning disable CA1837 // Use 'Environment.ProcessId'
+    public static int CurrentProcessId => Process.GetCurrentProcess().Id;
+#pragma warning restore CA1837 // Use 'Environment.ProcessId'
+
+    private static IUIAutomationElement? ItemContainerFindItemByProperty(
+        IUIAutomationItemContainerPattern pattern,
+        IUIAutomationElement? pStartAfter
+    )
+    {
+        try
+        {
+            return pattern.FindItemByProperty(pStartAfter, 0, null);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public static IEnumerable<IUIAutomationElement> EnumerateChildren(
+        this IUIAutomationElement? element,
+        IUIAutomationTreeWalker? walker,
+        bool findVirtual = false
+    )
+    {
+        if (element == null || walker == null)
+        {
+            yield break;
+        }
+
+        var r = walker.GetFirstChildElement(element);
+        if (r == null)
+        {
+            yield break;
+        }
+
+        r.Realize();
+        if (r.CurrentProcessId == CurrentProcessId)
+        {
+            Debug.WriteLine("Skipping element from the same process");
+        }
+        else
+        {
+            yield return r;
+        }
+
+        while (r != null)
+        {
+            r = walker.GetNextSiblingElement(r);
+            if (r != null)
+            {
+                r.Realize();
+                if (r.CurrentProcessId == CurrentProcessId)
+                {
+                    Debug.WriteLine("Skipping element from the same process");
+                    continue;
+                }
+                yield return r;
+            }
+        }
+
+        if (findVirtual && element.SupportsPatternId(UIA_PatternIds.UIA_ItemContainerPatternId))
+        {
+            var pattern = element.GetCurrentPattern<IUIAutomationItemContainerPattern>();
+            if (pattern == null)
+            {
+                yield break;
+            }
+
+            r = ItemContainerFindItemByProperty(pattern, null);
+            if (r == null)
+            {
+                yield break;
+            }
+
+            r.Realize();
+            if (r.CurrentProcessId == CurrentProcessId)
+            {
+                Debug.WriteLine("Skipping element from the same process");
+            }
+            else
+            {
+                yield return r;
+            }
+
+            while (r != null)
+            {
+                r = ItemContainerFindItemByProperty(pattern, r);
+                if (r != null)
+                {
+                    if (r.CurrentProcessId == CurrentProcessId)
+                    {
+                        Debug.WriteLine("Skipping element from the same process");
+                        continue;
+                    }
+                    r.Realize();
+                    yield return r;
+                }
+            }
+        }
     }
 }

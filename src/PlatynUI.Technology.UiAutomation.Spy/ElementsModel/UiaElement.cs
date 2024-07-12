@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
 
@@ -16,46 +17,11 @@ public class UiaElement : ElementBase
 
     public IUIAutomationElement AutomationElement { get; set; }
 
-    private IEnumerable<IUIAutomationElement> EnumerateChildren(
-        IUIAutomationElement parent,
-        IUIAutomationTreeWalker walker
-    )
-    {
-        var r = walker.GetFirstChildElement(parent);
-        if (r == null)
-        {
-            yield break;
-        }
-
-        if (r.CurrentProcessId == System.Diagnostics.Process.GetCurrentProcess().Id)
-        {
-            System.Diagnostics.Debug.WriteLine("Skipping element from the same process");
-        }
-        else
-        {
-            yield return r.Realize();
-        }
-
-        while (r != null)
-        {
-            r = walker.GetNextSiblingElement(r);
-            if (r != null)
-            {
-                if (r.CurrentProcessId == System.Diagnostics.Process.GetCurrentProcess().Id)
-                {
-                    System.Diagnostics.Debug.WriteLine("Skipping element from the same process");
-                    continue;
-                }
-                yield return r.Realize();
-            }
-        }
-    }
-
     protected override ObservableCollection<ElementBase> InitChildren()
     {
         var result = base.InitChildren();
 
-        foreach (var c in EnumerateChildren(AutomationElement, Automation.RawViewWalker))
+        foreach (var c in AutomationElement.EnumerateChildren(Automation.RawViewWalker, true))
         {
             if (OldChildren != null)
             {
@@ -131,7 +97,7 @@ public class UiaElement : ElementBase
                 {
                     try
                     {
-                        var processName = System.Diagnostics.Process.GetProcessById((int)v).ProcessName;
+                        var processName = Process.GetProcessById((int)v).ProcessName;
                         result.Add(new PropertyEntry { Name = "ProcessName", Value = processName });
                     }
                     catch

@@ -1,9 +1,7 @@
-namespace PlatynUI.Technology.UiAutomation.Core;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using PlatynUI.Technology.UiAutomation.Client;
+
+namespace PlatynUI.Technology.UiAutomation.Core;
 
 internal class AutomationElementNavigator : ChildrenNavigatorBase<IUIAutomationElement, IUIAutomationElement>
 {
@@ -84,86 +82,7 @@ internal class AutomationElementNavigator : ChildrenNavigatorBase<IUIAutomationE
             return Element != null ? [Element] : [];
         }
 
-        if (_findVirtual && Parent.SupportsPatternId(UIA_PatternIds.UIA_ItemContainerPatternId))
-        {
-            return EnumerateVirtualizedChildren(Parent).ToList();
-        }
-
-        return EnumerateChildren(Parent).ToList();
-    }
-
-    private IEnumerable<IUIAutomationElement> EnumerateChildren(IUIAutomationElement parent)
-    {
-        if (_walker == null)
-        {
-            yield break;
-        }
-
-        var r = _walker.GetFirstChildElement(parent);
-        if (r == null)
-        {
-            yield break;
-        }
-
-        r.Realize();
-        yield return r;
-
-        while (r != null)
-        {
-            r = _walker.GetNextSiblingElement(r);
-            if (r != null)
-            {
-                r.Realize();
-                yield return r;
-            }
-        }
-    }
-
-    private static IEnumerable<IUIAutomationElement> EnumerateVirtualizedChildren(IUIAutomationElement parent)
-    {
-        var collapsed = false;
-        if (parent.TryGetCurrentPattern(out IUIAutomationExpandCollapsePattern? expandCollapsePattern))
-        {
-            if (expandCollapsePattern?.CurrentExpandCollapseState == ExpandCollapseState.ExpandCollapseState_Collapsed)
-            {
-                collapsed = true;
-            }
-        }
-
-        var pattern = parent.GetCurrentPattern<IUIAutomationItemContainerPattern>();
-        if (pattern == null)
-        {
-            yield break;
-        }
-
-        var r = pattern.FindItemByProperty(null, 0, null);
-        if (r == null)
-        {
-            yield break;
-        }
-
-        r.Realize();
-        yield return r;
-
-        while (r != null)
-        {
-            r = pattern.FindItemByProperty(r, 0, null);
-            if (r != null)
-            {
-                r.Realize();
-                yield return r;
-            }
-        }
-
-        if (!collapsed)
-        {
-            yield break;
-        }
-
-        if (expandCollapsePattern?.CurrentExpandCollapseState == ExpandCollapseState.ExpandCollapseState_Expanded)
-        {
-            expandCollapsePattern.Collapse();
-        }
+        return Parent.EnumerateChildren(_walker, _findVirtual).ToList();
     }
 
     public override ChildrenNavigatorBase<IUIAutomationElement, IUIAutomationElement> Clone()

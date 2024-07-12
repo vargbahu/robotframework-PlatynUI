@@ -12,7 +12,8 @@
         Width="800"
         Height="600"
         ResizeMode="CanResizeWithGrip"
-        Topmost="{Binding Topmost}">
+        Topmost="{Binding Topmost}"
+        Cursor="{Binding Cursor}">
 
 
     <DockPanel>
@@ -54,7 +55,7 @@
             </ToolBar>
         </ToolBarPanel>
         <Grid Margin="6"
-                DockPanel.Dock="Top">
+              DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"
@@ -89,7 +90,8 @@
                                             Value="{Binding IsExpanded}"/>
                                     <Setter Property="IsSelected"
                                             Value="{Binding IsSelected}"/>
-                                    <EventSetter Event="Selected" Handler="TreeViewSelectedItemChanged" />
+                                    <EventSetter Event="Selected"
+                                            Handler="TreeViewSelectedItemChanged"/>
 
                                 </Style>
                             </HierarchicalDataTemplate.ItemContainerStyle>

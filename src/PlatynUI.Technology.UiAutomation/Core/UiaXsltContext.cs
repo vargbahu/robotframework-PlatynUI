@@ -1,12 +1,26 @@
-using System.Xml;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.XPath;
 using System.Xml.Xsl;
-using PlatynUI.Technology.UiAutomation.Client;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
 
 public class UiaXsltContext : XsltContext
 {
+    public override bool HasNamespace(string prefix)
+    {
+        return base.HasNamespace(prefix);
+    }
+
+    public override string? LookupNamespace(string prefix)
+    {
+        var result = base.LookupNamespace(prefix);
+
+        if (result == null) {
+            result = "";
+        }
+        return result;
+    }
+
     public override bool Whitespace => true;
 
     public override int CompareDocument(string baseUri, string nextbaseUri)
