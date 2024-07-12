@@ -15,7 +15,8 @@ public class UiaXsltContext : XsltContext
     {
         var result = base.LookupNamespace(prefix);
 
-        if (result == null) {
+        if (result == null)
+        {
             result = "";
         }
         return result;

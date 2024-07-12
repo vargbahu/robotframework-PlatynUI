@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.DataGrids
+﻿namespace WpfTestApp.Pages.DataGrids;
+
+public partial class DataGridsPageView
 {
-    public partial class DataGridsPageView
+    public DataGridsPageView()
     {
-        public DataGridsPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

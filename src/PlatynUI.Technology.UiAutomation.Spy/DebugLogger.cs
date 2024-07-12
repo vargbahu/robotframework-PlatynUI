@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-
 using Caliburn.Micro;
 
 namespace PlatynUI.Technology.UiAutomation.Spy;

@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.Disabled
+﻿namespace WpfTestApp.Pages.Disabled;
+
+public partial class DisabledPageView
 {
-    public partial class DisabledPageView
+    public DisabledPageView()
     {
-        public DisabledPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

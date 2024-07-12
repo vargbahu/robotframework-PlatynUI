@@ -1,11 +1,10 @@
-﻿namespace WpfTestApp.Pages.Trees
-{
-    using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 
-    [Export(typeof(TabPageBase))]
-    public class TreesPageViewModel : TabPageBase
-    {
-        public TreesPageViewModel()
-            : base("Trees") { }
-    }
+namespace WpfTestApp.Pages.Trees;
+
+[Export(typeof(TabPageBase))]
+public class TreesPageViewModel : TabPageBase
+{
+    public TreesPageViewModel()
+        : base("Trees") { }
 }

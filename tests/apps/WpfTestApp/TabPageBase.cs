@@ -1,35 +1,34 @@
-﻿namespace WpfTestApp
+﻿using Caliburn.Micro;
+
+namespace WpfTestApp;
+
+public abstract class TabPageBase : Screen
 {
-    using Caliburn.Micro;
+    private bool _isEnabled = true;
 
-    public abstract class TabPageBase : Screen
+    protected TabPageBase(string displayName)
     {
-        private bool _isEnabled = true;
+        DisplayName = displayName;
+    }
 
-        protected TabPageBase(string displayName)
-        {
-            DisplayName = displayName;
-        }
+    public sealed override string DisplayName
+    {
+        get => base.DisplayName;
+        set => base.DisplayName = value;
+    }
 
-        public sealed override string DisplayName
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
         {
-            get => base.DisplayName;
-            set => base.DisplayName = value;
-        }
-
-        public bool IsEnabled
-        {
-            get => _isEnabled;
-            set
+            if (value == _isEnabled)
             {
-                if (value == _isEnabled)
-                {
-                    return;
-                }
-
-                _isEnabled = value;
-                NotifyOfPropertyChange(() => IsEnabled);
+                return;
             }
+
+            _isEnabled = value;
+            NotifyOfPropertyChange(() => IsEnabled);
         }
     }
 }

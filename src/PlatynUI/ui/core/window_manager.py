@@ -6,7 +6,6 @@ from ...core.types import Point, Size
 __all__ = ["WindowManager"]
 
 
-# noinspection PyShadowingBuiltins
 class WindowManager(StrategyBase):
     strategy_name = "org.platynui.WindowManager"
 

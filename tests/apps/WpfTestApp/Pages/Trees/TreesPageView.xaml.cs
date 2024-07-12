@@ -1,12 +1,11 @@
-﻿namespace WpfTestApp.Pages.Trees
-{
-    using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
-    public partial class TreesPageView : UserControl
+namespace WpfTestApp.Pages.Trees;
+
+public partial class TreesPageView : UserControl
+{
+    public TreesPageView()
     {
-        public TreesPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

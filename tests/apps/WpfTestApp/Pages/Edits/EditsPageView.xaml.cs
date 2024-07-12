@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.Edits
+﻿namespace WpfTestApp.Pages.Edits;
+
+public partial class EditsPageView
 {
-    public partial class EditsPageView
+    public EditsPageView()
     {
-        public EditsPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

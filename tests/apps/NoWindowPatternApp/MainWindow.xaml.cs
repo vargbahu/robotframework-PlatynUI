@@ -141,6 +141,7 @@ public class CustomWindowAutomationPeer : AutomationPeer
         throw new NotImplementedException();
     }
 }
+
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>

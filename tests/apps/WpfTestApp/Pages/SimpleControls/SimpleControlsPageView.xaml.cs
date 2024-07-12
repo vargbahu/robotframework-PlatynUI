@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.SimpleControls
+﻿namespace WpfTestApp.Pages.SimpleControls;
+
+public partial class SimpleControlsPageView
 {
-    public partial class SimpleControlsPageView
+    public SimpleControlsPageView()
     {
-        public SimpleControlsPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

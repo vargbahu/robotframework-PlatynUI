@@ -1,95 +1,74 @@
-namespace WpfTestApp
+using System.ComponentModel.Composition;
+using System.Linq;
+using System.Windows;
+using Caliburn.Micro;
+
+namespace WpfTestApp;
+
+[Export]
+public class ShellViewModel : Conductor<TabPageBase>.Collection.OneActive
 {
-    using System.ComponentModel.Composition;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using Caliburn.Micro;
-    using MahApps.Metro.Controls;
-    using MahApps.Metro.Controls.Dialogs;
+    private string _theMessage = "Hello World";
+    private string _title = "WPF Test Application";
 
-    [Export]
-    public class ShellViewModel : Conductor<TabPageBase>.Collection.OneActive
+    [ImportingConstructor]
+    public ShellViewModel([ImportMany] TabPageBase[] pages)
     {
-        private string _theMessage = "Hello World";
-        private string _title = "WPF Test Application";
+        Items.AddRange(pages.OrderBy(v => v.DisplayName));
+    }
 
-        [ImportingConstructor]
-        public ShellViewModel([ImportMany] TabPageBase[] pages)
+    public string Title
+    {
+        get => _title;
+        set
         {
-            Items.AddRange(pages.OrderBy(v => v.DisplayName));
-        }
-
-        public string Title
-        {
-            get => _title;
-            set
+            if (value == _title)
             {
-                if (value == _title)
-                {
-                    return;
-                }
-
-                _title = value;
-                NotifyOfPropertyChange();
+                return;
             }
-        }
 
-        public string TheMessage
+            _title = value;
+            NotifyOfPropertyChange();
+        }
+    }
+
+    public string TheMessage
+    {
+        get => _theMessage;
+        set
         {
-            get => _theMessage;
-            set
+            if (value == _theMessage)
             {
-                if (value == _theMessage)
-                {
-                    return;
-                }
-
-                _theMessage = value;
-                NotifyOfPropertyChange();
+                return;
             }
-        }
 
-        public async void Exit()
-        {
-            await TryCloseAsync();
+            _theMessage = value;
+            NotifyOfPropertyChange();
         }
+    }
 
-        public void New()
-        {
-            MessageBox.Show("New activated");
-        }
+    public async void Exit()
+    {
+        await TryCloseAsync();
+    }
 
-        public void Fourth()
-        {
-            MessageBox.Show("Fourth activated");
-        }
+    public void New()
+    {
+        MessageBox.Show("New activated");
+    }
 
-        public void Eighth()
-        {
-            MessageBox.Show("Eighth activated");
-        }
+    public void Fourth()
+    {
+        MessageBox.Show("Fourth activated");
+    }
 
-        public void ClickMe()
-        {
-            MessageBox.Show(TheMessage, "A Message");
-        }
+    public void Eighth()
+    {
+        MessageBox.Show("Eighth activated");
+    }
 
-        public async void ShowSettings()
-        {
-            await (Application.Current.MainWindow as MetroWindow).ShowMessageAsync(
-                "sorry this is not implemented at the moment",
-                "This should be the settings"
-            );
-        }
-
-        public async void DeployCupcakes()
-        {
-            await (Application.Current.MainWindow as MetroWindow).ShowMessageAsync(
-                "Hope it tastes good",
-                "CupCakes deployed",
-                MessageDialogStyle.AffirmativeAndNegative
-            );
-        }
+    public void ClickMe()
+    {
+        MessageBox.Show(TheMessage, "A Message");
     }
 }

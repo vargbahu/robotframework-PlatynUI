@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.Buttons
+﻿namespace WpfTestApp.Pages.Buttons;
+
+public partial class ButtonsPageView
 {
-    public partial class ButtonsPageView
+    public ButtonsPageView()
     {
-        public ButtonsPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

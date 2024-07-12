@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.Texts
+﻿namespace WpfTestApp.Pages.Texts;
+
+public partial class TextsPageView
 {
-    public partial class TextsPageView
+    public TextsPageView()
     {
-        public TextsPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

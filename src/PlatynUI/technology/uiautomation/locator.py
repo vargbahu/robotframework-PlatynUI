@@ -14,7 +14,6 @@ from .core.technology import get_technology
 __all__ = ["Locator", "locator", "LocatorScope"]
 
 
-# noinspection PyPep8Naming
 class Locator(LocatorBase):
     node: Optional[str] = None
     prefix: Optional[str] = None
@@ -45,7 +44,6 @@ class Locator(LocatorBase):
         LocatorScope.PrecedingSibling: "preceding-sibling::",
     }
 
-    # noinspection PyShadowingBuiltins
     def __init__(
         self,
         *args: Any,

@@ -42,6 +42,8 @@ public class Highlighter : IDisposable
         {
             _thread = new Thread(() =>
             {
+                Thread.CurrentThread.Name = "HighlighterThread";
+
 #pragma warning disable CA1416 // Validate platform compatibility
 
                 try

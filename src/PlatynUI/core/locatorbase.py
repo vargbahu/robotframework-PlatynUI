@@ -52,7 +52,6 @@ class LocatorBase(decorator.Decorator):
 
                 typ = cast(Type["ContextBase"], args[0])
 
-            # noinspection PyUnresolvedReferences,PyProtectedMember
             if isinstance(typ, typing.ForwardRef):
                 typ = (typ, func)
             elif isinstance(typ, str):

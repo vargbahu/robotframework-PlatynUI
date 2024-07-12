@@ -9,53 +9,67 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-        <Grid Margin="6" Grid.Column="0">
+        <GridSplitter Grid.Column="1"
+                HorizontalAlignment="Stretch"/>
+        <Grid Margin="6"
+                Grid.Column="0">
             <GroupBox Header="Simple Items">
                 <StackPanel Orientation="Vertical">
-                    <ListView x:Name="SimpleItems" MaxHeight="300" Margin="3">
+                    <ListView x:Name="SimpleItems"
+                            MaxHeight="300"
+                            Margin="3">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn Header="Surename" DisplayMemberBinding="{Binding SureName}" />
+                                <GridViewColumn Header="Name"
+                                        DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Surename"
+                                        DisplayMemberBinding="{Binding SureName}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
                     <StackPanel Orientation="Horizontal">
                         <Label Margin="3">Selected Item:</Label>
-                        <TextBox x:Name="SelectedSimpleItem" Margin="3" MinWidth="150" />
+                        <TextBox x:Name="SelectedSimpleItem"
+                                Margin="3"
+                                MinWidth="150"/>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
         </Grid>
-        <Grid Margin="6" Grid.Column="2">
+        <Grid Margin="6"
+                Grid.Column="2">
             <GroupBox Header="Complex Items">
                 <StackPanel Orientation="Vertical">
-                    <ListView x:Name="ComplexItems" MaxHeight="300" Margin="3">
+                    <ListView x:Name="ComplexItems"
+                            MaxHeight="300"
+                            Margin="3">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Name">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock x:Name="Name" Text="{Binding Name}" />
+                                            <TextBlock x:Name="Name"
+                                                    Text="{Binding Name}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
                                 <GridViewColumn Header="Surename">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock x:Name="SureName" Text="{Binding SureName}" />
+                                            <TextBlock x:Name="SureName"
+                                                    Text="{Binding SureName}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
                                 <GridViewColumn Header="Age">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock x:Name="SureName" Text="{Binding Age}" />
+                                            <TextBlock x:Name="SureName"
+                                                    Text="{Binding Age}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

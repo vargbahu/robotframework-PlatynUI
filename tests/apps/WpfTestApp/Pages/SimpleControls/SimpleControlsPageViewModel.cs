@@ -1,17 +1,16 @@
-﻿namespace WpfTestApp.Pages.SimpleControls
+﻿using System.ComponentModel.Composition;
+using System.Windows;
+
+namespace WpfTestApp.Pages.SimpleControls;
+
+[Export(typeof(TabPageBase))]
+public class SimpleControlsPageViewModel : TabPageBase
 {
-    using System.ComponentModel.Composition;
-    using System.Windows;
+    private SimpleControlsPageViewModel()
+        : base("SimpleControls") { }
 
-    [Export(typeof(TabPageBase))]
-    public class SimpleControlsPageViewModel : TabPageBase
+    public void DoSomething()
     {
-        private SimpleControlsPageViewModel()
-            : base("SimpleControls") { }
-
-        public void DoSomething()
-        {
-            MessageBox.Show("Done");
-        }
+        MessageBox.Show("Done");
     }
 }

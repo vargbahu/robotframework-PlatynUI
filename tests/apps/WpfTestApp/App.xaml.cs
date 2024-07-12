@@ -1,6 +1,5 @@
-﻿namespace WpfTestApp
-{
-    using System.Windows;
+﻿using System.Windows;
 
-    public partial class App : Application { }
-}
+namespace WpfTestApp;
+
+public partial class App : Application { }

@@ -250,7 +250,7 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
             }
 
             foundElement.IsExpanded = true;
-
+            currentElement.IsSelected = true;
             currentElement = foundElement;
         }
 

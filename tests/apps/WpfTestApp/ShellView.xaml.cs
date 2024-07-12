@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp
+﻿namespace WpfTestApp;
+
+public partial class ShellView
 {
-    public partial class ShellView
+    public ShellView()
     {
-        public ShellView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

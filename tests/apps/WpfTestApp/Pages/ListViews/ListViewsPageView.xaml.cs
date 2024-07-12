@@ -1,10 +1,9 @@
-﻿namespace WpfTestApp.Pages.ListViews
+﻿namespace WpfTestApp.Pages.ListViews;
+
+public partial class ListViewsPageView
 {
-    public partial class ListViewsPageView
+    public ListViewsPageView()
     {
-        public ListViewsPageView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
