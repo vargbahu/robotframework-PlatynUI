@@ -7,3 +7,6 @@ class ButtonKeywords:
     @keyword
     def activate(self, locator: ContextBase) -> None:
         locator.activate()
+
+    def click(self, locator: ContextBase) -> None:
+        locator.mouse.click()

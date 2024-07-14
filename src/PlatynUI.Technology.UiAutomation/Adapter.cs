@@ -11,7 +11,7 @@ public static class Adapter
 {
     public static string GetRole(IUIAutomationElement element)
     {
-        return Automation.ControlTypeNameFromId(element.CurrentControlType);
+        return element.GetCurrentControlTypeName();
     }
 
     public static string GetRuntimeId(IUIAutomationElement element)

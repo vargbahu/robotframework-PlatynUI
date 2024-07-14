@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Windows;
 using PlatynUI.Technology.UiAutomation.Client;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
@@ -124,6 +123,16 @@ public static class UiAutomationElementExtensions
         }
     }
 
+    public static string GetCurrentControlTypeName(this IUIAutomationElement element)
+    {
+        return Automation.ControlTypeNameFromId(element.CurrentControlType);
+    }
+
+    public static string GetDisplayName(this IUIAutomationElement element)
+    {
+        return $"{element.GetCurrentControlTypeName()} \"{element.CurrentName}\"";
+    }
+
     public static IEnumerable<IUIAutomationElement> EnumerateChildren(
         this IUIAutomationElement? element,
         IUIAutomationTreeWalker? walker,
@@ -136,51 +145,6 @@ public static class UiAutomationElementExtensions
         }
 
         IUIAutomationElement? r;
-        try
-        {
-            r = walker.GetFirstChildElement(element);
-        }
-        catch
-        {
-            r = null;
-        }
-        if (r == null)
-        {
-            yield break;
-        }
-
-        r.Realize();
-        if (r.CurrentProcessId == CurrentProcessId)
-        {
-            Debug.WriteLine("Skipping element from the same process");
-        }
-        else
-        {
-            yield return r;
-        }
-
-        while (r != null)
-        {
-            try
-            {
-                r = walker.GetNextSiblingElement(r);
-            }
-            catch
-            {
-                r = null;
-            }
-            if (r != null)
-            {
-                r.Realize();
-                if (r.CurrentProcessId == CurrentProcessId)
-                {
-                    Debug.WriteLine("Skipping element from the same process");
-                    continue;
-                }
-                yield return r;
-            }
-        }
-
         if (findVirtual && element.SupportsPatternId(UIA_PatternIds.UIA_ItemContainerPatternId))
         {
             var pattern = element.GetCurrentPattern<IUIAutomationItemContainerPattern>();
@@ -216,6 +180,53 @@ public static class UiAutomationElementExtensions
                         continue;
                     }
                     r.Realize();
+                    yield return r;
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                r = walker.GetFirstChildElement(element);
+            }
+            catch
+            {
+                r = null;
+            }
+            if (r == null)
+            {
+                yield break;
+            }
+
+            r.Realize();
+            if (r.CurrentProcessId == CurrentProcessId)
+            {
+                Debug.WriteLine("Skipping element from the same process");
+            }
+            else
+            {
+                yield return r;
+            }
+
+            while (r != null)
+            {
+                try
+                {
+                    r = walker.GetNextSiblingElement(r);
+                }
+                catch
+                {
+                    r = null;
+                }
+                if (r != null)
+                {
+                    r.Realize();
+                    if (r.CurrentProcessId == CurrentProcessId)
+                    {
+                        Debug.WriteLine("Skipping element from the same process");
+                        continue;
+                    }
                     yield return r;
                 }
             }

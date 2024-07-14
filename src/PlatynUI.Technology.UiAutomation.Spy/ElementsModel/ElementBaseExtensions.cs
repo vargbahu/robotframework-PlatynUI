@@ -25,10 +25,7 @@ static class ElementBaseExtensions
         {
             if (e is UiaElement uiaElement)
             {
-                if (Automation.CompareElements(uiaElement.AutomationElement, element))
-                {
-                    return true;
-                }
+                return Automation.CompareElements(uiaElement.AutomationElement, element);
             }
             return false;
         });

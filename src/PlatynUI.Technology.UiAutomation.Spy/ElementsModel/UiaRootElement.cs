@@ -15,7 +15,7 @@ public class UiaRootElement : ElementBase
     {
         var result = base.InitChildren();
 
-        result.Add(new UiaElement(null, Automation.RootElement) { IsExpanded = true });
+        result.Add(new UiaElement(null, Automation.RootElement, Automation.RawViewWalker) { IsExpanded = true });
 
         return result;
     }

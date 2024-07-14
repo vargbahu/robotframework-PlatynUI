@@ -7,21 +7,26 @@ namespace PlatynUI.Technology.UiAutomation.Spy.ElementsModel;
 
 public class UiaElement : ElementBase
 {
-    public UiaElement(ElementBase? parent, IUIAutomationElement automationElement)
+    public UiaElement(
+        ElementBase? parent,
+        IUIAutomationElement automationElement,
+        IUIAutomationTreeWalker? walker = null
+    )
         : base(parent)
     {
         AutomationElement = automationElement;
-        DisplayName =
-            $"{Automation.ControlTypeNameFromId(automationElement.CurrentControlType)} \"{automationElement.CurrentName}\"";
+        Walker = walker ?? Automation.RawViewWalker;
+        DisplayName = automationElement.GetDisplayName();
     }
 
     public IUIAutomationElement AutomationElement { get; set; }
+    public IUIAutomationTreeWalker? Walker { get; }
 
     protected override ObservableCollection<ElementBase> InitChildren()
     {
         var result = base.InitChildren();
 
-        foreach (var c in AutomationElement.EnumerateChildren(Automation.RawViewWalker, true))
+        foreach (var c in AutomationElement.EnumerateChildren(Walker, false))
         {
             if (OldChildren != null)
             {
@@ -39,7 +44,7 @@ public class UiaElement : ElementBase
                     continue;
                 }
             }
-            result.Add(new UiaElement(this, c));
+            result.Add(new UiaElement(this, c, Walker));
         }
 
         return result;
@@ -70,14 +75,7 @@ public class UiaElement : ElementBase
     protected override ObservableCollection<PropertyEntry> InitProperties()
     {
         var result = base.InitProperties();
-        result.Insert(
-            0,
-            new PropertyEntry
-            {
-                Name = "Role",
-                Value = Automation.ControlTypeNameFromId(AutomationElement.CurrentControlType)
-            }
-        );
+        result.Insert(0, new PropertyEntry { Name = "Role", Value = AutomationElement.GetCurrentControlTypeName() });
 
         foreach (var n in Automation.GetSupportedPropertyIdAndNames(AutomationElement))
         {

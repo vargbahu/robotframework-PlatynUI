@@ -19,7 +19,7 @@ internal class UiaXPathNavigator : XPathNavigator
 
         _findVirtual = findVirtual;
 
-        _current = new AutomationElementNavigator(element, TreeWalker, findVirtual);
+        _current = new AutomationElementNavigator(element, Walker, findVirtual);
 
         _nameTable.Add(string.Empty);
     }
@@ -44,7 +44,7 @@ internal class UiaXPathNavigator : XPathNavigator
         _findVirtual = other._findVirtual;
     }
 
-    protected IUIAutomationTreeWalker TreeWalker => _treeWalker ??= Automation.RawViewWalker;
+    protected IUIAutomationTreeWalker Walker => _treeWalker ??= Automation.RawViewWalker;
 
     public override string Value
     {
@@ -68,7 +68,7 @@ internal class UiaXPathNavigator : XPathNavigator
                         if (p.Id == -1)
                         {
                             if (p.Name == "Role")
-                                return Automation.ControlTypeNameFromId(cp.CurrentControlType);
+                                return cp.GetCurrentControlTypeName();
 
                             return string.Empty;
                         }
@@ -128,7 +128,7 @@ internal class UiaXPathNavigator : XPathNavigator
                         if (p.Id == -1)
                         {
                             if (p.Name == "Role")
-                                return Automation.ControlTypeNameFromId(cp.CurrentControlType);
+                                return cp.GetCurrentControlTypeName();
 
                             return base.TypedValue;
                         }
@@ -194,7 +194,7 @@ internal class UiaXPathNavigator : XPathNavigator
                     }
                     try
                     {
-                        var result = Automation.ControlTypeNameFromId(navigator.Current.CurrentControlType);
+                        var result = navigator.Current.GetCurrentControlTypeName();
                         return result;
                     }
                     catch
@@ -352,7 +352,7 @@ internal class UiaXPathNavigator : XPathNavigator
     {
         if (_current is AutomationElementNavigator current)
         {
-            current = new AutomationElementNavigator(current, TreeWalker, _findVirtual);
+            current = new AutomationElementNavigator(current, Walker, _findVirtual);
             if (current.MoveToFirst())
             {
                 _current = current;
@@ -372,13 +372,13 @@ internal class UiaXPathNavigator : XPathNavigator
                 return true;
             case AutomationElementNavigator c:
             {
-                var v = TreeWalker.GetParentElement(c.Current);
+                var v = Walker.GetParentElement(c.Current);
                 if (v == null)
                 {
                     return false;
                 }
 
-                _current = new AutomationElementNavigator(v, TreeWalker, _findVirtual);
+                _current = new AutomationElementNavigator(v, Walker, _findVirtual);
                 return true;
             }
             case AutomationPropertyNavigator navigator:

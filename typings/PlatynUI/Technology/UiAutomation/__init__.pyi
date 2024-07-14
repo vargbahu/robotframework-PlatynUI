@@ -3,6 +3,7 @@
 import typing, abc
 from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement, IUIAutomationWindowPattern
 from System import Array_1
+from System.Collections.Generic import IEnumerable_1, List_1
 
 class Adapter(abc.ABC):
     @staticmethod
@@ -31,6 +32,12 @@ class DisplayDevice(abc.ABC):
 
 
 class Finder(abc.ABC):
+    @staticmethod
+    def EnumAllElements(parent: typing.Optional[IUIAutomationElement], xpath: str, findVirtual: bool = ...) -> IEnumerable_1[IUIAutomationElement]: ...
+    @staticmethod
+    def Evaluate(parent: typing.Optional[IUIAutomationElement], xpath: str, findVirtual: bool = ...) -> List_1[typing.Any]: ...
+    @staticmethod
+    def FindAllElements(parent: typing.Optional[IUIAutomationElement], xpath: str, findVirtual: bool = ...) -> List_1[IUIAutomationElement]: ...
     @staticmethod
     def FindSingleElement(parent: typing.Optional[IUIAutomationElement], xpath: str, findVirtual: bool = ...) -> typing.Optional[IUIAutomationElement]: ...
 
@@ -119,7 +126,7 @@ class Patterns(abc.ABC):
     @staticmethod
     def GetNativeWindowPattern(element: IUIAutomationElement) -> Patterns.NativeWindowPattern: ...
     @staticmethod
-    def GetWindowPattern(element: IUIAutomationElement) -> Patterns.WindowPattern: ...
+    def GetWindowPattern(element: IUIAutomationElement) -> typing.Optional[Patterns.WindowPattern]: ...
 
     class NativeWindowPattern:
         def __init__(self, element: IUIAutomationElement) -> None: ...

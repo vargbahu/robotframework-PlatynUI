@@ -152,6 +152,8 @@ public class Automation
     }
 
     public static IUIAutomationTreeWalker RawViewWalker => UiAutomation.RawViewWalker;
+    public static IUIAutomationTreeWalker ContentViewWalker => UiAutomation.ContentViewWalker;
+    public static IUIAutomationTreeWalker ControlViewWalker => UiAutomation.ControlViewWalker;
 
     public static T? GetCurrentPattern<T>(IUIAutomationElement element)
         where T : class
@@ -278,7 +280,7 @@ public class Automation
     {
         if (propertyName == "Role")
         {
-            return ControlTypeNameFromId(element.CurrentControlType);
+            return element.GetCurrentControlTypeName();
         }
 
         UiAutomation.PollForPotentialSupportedProperties(element, out var ids, out var names);

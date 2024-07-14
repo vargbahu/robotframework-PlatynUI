@@ -64,6 +64,15 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
                 if (element.CurrentProcessId != UiAutomationElementExtensions.CurrentProcessId)
                 {
                     var e = FindElement(element);
+                    while (e == null)
+                    {
+                        element = element.GetCurrentParent();
+                        if (element == null)
+                        {
+                            break;
+                        }
+                        e = FindElement(element);
+                    }
                     if (e != null)
                         SelectElement(false, e);
                 }
@@ -262,12 +271,38 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
 
     CancellationTokenSource? _searchCancellationTokenSource;
 
+    public const string SEARCH_MODE_TEXT = "Search";
+    public const string CANCEL_MODE_TEXT = "Cancel";
+
+    string _searchMode = "Search";
+
+    public string SearchMode
+    {
+        get { return _searchMode; }
+        set
+        {
+            if (value == _searchMode)
+            {
+                return;
+            }
+            _searchMode = value;
+            NotifyOfPropertyChange();
+            NotifyOfPropertyChange("ProgressBarVisible");
+        }
+    }
+
+    public Visibility ProgressBarVisible
+    {
+        get { return SearchMode == SEARCH_MODE_TEXT ? Visibility.Hidden : Visibility.Visible; }
+    }
+
     public async void SearchXPath(bool focus = false)
     {
         if (_searchCancellationTokenSource != null)
         {
             _searchCancellationTokenSource.Cancel();
             _searchCancellationTokenSource = null;
+            SearchMode = SEARCH_MODE_TEXT;
             return;
         }
         if (string.IsNullOrWhiteSpace(XPath))
@@ -280,6 +315,7 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
         try
         {
             LastErrorMessage = "";
+            SearchMode = CANCEL_MODE_TEXT;
             await Task.Run(
                 async () =>
                 {
@@ -295,7 +331,7 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
                             token
                         );
 
-                        var results = Finder.EnumAllElements(null, XPath.Trim(), true);
+                        var results = Finder.EnumAllElements(null, XPath.Trim(), false);
 
                         var first = true;
                         foreach (var element in results)
@@ -341,6 +377,7 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
         }
         finally
         {
+            SearchMode = SEARCH_MODE_TEXT;
             _searchCancellationTokenSource = null;
             myCancellationTokenSource.Dispose();
             ResultsCount = $"{Results.Count} Elements";
@@ -376,7 +413,7 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
 
         if (currentElement != null)
         {
-            currentElement = currentElement!.FindAutomationElement(element);
+            return currentElement!.FindAutomationElement(element);
         }
 
         return currentElement;

@@ -27,22 +27,8 @@
             </MenuItem>
             <MenuItem Header="_Edit"
                       x:Name="Edit">
-                <MenuItem Header="_Undo"
-                          x:Name="Undo"
-                          IsEnabled="False"/>
-                <MenuItem Header="_Redo"
-                          x:Name="Redo"
-                          IsEnabled="False"/>
-                <Separator/>
-                <MenuItem Header="_Cut"
-                          x:Name="Cut"/>
                 <MenuItem Header="_Copy"
                           x:Name="Copy"/>
-                <MenuItem Header="_Paste"
-                          x:Name="Paste"/>
-                <MenuItem Header="_Delete"
-                          x:Name="Delete"/>
-                <Separator/>
             </MenuItem>
         </Menu>
         <ToolBarPanel DockPanel.Dock="Top">
@@ -53,8 +39,36 @@
             </ToolBar>
         </ToolBarPanel>
         <StatusBar DockPanel.Dock="Bottom">
-            <TextBlock x:Name="ResultsCount"/>
-            <TextBlock x:Name="LastErrorMessage"/>
+            <StatusBarItem>
+                <TextBlock x:Name="ResultsCount"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="LastErrorMessage"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right"
+                           Visibility="{Binding ProgressBarVisible}">
+                <ProgressBar Width="100"
+                             Height="20"
+                             x:Name='progressBar'>
+                    <ProgressBar.Triggers>
+                        <EventTrigger RoutedEvent='ProgressBar.Loaded'>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName='progressBar'
+                                        Storyboard.TargetProperty='Value'
+                                        From='0'
+                                        To='100'
+                                        Duration='0:0:1'
+                                        AutoReverse="True"
+                                        RepeatBehavior="Forever"/>
+
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ProgressBar.Triggers>
+                </ProgressBar>
+            </StatusBarItem>
         </StatusBar>
         <Grid Margin="6"
               DockPanel.Dock="Top">
@@ -68,7 +82,8 @@
                      cal:Message.Attach="[Event KeyDown] = [Action ExecuteXPath($executionContext)]"/>
             <Button x:Name="SearchXPath"
                     Grid.Column="1"
-                    Width="50">Search</Button>
+                    Width="50"
+                    Content="{Binding SearchMode}"/>
         </Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -122,7 +137,27 @@
                 </Grid>
                 <GridSplitter Grid.Column="1"
                               HorizontalAlignment="Stretch"/>
+
                 <Grid Grid.Column="2">
+                    <!-- <ListView x:Name="Properties"
+                            ItemsSource="{Binding Path=SelectedElement.Properties}">
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="False">
+                                <GridView.ColumnHeaderContainerStyle>
+                                    <Style TargetType="{x:Type GridViewColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"
+                                                Value="Left"/>
+                                    </Style>
+                                </GridView.ColumnHeaderContainerStyle>
+                                <GridViewColumn Header="Name"
+                                        Width="150"
+                                                DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Value"
+                                        Width="250"
+                                                DisplayMemberBinding="{Binding Value}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView> -->
                     <DataGrid x:Name="Properties"
                               ItemsSource="{Binding Path=SelectedElement.Properties}"
                               AutoGenerateColumns="False"
