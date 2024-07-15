@@ -5,22 +5,24 @@ using PlatynUI.Technology.UiAutomation.Core;
 
 namespace PlatynUI.Technology.UiAutomation.Spy.ElementsModel;
 
-public class UiaElement : ElementBase
+public class UiaElement(
+    ElementBase? parent,
+    IUIAutomationElement automationElement,
+    IUIAutomationTreeWalker? walker = null
+) : ElementBase(parent)
 {
-    public UiaElement(
-        ElementBase? parent,
-        IUIAutomationElement automationElement,
-        IUIAutomationTreeWalker? walker = null
-    )
-        : base(parent)
+    public IUIAutomationElement AutomationElement { get; set; } = automationElement;
+    public IUIAutomationTreeWalker? Walker { get; } = walker ?? Automation.RawViewWalker;
+
+    protected override string InitDisplayName()
     {
-        AutomationElement = automationElement;
-        Walker = walker ?? Automation.RawViewWalker;
-        DisplayName = automationElement.GetDisplayName();
+        return AutomationElement.GetDisplayName();
     }
 
-    public IUIAutomationElement AutomationElement { get; set; }
-    public IUIAutomationTreeWalker? Walker { get; }
+    protected override string InitFullDisplayName()
+    {
+        return AutomationElement.GetFullDisplayName();
+    }
 
     protected override ObservableCollection<ElementBase> InitChildren()
     {

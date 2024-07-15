@@ -133,6 +133,17 @@ public static class UiAutomationElementExtensions
         return $"{element.GetCurrentControlTypeName()} \"{element.CurrentName}\"";
     }
 
+    public static string GetFullDisplayName(this IUIAutomationElement element)
+    {
+        var result = element.GetDisplayName();
+        while (element.GetCurrentParent() is IUIAutomationElement parent)
+        {
+            result = $"{parent.GetDisplayName()} -> {result}";
+            element = parent;
+        }
+        return result;
+    }
+
     public static IEnumerable<IUIAutomationElement> EnumerateChildren(
         this IUIAutomationElement? element,
         IUIAutomationTreeWalker? walker,

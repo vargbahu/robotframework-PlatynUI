@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using Caliburn.Micro;
 
 namespace PlatynUI.Technology.UiAutomation.Spy.ElementsModel;
@@ -22,6 +19,23 @@ public class FindResult(ElementBase element) : PropertyChangedBase, IHaveDisplay
             NotifyOfPropertyChange();
         }
     }
+
+    private string _fullDisplayName = element.FullDisplayName;
+    public string FullDisplayName
+    {
+        get => _fullDisplayName;
+        set
+        {
+            if (value == _fullDisplayName)
+            {
+                return;
+            }
+
+            _fullDisplayName = value;
+            NotifyOfPropertyChange();
+        }
+    }
+
     private bool _isSelected;
     public bool IsSelected
     {

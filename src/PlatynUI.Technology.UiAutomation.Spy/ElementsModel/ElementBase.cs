@@ -21,7 +21,6 @@ public abstract class ElementBase(ElementBase? parent)
     private ObservableCollection<ElementBase>? _children;
     private ObservableCollection<ElementBase>? _oldChildren;
 
-    private string _displayName = "";
     private string? _iconSource;
     private bool _isExpanded;
     private bool _isSelected;
@@ -137,9 +136,11 @@ public abstract class ElementBase(ElementBase? parent)
         return GetEnumerator();
     }
 
-    public string DisplayName
+    private string? _displayName;
+
+    public virtual string DisplayName
     {
-        get => _displayName;
+        get => _displayName ??= InitDisplayName();
         set
         {
             if (value == _displayName)
@@ -148,6 +149,33 @@ public abstract class ElementBase(ElementBase? parent)
             }
 
             _displayName = value;
+            NotifyOfPropertyChange();
+        }
+    }
+
+    protected virtual string InitDisplayName()
+    {
+        return "";
+    }
+
+    private string? _fullDisplayName;
+
+    protected virtual string InitFullDisplayName()
+    {
+        return "";
+    }
+
+    public virtual string FullDisplayName
+    {
+        get => _fullDisplayName ??= InitFullDisplayName();
+        set
+        {
+            if (value == _fullDisplayName)
+            {
+                return;
+            }
+
+            _fullDisplayName = value;
             NotifyOfPropertyChange();
         }
     }

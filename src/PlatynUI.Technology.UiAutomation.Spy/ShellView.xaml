@@ -198,8 +198,8 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding DisplayName}"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DisplayName}" ToolTip="{Binding FullDisplayName}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
