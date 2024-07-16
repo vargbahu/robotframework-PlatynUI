@@ -5,18 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using PlatynUI.Technology.UiAutomation.Client;
 
-internal class AutomationPropertyNavigator
-    : ChildrenNavigatorBase<AutomationElementNavigator, Automation.PropertyIdAndName>
+internal class AutomationPropertyNavigator(AutomationElementNavigator parent)
+        : ChildrenNavigatorBase<AutomationElementNavigator, Automation.PropertyIdAndName>(parent)
 {
     private IReadOnlyList<Automation.PropertyIdAndName>? _children;
 
-    public AutomationPropertyNavigator(AutomationElementNavigator parent)
-        : base(parent)
-    {
-        Element = parent?.Current ?? throw new ArgumentNullException(nameof(parent));
-    }
-
-    public IUIAutomationElement? Element { get; }
+    public IUIAutomationElement? Element { get; } = parent?.Current ?? throw new ArgumentNullException(nameof(parent));
 
     protected override IReadOnlyList<Automation.PropertyIdAndName> Children => _children ??= GetChildren();
 

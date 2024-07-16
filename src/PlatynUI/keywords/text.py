@@ -1,7 +1,7 @@
 from robotlibcore import keyword
 
 
-class TextKeywords:
+class Text:
     @keyword
     def set_text(self, locator: str, text: str) -> None:
-        pass
+        locator.set_text(text)

@@ -15,7 +15,7 @@ class AbstractButton(Control):
 
 
 @context
-class Button(AbstractButton):
+class Button(AbstractButton, strategies.Activatable):
     def activate(self) -> None:
         self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view, self._element_is_enabled)
 

@@ -9,13 +9,6 @@ public static class Finder
 {
     static readonly UiaXsltContext xsltContext = new();
 
-    static Finder()
-    {
-        xsltContext.AddNamespace("native", "http://platynui.io/native");
-        xsltContext.AddNamespace("element", "http://platynui.io/element");
-        xsltContext.AddNamespace("item", "http://platynui.io/item");
-    }
-
     public static IUIAutomationElement? FindSingleElement(
         IUIAutomationElement? parent,
         string xpath,
@@ -24,7 +17,7 @@ public static class Finder
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var navigator = new UiaXPathNavigator(parent, findVirtual, xsltContext.NameTable);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var node = navigator.SelectSingleNode(expression);

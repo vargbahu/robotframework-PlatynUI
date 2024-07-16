@@ -2,14 +2,14 @@
 
 using System.Collections.Generic;
 
-internal abstract class ChildrenNavigatorBase<TParent, TChild>
+internal class ChildrenNavigatorBase
 {
-    protected ChildrenNavigatorBase(TParent? parent)
-    {
-        Parent = parent;
-    }
+    public virtual string NamespaceURI { get; set; } = "http://platynui.io/raw";
+}
 
-    public TParent? Parent { get; protected set; }
+internal abstract class ChildrenNavigatorBase<TParent, TChild>(TParent? parent) : ChildrenNavigatorBase
+{
+    public TParent? Parent { get; protected set; } = parent;
 
     public int CurrentIndex { get; protected set; }
 

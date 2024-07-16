@@ -207,18 +207,38 @@ def word_test() -> None:
     word.keyboard.type_keys("Hallo Weltöäü🐑🤔")
     word.keyboard.type_keys(readme_text)
 
-word_test()
+
+# word_test()
+
 
 def highlight_test() -> None:
     word = WordWindow()
     word.focus()
     word.highlight()
+    word.mouse.click()
     # for w in word.children:
     #     w.highlight()
 
-#highlight_test()
+
+# highlight_test()
 
 # calc = Calculator()
 # calc.clear.activate()
 # calc.n1.activate()
 # calc.n2.activate()
+
+
+@locator(name="Calculator", use_default_prefix=True)
+class CalcApp(Application):
+    @property
+    @locator()
+    def main_window(self) -> Calculator:
+        return Calculator()
+
+
+def calc_test() -> None:
+    calc = CalcApp()
+    calc.main_window.n1.activate()
+
+
+calc_test()

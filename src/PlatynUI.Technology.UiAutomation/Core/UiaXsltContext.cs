@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
@@ -6,6 +5,17 @@ namespace PlatynUI.Technology.UiAutomation.Core;
 
 public class UiaXsltContext : XsltContext
 {
+    public UiaXsltContext()
+        : base()
+    {
+        AddNamespace("", "http://platynui.io/raw");
+        AddNamespace("raw", "http://platynui.io/raw");
+        AddNamespace("native", "http://platynui.io/native");
+        AddNamespace("element", "http://platynui.io/element");
+        AddNamespace("item", "http://platynui.io/item");
+        AddNamespace("app", "http://platynui.io/app");
+    }
+
     public override bool HasNamespace(string prefix)
     {
         return base.HasNamespace(prefix);

@@ -1,5 +1,6 @@
-﻿using System.Xml;
+using System.Xml;
 using System.Xml.XPath;
+
 using PlatynUI.Technology.UiAutomation.Client;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
@@ -8,11 +9,15 @@ internal class UiaXPathNavigator : XPathNavigator
 {
     private object? _current;
     private bool _findVirtual;
-    private NameTable _nameTable = new();
+    private XmlNameTable _nameTable;
 
     private IUIAutomationTreeWalker? _treeWalker;
 
-    public UiaXPathNavigator(IUIAutomationElement? element = null, bool findVirtual = false)
+    public UiaXPathNavigator(
+        IUIAutomationElement? element = null,
+        bool findVirtual = false,
+        XmlNameTable? nameTable = null
+    )
     {
         element ??= Automation.RootElement;
         //element ??= Automation.GetCachedRootElement();
@@ -21,7 +26,7 @@ internal class UiaXPathNavigator : XPathNavigator
 
         _current = new AutomationElementNavigator(element, Walker, findVirtual);
 
-        _nameTable.Add(string.Empty);
+        _nameTable = nameTable ?? new NameTable();
     }
 
     protected UiaXPathNavigator(UiaXPathNavigator other)
@@ -209,7 +214,10 @@ internal class UiaXPathNavigator : XPathNavigator
         }
     }
 
-    public override string Name => LocalName;
+    public override string Name
+    {
+        get { return $"{Prefix}:{LocalName}"; }
+    }
 
     public override string? LookupNamespace(string prefix)
     {
@@ -221,11 +229,27 @@ internal class UiaXPathNavigator : XPathNavigator
         return base.MoveToNamespace(name);
     }
 
-    public override string NamespaceURI => _nameTable.Get(string.Empty) ?? string.Empty;
+    public override string NamespaceURI
+    {
+        get
+        {
+            if (_current is ChildrenNavigatorBase navigator)
+            {
+                return navigator.NamespaceURI;
+            }
+            return String.Empty;
+        }
+    }
 
-    public override string Prefix => _nameTable.Get(string.Empty) ?? string.Empty;
+    public override string Prefix
+    {
+        get { return _nameTable.Get(string.Empty) ?? string.Empty; }
+    }
 
-    public override string BaseURI => string.Empty;
+    public override string BaseURI
+    {
+        get { return string.Empty; }
+    }
 
     public override bool IsEmptyElement => false;
 
@@ -310,12 +334,12 @@ internal class UiaXPathNavigator : XPathNavigator
 
     public override bool MoveToFirstNamespace(XPathNamespaceScope namespaceScope)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
     public override bool MoveToNextNamespace(XPathNamespaceScope namespaceScope)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
     public override bool MoveToNext()

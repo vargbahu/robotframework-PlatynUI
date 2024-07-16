@@ -1,6 +1,5 @@
 from inspect import ismethod
 from typing import (
-    Any,
     Callable,
     Optional,
     TypeVar,
@@ -8,8 +7,6 @@ from typing import (
     overload,
 )
 
-from robot.result import Keyword as KeywordResult
-from robot.running.bodyrunner import KeywordRunner
 from robot.running.context import EXECUTION_CONTEXTS
 from robot.running.librarykeyword import LibraryKeyword
 from robot.running.model import Argument, Keyword

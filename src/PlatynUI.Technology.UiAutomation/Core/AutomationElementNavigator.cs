@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using PlatynUI.Technology.UiAutomation.Client;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
