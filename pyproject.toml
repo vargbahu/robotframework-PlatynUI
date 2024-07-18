@@ -79,8 +79,12 @@ dependencies = [
 # pre-install-commands = ["install-packages"]
 
 [tool.hatch.envs.default.scripts]
-build-runtime = "dotnet publish -c release -f net8.0-windows -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
-clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
+build-runtime-netfx = "dotnet publish -c release -f net481 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/netfx ./src/PlatynUI.Technology.UiAutomation.Spy"
+build-runtime-coreclr = "dotnet publish -c release -f net8.0-windows -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/coreclr ./src/PlatynUI.Technology.UiAutomation.Spy"
+build-runtime = ["build-runtime-netfx", "build-runtime-coreclr"]
+
+# clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
+clean-runtime = "python scripts/rm.py src/PlatynUI/technology/uiautomation/runtime"
 
 [tool.hatch.envs.types]
 extra-dependencies = ["mypy>=1.0.0"]
@@ -214,7 +218,14 @@ disable_error_code = ["type-abstract"]
 # allow_untyped_calls = true
 
 [[tool.mypy.overrides]]
-module = ["robot.*", "clr", "System.*", "RobotFramework.*", "robotlibcore.*"]
+module = [
+  "robot.*",
+  "clr",
+  "System.*",
+  "RobotFramework.*",
+  "robotlibcore.*",
+  "pythonnet.*",
+]
 ignore_missing_imports = true
 no_implicit_reexport = false
 

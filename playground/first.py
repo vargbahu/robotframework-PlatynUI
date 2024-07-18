@@ -222,23 +222,23 @@ def highlight_test() -> None:
 
 # highlight_test()
 
-# calc = Calculator()
-# calc.clear.activate()
-# calc.n1.activate()
-# calc.n2.activate()
+calc = Calculator()
+calc.clear.activate()
+calc.n1.activate()
+calc.n2.activate()
 
 
-@locator(name="Calculator", use_default_prefix=True)
-class CalcApp(Application):
-    @property
-    @locator()
-    def main_window(self) -> Calculator:
-        return Calculator()
+# @locator(name="Calculator", use_default_prefix=True)
+# class CalcApp(Application):
+#     @property
+#     @locator()
+#     def main_window(self) -> Calculator:
+#         return Calculator()
 
 
-def calc_test() -> None:
-    calc = CalcApp()
-    calc.main_window.n1.activate()
+# def calc_test() -> None:
+#     calc = CalcApp()
+#     calc.main_window.n1.activate()
 
 
-calc_test()
+# calc_test()
