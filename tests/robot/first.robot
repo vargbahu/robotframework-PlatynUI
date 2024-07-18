@@ -6,6 +6,7 @@ Variables       mapping.py
 *** Test Cases ***
 first
     Activate    ${calculator}
+    Type Keys    ${calculator}    <ALT+1>
     Clear
     Activate    ${calculator.n1}
     Activate    ${calculator.n2}
@@ -18,6 +19,23 @@ first
     Activate    ${calculator.n8}
 
     Activate    ${calculator.equal}
+
+    Type Keys    ${calculator}    <ALT+1>
+    Type Keys    ${calculator}    <ALT+2>
+    Type Keys    ${calculator}    <ALT+3>
+    Type Keys    ${calculator}    <ALT+4>
+    Type Keys    ${calculator}    <ALT+1>
+    Type Keys    ${calculator}    <ESCAPE>
+    Type Keys    ${calculator}    12345
+    Type Keys    ${calculator}    <ESCAPE>
+    Type Keys    ${calculator}    12345    delay=1
+    Type Keys    ${calculator}    <CONTROL+c>
+    Type Keys    ${calculator}    <ESCAPE>
+    Type Keys    ${calculator}    <CONTROL+v>
+    Type Keys    ${calculator}    +
+    Type Keys    ${calculator}    67890
+    Type Keys    ${calculator}    <ENTER>
+    Type Keys    ${calculator}    <ALT+F4>
 
 
 *** Keywords ***

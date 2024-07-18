@@ -21,7 +21,7 @@ class Settings:
 
     window_close_timeout: float = 1.0
 
-    input_after_input_delay: float = 0.0
+    input_after_input_delay: float = 0.001
 
     mouse_before_next_click_delay_multiplicator: float = 1.5
 
@@ -32,8 +32,8 @@ class Settings:
     mouse_move_delay: float = 0.001
     mouse_move_time: float = 0.4
 
-    keyboard_after_press_key_delay: float = 0.001
-    keyboard_after_release_key_delay: float = 0.005
+    keyboard_after_press_key_delay: float = 0.01
+    keyboard_after_release_key_delay: float = 0.1
     keyboard_after_press_release_delay: float = 0.05
 
     display_screenshot_format: str = "png"

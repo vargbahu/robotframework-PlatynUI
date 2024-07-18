@@ -1,9 +1,9 @@
 from robotlibcore import keyword
 
-from ..core.contextbase import ContextBase
+from ..ui import Element
 
 
-class Text:
+class Mouse:
     @keyword
-    def mouse_click(self, locator: ContextBase, text: str) -> None:
+    def mouse_click(self, locator: Element, text: str) -> None:
         raise NotImplementedError
