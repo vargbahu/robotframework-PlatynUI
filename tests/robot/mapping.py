@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from PlatynUI.technology.uiautomation.locator import locator
 from PlatynUI.ui import Button, Pane, Text, Window
 

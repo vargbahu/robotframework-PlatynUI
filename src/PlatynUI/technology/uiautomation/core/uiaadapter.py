@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, cast
 
 from PlatynUI.core import Adapter

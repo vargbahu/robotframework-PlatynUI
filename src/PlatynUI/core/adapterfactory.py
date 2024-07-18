@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, List, Optional, Type, overload
 

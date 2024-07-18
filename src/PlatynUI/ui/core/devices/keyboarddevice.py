@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import abc
 import logging
 from typing import Any, Iterable, Iterator, List, Optional, Union

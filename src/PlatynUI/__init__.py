@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2024-present Daniel Biehl <dbiehl@live.de>
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import Any
 
 from robot.api.deco import library

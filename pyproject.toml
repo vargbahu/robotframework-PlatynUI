@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 [build-system]
 requires = ["hatchling", "hatch-build-scripts"]
 build-backend = "hatchling.build"
@@ -74,6 +78,7 @@ dependencies = [
   "robotremoteserver",
   "robotframework-tidy",
   "robotframework-robocop",
+  "reuse",
 ]
 # features = ["all"]
 # pre-install-commands = ["install-packages"]

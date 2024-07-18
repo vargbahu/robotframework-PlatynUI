@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+version = 1
+SPDX-PackageName = "robotframework-PlatynUI"
+SPDX-PackageSupplier = "Daniel Biehl <daniel.biehl@imbus.de>"
+SPDX-PackageDownloadLocation = "https://github.com/imbus/robotframework-PlatynUI"
+
+
+[[annotations]]
+path = [
+    "**/*.pyi",
+    "**/*.sln",
+    "**/*.csproj",
+    "**/*.xaml",
+    "**/app.manifest",
+    "**/NativeMethods.txt",
+    "**/App.config",
+]
+SPDX-FileCopyrightText = "2024 Daniel Biehl <daniel.biehl@imbus.de>"
+SPDX-License-Identifier = "Apache-2.0"
+
+
+[[annotations]]
+path = [".vscode/**/*", ".config/**/*", "*.toml", "*.md"]
+SPDX-FileCopyrightText = "2024 Daniel Biehl <daniel.biehl@imbus.de>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["**/*.robot", "**/*.resource"]
+SPDX-FileCopyrightText = "2024 Daniel Biehl <daniel.biehl@imbus.de>"
+SPDX-License-Identifier = "Apache-2.0"

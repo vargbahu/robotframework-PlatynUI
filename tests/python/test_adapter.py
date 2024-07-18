@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from PlatynUI.core.contextbase import ContextFactory
 from PlatynUI.technology.uiautomation import Desktop, Locator, locator
 from PlatynUI.ui import Button, Element, Pane, Window

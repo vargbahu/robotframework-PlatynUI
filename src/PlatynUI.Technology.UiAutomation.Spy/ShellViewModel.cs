@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+//
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;

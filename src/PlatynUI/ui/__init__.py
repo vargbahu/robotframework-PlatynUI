@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from .application import Application
 from .buttons import AbstractButton, Button, CheckBox, Link, RadioButton
 from .combobox import ComboBox

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # robotframework-PlatynUI
 
 [![PyPI - Version](https://img.shields.io/pypi/v/robotframework-platynui.svg)](https://pypi.org/project/robotframework-platynui)

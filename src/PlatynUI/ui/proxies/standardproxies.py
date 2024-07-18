@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import Optional, cast
 
 from ...core import Adapter, AdapterProxy, Point, Rect, Size, adapter_proxy_for, wait_for

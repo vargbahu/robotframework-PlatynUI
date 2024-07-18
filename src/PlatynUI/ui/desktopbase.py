@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from ..core import Point, Rect
 from .core.devices import KeyboardDevice, MouseDevice
 from .core.devices.keyboardproxy import KeyboardProxy
