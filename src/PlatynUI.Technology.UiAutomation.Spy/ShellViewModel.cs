@@ -316,6 +316,9 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
         {
             LastErrorMessage = "";
             SearchMode = CANCEL_MODE_TEXT;
+
+            var single = Keyboard.IsKeyDown(Key.LeftCtrl);
+
             await Task.Run(
                 async () =>
                 {
@@ -331,7 +334,20 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
                             token
                         );
 
-                        var results = Finder.EnumAllElements(null, XPath.Trim(), false);
+                        IEnumerable<IUIAutomationElement> results = [];
+
+                        if (single)
+                        {
+                            var element = Finder.FindSingleElement(null, XPath.Trim(), false);
+                            if (element != null)
+                            {
+                                results = [element];
+                            }
+                        }
+                        else
+                        {
+                            results = Finder.EnumAllElements(null, XPath.Trim(), false);
+                        }
 
                         var first = true;
                         foreach (var element in results)
@@ -350,16 +366,23 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
                                     {
                                         Results.Add(result);
                                         ResultsCount = $"{Results.Count} Elements";
-                                        if (first)
-                                        {
-                                            first = false;
-                                            result.IsSelected = true;
-                                            SelectElement(focus, result.Element);
-                                        }
                                     },
                                     DispatcherPriority.Normal,
                                     token
                                 );
+                                if (first)
+                                {
+                                    first = false;
+                                    await Application.Current.Dispatcher.InvokeAsync(
+                                        () =>
+                                        {
+                                            result.IsSelected = true;
+                                            SelectElement(focus, result.Element);
+                                        },
+                                        DispatcherPriority.Normal,
+                                        token
+                                    );
+                                }
                             }
                         }
                     }
@@ -389,14 +412,16 @@ public sealed class ShellViewModel : Screen, IDisposable, IUIAutomationEventHand
         var parents = new List<IUIAutomationElement>();
         var parent = element.GetCurrentParent();
 
-        while (parent != null)
+        if (parent != null)
         {
-            parents.Insert(0, parent);
-            parent = parent.GetCurrentParent();
+            while (parent != null)
+            {
+                parents.Insert(0, parent);
+                parent = parent.GetCurrentParent();
+            }
+
+            //parents.Insert(0, (RootElement.Children.First() as UiaElement)!.AutomationElement);
         }
-
-        parents.Insert(0, (RootElement.Children.First() as UiaElement)!.AutomationElement);
-
         var currentElement = RootElement;
 
         foreach (var parentElement in parents)

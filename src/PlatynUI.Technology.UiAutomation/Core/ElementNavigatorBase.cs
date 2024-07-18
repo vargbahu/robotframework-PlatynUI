@@ -2,12 +2,12 @@
 
 using System.Collections.Generic;
 
-internal class ChildrenNavigatorBase
+internal class ElementNavigatorBase
 {
     public virtual string NamespaceURI { get; set; } = "http://platynui.io/raw";
 }
 
-internal abstract class ChildrenNavigatorBase<TParent, TChild>(TParent? parent) : ChildrenNavigatorBase
+internal abstract class ElementNavigatorBase<TParent, TChild>(TParent? parent) : ElementNavigatorBase
 {
     public TParent? Parent { get; protected set; } = parent;
 
@@ -16,6 +16,12 @@ internal abstract class ChildrenNavigatorBase<TParent, TChild>(TParent? parent) 
     protected abstract IReadOnlyList<TChild> Children { get; }
 
     public bool IsStarted { get; protected set; }
+
+    public void Reset()
+    {
+        IsStarted = false;
+        CurrentIndex = -1;
+    }
 
     public virtual TChild? Current
     {
@@ -44,6 +50,8 @@ internal abstract class ChildrenNavigatorBase<TParent, TChild>(TParent? parent) 
         return true;
     }
 
+
+
     public bool MoveToNext()
     {
         if (IsStarted && CurrentIndex + 1 >= Children.Count)
@@ -68,5 +76,5 @@ internal abstract class ChildrenNavigatorBase<TParent, TChild>(TParent? parent) 
         return true;
     }
 
-    public abstract ChildrenNavigatorBase<TParent, TChild> Clone();
+    public abstract ElementNavigatorBase<TParent, TChild> Clone();
 }

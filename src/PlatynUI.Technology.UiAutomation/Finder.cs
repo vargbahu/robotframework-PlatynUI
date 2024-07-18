@@ -7,7 +7,7 @@ namespace PlatynUI.Technology.UiAutomation;
 
 public static class Finder
 {
-    static readonly UiaXsltContext xsltContext = new();
+    static readonly XsltContext xsltContext = new();
 
     public static IUIAutomationElement? FindSingleElement(
         IUIAutomationElement? parent,
@@ -17,7 +17,7 @@ public static class Finder
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var navigator = new UiaXPathNavigator(parent, findVirtual, xsltContext.NameTable);
+        var navigator = new Core.XPathNavigator(parent, findVirtual, xsltContext.NameTable);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var node = navigator.SelectSingleNode(expression);
@@ -34,7 +34,7 @@ public static class Finder
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var navigator = new Core.XPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var nodes = navigator.Select(expression);
@@ -43,7 +43,7 @@ public static class Finder
         var result = new List<IUIAutomationElement>();
         while (nodes.MoveNext())
         {
-            if (nodes.Current is XPathNavigator node)
+            if (nodes.Current is System.Xml.XPath.XPathNavigator node)
             {
                 if (node?.UnderlyingObject is IUIAutomationElement element)
                     result.Add(element);
@@ -60,15 +60,14 @@ public static class Finder
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var navigator = new Core.XPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var nodes = navigator.Select(expression);
-        Debug.WriteLine($"XPath '{xpath}' search took {stopwatch.ElapsedMilliseconds}ms");
 
         while (nodes.MoveNext())
         {
-            if (nodes.Current is XPathNavigator node)
+            if (nodes.Current is System.Xml.XPath.XPathNavigator node)
             {
                 if (node?.UnderlyingObject is IUIAutomationElement element)
                     yield return element;
@@ -80,7 +79,7 @@ public static class Finder
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var navigator = new UiaXPathNavigator(parent, findVirtual);
+        var navigator = new Core.XPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var nodes = navigator.Evaluate(expression);
@@ -90,7 +89,7 @@ public static class Finder
         if (nodes is XPathNodeIterator iterator)
             while (iterator!.MoveNext())
             {
-                if (iterator.Current is XPathNavigator node)
+                if (iterator.Current is System.Xml.XPath.XPathNavigator node)
                 {
                     if (node?.UnderlyingObject is IUIAutomationElement element)
                         result.Add(element);

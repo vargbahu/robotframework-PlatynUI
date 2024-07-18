@@ -3,9 +3,9 @@ using System.Xml.Xsl;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
 
-public class UiaXsltContext : XsltContext
+public class XsltContext : System.Xml.Xsl.XsltContext
 {
-    public UiaXsltContext()
+    public XsltContext()
         : base()
     {
         AddNamespace("", "http://platynui.io/raw");
@@ -39,7 +39,7 @@ public class UiaXsltContext : XsltContext
         return string.CompareOrdinal(baseUri, nextbaseUri);
     }
 
-    public override bool PreserveWhitespace(XPathNavigator node)
+    public override bool PreserveWhitespace(System.Xml.XPath.XPathNavigator node)
     {
         return false;
     }
@@ -71,7 +71,11 @@ public class UiaXsltContext : XsltContext
 
         public XPathResultType[] ArgTypes => [XPathResultType.String, XPathResultType.String];
 
-        public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
+        public object Invoke(
+            System.Xml.Xsl.XsltContext xsltContext,
+            object[] args,
+            System.Xml.XPath.XPathNavigator docContext
+        )
         {
             if (args[0] is string s && args[1] is string suffix)
             {

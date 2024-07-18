@@ -91,11 +91,6 @@ public static class UiAutomationElementExtensions
     {
         var result = Automation.RawViewWalker.GetParentElement(element);
 
-        if (result != null && Automation.CompareElements(result, Automation.RootElement))
-        {
-            return null;
-        }
-
         return result;
     }
 
@@ -125,7 +120,14 @@ public static class UiAutomationElementExtensions
 
     public static string GetCurrentControlTypeName(this IUIAutomationElement element)
     {
-        return Automation.ControlTypeNameFromId(element.CurrentControlType);
+        try
+        {
+            return Automation.ControlTypeNameFromId(element.CurrentControlType);
+        }
+        catch
+        {
+            return "UnknownError";
+        }
     }
 
     public static string GetDisplayName(this IUIAutomationElement element)
