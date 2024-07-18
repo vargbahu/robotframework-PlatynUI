@@ -11,6 +11,10 @@ public static class Adapter
 {
     public static string GetRole(IUIAutomationElement element)
     {
+        if (element.GetCurrentParent() == null)
+        {
+            return "Desktop";
+        }
         return element.GetCurrentControlTypeName();
     }
 

@@ -4,7 +4,6 @@ from typing import Any, Iterator, Optional
 
 from ....core.settings import Settings
 from ....core.types import Point, Rect
-from ....robot.reporting import report_as_keyword
 from .basemousedevice import BaseMouseDevice
 from .inputdevice import InputDevice
 from .mousebutton import MouseButton
@@ -169,7 +168,6 @@ class DefaultMouseDevice(MouseDevice):
             else:
                 break
 
-    @report_as_keyword
     def move_to(
         self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, raise_exception: bool = True
     ) -> Point:
@@ -201,7 +199,6 @@ class DefaultMouseDevice(MouseDevice):
 
         return pos
 
-    @report_as_keyword
     def press(
         self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
     ) -> Optional[Point]:
@@ -217,7 +214,6 @@ class DefaultMouseDevice(MouseDevice):
 
         return result
 
-    @report_as_keyword
     def release(
         self, pos: Point = None, x: Optional[float] = None, y: Optional[float] = None, button: MouseButton = None
     ) -> Optional[Point]:
@@ -242,7 +238,6 @@ class DefaultMouseDevice(MouseDevice):
 
         return Rect(p.x - size.width / 2, p.y - size.height / 2, size.width, size.height)
 
-    @report_as_keyword
     def click(
         self,
         pos: Point = Point(),

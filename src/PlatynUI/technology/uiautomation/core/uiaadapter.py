@@ -141,7 +141,6 @@ class UiaAdapter(Adapter, UiaProperties, UiaElement):
         return self._element is not None
 
     def invalidate(self) -> None:
-        print(f"Invalidating element {self}")
         self._element = None
 
     @property

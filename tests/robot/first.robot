@@ -35,7 +35,8 @@ first
     Type Keys    ${calculator}    +
     Type Keys    ${calculator}    67890
     Type Keys    ${calculator}    <ENTER>
-    Type Keys    ${calculator}    <ALT+F4>
+    Type Keys    .    <ALT+F4>
+
 
 
 *** Keywords ***

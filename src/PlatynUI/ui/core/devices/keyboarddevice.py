@@ -144,6 +144,7 @@ class KeyConverter:
                     first = 0
                     escape = False
                     sequence = []
+                    need_end = True
                     for j in g:
                         first += 1
                         if j == "<":
@@ -155,7 +156,7 @@ class KeyConverter:
                                 escape = True
                                 break
                             else:
-                                raise InvalidKeySequenceError("invalid key sequence at index %s" % self._current_index)
+                                raise InvalidKeySequenceError(f"Invalid key sequence at index {self._current_index}")
 
                         if str.isspace(j):
                             continue
@@ -163,16 +164,21 @@ class KeyConverter:
                             sequence.append(current)
                             current = ""
                         elif j == ">":
+                            need_end = False
                             break
                         else:
                             current += j
+                    if need_end:
+                        raise InvalidKeySequenceError(
+                            f"Invalid key sequence at index {self._current_index}: > is missing"
+                        )
 
                     if not escape:
                         if current:
                             sequence.append(current)
 
                         if len(sequence) == 0:
-                            raise InvalidKeySequenceError("empty key sequence at index %s" % self._current_index)
+                            raise InvalidKeySequenceError(f"Empty key sequence at index {self._current_index}")
 
                         if self._down:
                             for k in [KeyEvent(self.__key_to_keycode(k), press=True) for k in sequence]:

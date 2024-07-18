@@ -44,7 +44,11 @@ public class AttributesEnumerator<T>(IEnumerable<T> properties) : IAttributesEnu
 
     object IEnumerator.Current => _enumerator.Current;
 
-    public virtual void Dispose() => _enumerator.Dispose();
+    public virtual void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _enumerator.Dispose();
+    }
 
     public bool MoveNext() => _enumerator.MoveNext();
 
