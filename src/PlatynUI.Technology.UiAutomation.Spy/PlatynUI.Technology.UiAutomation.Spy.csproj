@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <Version>0.1.0</Version>
     <TargetFrameworks>net8.0-windows;net481</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
