@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-namespace PlatynUI.Technology.UiAutomation;
+namespace PlatynUI.Runtime;
 
 public struct Point(double x, double y)
 {

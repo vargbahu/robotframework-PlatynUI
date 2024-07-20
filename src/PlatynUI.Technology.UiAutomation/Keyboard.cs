@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Runtime.InteropServices;
+
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 
@@ -382,17 +383,17 @@ public static class KeyboardDevice
         switch (key)
         {
             case string keystr:
-            {
-                if (VirtualKey.Keys.TryGetValue(keystr, out var virtualKey))
-                    return new Keycode(key, virtualKey, true, null);
-
-                if (keystr.Length == 1 && keystr[0] <= '\x007f')
                 {
-                    return new Keycode(key, ToVirtualKeyCodes(keystr[0]), true, null);
-                }
+                    if (VirtualKey.Keys.TryGetValue(keystr, out var virtualKey))
+                        return new Keycode(key, virtualKey, true, null);
 
-                return new Keycode(key, key, true, null);
-            }
+                    if (keystr.Length == 1 && keystr[0] <= '\x007f')
+                    {
+                        return new Keycode(key, ToVirtualKeyCodes(keystr[0]), true, null);
+                    }
+
+                    return new Keycode(key, key, true, null);
+                }
 
             case char keychar:
                 return new Keycode(key, ToVirtualKeyCodes(keychar), true, null);

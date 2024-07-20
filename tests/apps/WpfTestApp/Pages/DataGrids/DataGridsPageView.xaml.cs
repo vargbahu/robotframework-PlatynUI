@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace WpfTestApp.Pages.DataGrids;
+namespace WpfTestApp.Pages.DataGrids;
 
 public partial class DataGridsPageView
 {

@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:PlatynUI.Spy.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="PlatynUI.Spy.Views.MainWindow"
+    x:DataType="vm:MainWindowViewModel"
+    Icon="/Assets/avalonia-logo.ico"
+    Title="PlatynUI.Spy">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at
+        App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="E_xit" Command="{Binding $parent[Window].Close}" />
+            </MenuItem>
+        </Menu>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Button Content="Refresh" />
+            <Button Content="Always On Top" />
+        </StackPanel>
+         <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"
+                                  MinWidth="50"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" x:Name="XPath"/>
+            <Button x:Name="SearchXPath" Grid.Column="1"
+                    Width="50"
+                    Content="Search"/>
+        </Grid>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+            <TextBlock Text="Status:" />
+            <TextBlock Text="Ready" />
+        </StackPanel>
+
+        <Grid ColumnDefinitions="0.35*,4,0.65*">
+            <TreeView Grid.Column="0">
+                <TreeViewItem Header="Root">
+                    <TreeViewItem Header="Child 1" />
+                    <TreeViewItem Header="Child 2" />
+                </TreeViewItem>
+            </TreeView>
+            <GridSplitter Grid.Column="1"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Center"
+                          Background="{DynamicResource ThemeControlMidBrush}"/>
+            <DataGrid Grid.Column="2">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" />
+                    <DataGridTextColumn Header="Value" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+    </DockPanel>
+
+</Window>

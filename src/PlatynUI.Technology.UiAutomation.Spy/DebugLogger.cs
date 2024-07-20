@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using System.Diagnostics;
+using System.Diagnostics;
+
 using Caliburn.Micro;
 
 namespace PlatynUI.Technology.UiAutomation.Spy;

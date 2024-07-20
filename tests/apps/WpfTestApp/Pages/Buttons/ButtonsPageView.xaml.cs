@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace WpfTestApp.Pages.Buttons;
+namespace WpfTestApp.Pages.Buttons;
 
 public partial class ButtonsPageView
 {

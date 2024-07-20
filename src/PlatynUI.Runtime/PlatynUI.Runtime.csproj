@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>PlatynUI .NET Runtime</Description>
+    <Version>0.1.0</Version>
+    <TargetFrameworks>net8.0-windows;net481</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>PlatynUI.Runtime</RootNamespace>
+  </PropertyGroup>
+
+</Project>

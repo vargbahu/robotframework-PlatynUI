@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using System.Configuration;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 

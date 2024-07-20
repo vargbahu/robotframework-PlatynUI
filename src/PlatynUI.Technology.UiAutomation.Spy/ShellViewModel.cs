@@ -9,7 +9,9 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+
 using Caliburn.Micro;
+
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
 using PlatynUI.Technology.UiAutomation.Spy.ElementsModel;

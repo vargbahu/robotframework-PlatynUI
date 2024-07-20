@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using Caliburn.Micro;
+using Caliburn.Micro;
 
 namespace WpfTestApp;
 

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace WpfTestApp.Pages.Disabled;
+namespace WpfTestApp.Pages.Disabled;
 
 public partial class DisabledPageView
 {

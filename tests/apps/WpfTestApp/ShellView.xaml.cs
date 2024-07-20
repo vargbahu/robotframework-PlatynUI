@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace WpfTestApp;
+namespace WpfTestApp;
 
 public partial class ShellView
 {

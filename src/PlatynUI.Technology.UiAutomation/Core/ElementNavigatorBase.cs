@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace PlatynUI.Technology.UiAutomation.Core;
+namespace PlatynUI.Technology.UiAutomation.Core;
 
 using System.Collections.Generic;
 
@@ -53,8 +53,6 @@ internal abstract class ElementNavigatorBase<TParent, TChild>(TParent? parent) :
 
         return true;
     }
-
-
 
     public bool MoveToNext()
     {

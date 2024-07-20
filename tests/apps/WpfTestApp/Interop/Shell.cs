@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
+
 using Microsoft.Win32;
 
 namespace WpfTestApp.Interop;
@@ -78,7 +79,7 @@ internal interface IShellItemArray
     // Not supported: IBindCtx
 
     void BindToHandler(
-        [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pbc,
+        [In][MarshalAs(UnmanagedType.Interface)] IntPtr pbc,
         [In] ref Guid rbhid,
         [In] ref Guid riid,
         out IntPtr ppvOut
@@ -111,13 +112,13 @@ internal interface IFileDialog
     [PreserveSig]
     int Show([In] IntPtr parent);
 
-    void SetFileTypes([In] uint cFileTypes, [In] [MarshalAs(UnmanagedType.LPArray)] COMDLG_FILTERSPEC[] rgFilterSpec);
+    void SetFileTypes([In] uint cFileTypes, [In][MarshalAs(UnmanagedType.LPArray)] COMDLG_FILTERSPEC[] rgFilterSpec);
 
     void SetFileTypeIndex([In] uint iFileType);
 
     void GetFileTypeIndex(out uint piFileType);
 
-    void Advise([In] [MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
+    void Advise([In][MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
 
     void Unadvise([In] uint dwCookie);
 
@@ -125,29 +126,29 @@ internal interface IFileDialog
 
     void GetOptions(out FOS pfos);
 
-    void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    void SetDefaultFolder([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
-    void SetFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    void SetFolder([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
     void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
     void GetCurrentSelection([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-    void SetFileName([In] [MarshalAs(UnmanagedType.LPWStr)] string pszName);
+    void SetFileName([In][MarshalAs(UnmanagedType.LPWStr)] string pszName);
 
     void GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
 
-    void SetTitle([In] [MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
+    void SetTitle([In][MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
 
-    void SetOkButtonLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszText);
+    void SetOkButtonLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszText);
 
-    void SetFileNameLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
+    void SetFileNameLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
 
     void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-    void AddPlace([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, int alignment);
+    void AddPlace([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi, int alignment);
 
-    void SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
+    void SetDefaultExtension([In][MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
 
     void Close([MarshalAs(UnmanagedType.Error)] int hr);
 
@@ -169,23 +170,23 @@ internal interface IFileOpenDialog : IFileDialog
     void SetFileTypes([In] uint cFileTypes, [In] ref COMDLG_FILTERSPEC rgFilterSpec);
     new void SetFileTypeIndex([In] uint iFileType);
     new void GetFileTypeIndex(out uint piFileType);
-    new void Advise([In] [MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
+    new void Advise([In][MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
     new void Unadvise([In] uint dwCookie);
     new void SetOptions([In] FOS fos);
     new void GetOptions(out FOS pfos);
-    new void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
-    new void SetFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    new void SetDefaultFolder([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    new void SetFolder([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
     new void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
     new void GetCurrentSelection([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
-    new void SetFileName([In] [MarshalAs(UnmanagedType.LPWStr)] string pszName);
+    new void SetFileName([In][MarshalAs(UnmanagedType.LPWStr)] string pszName);
     new void GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
-    new void SetTitle([In] [MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
-    new void SetOkButtonLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszText);
-    new void SetFileNameLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
+    new void SetTitle([In][MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
+    new void SetOkButtonLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszText);
+    new void SetFileNameLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
     new void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-    void AddPlace([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, FileDialogCustomPlace fdcp);
-    new void SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
+    void AddPlace([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi, FileDialogCustomPlace fdcp);
+    new void SetDefaultExtension([In][MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
     new void Close([MarshalAs(UnmanagedType.Error)] int hr);
     new void SetClientGuid([In] ref Guid guid);
     new void ClearClientData();
@@ -207,41 +208,41 @@ internal interface IFileSaveDialog : IFileDialog
     void SetFileTypes([In] uint cFileTypes, [In] ref COMDLG_FILTERSPEC rgFilterSpec);
     new void SetFileTypeIndex([In] uint iFileType);
     new void GetFileTypeIndex(out uint piFileType);
-    new void Advise([In] [MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
+    new void Advise([In][MarshalAs(UnmanagedType.Interface)] IFileDialogEvents pfde, out uint pdwCookie);
     new void Unadvise([In] uint dwCookie);
     new void SetOptions([In] FOS fos);
     new void GetOptions(out FOS pfos);
-    new void SetDefaultFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
-    new void SetFolder([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    new void SetDefaultFolder([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    new void SetFolder([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
     new void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
     new void GetCurrentSelection([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
-    new void SetFileName([In] [MarshalAs(UnmanagedType.LPWStr)] string pszName);
+    new void SetFileName([In][MarshalAs(UnmanagedType.LPWStr)] string pszName);
     new void GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
-    new void SetTitle([In] [MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
-    new void SetOkButtonLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszText);
-    new void SetFileNameLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
+    new void SetTitle([In][MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
+    new void SetOkButtonLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszText);
+    new void SetFileNameLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
     new void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-    void AddPlace([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, FileDialogCustomPlace fdcp);
-    new void SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
+    void AddPlace([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi, FileDialogCustomPlace fdcp);
+    new void SetDefaultExtension([In][MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
     new void Close([MarshalAs(UnmanagedType.Error)] int hr);
     new void SetClientGuid([In] ref Guid guid);
     new void ClearClientData();
     new void SetFilter([MarshalAs(UnmanagedType.Interface)] IntPtr pFilter);
 
-    void SetSaveAsItem([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    void SetSaveAsItem([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
-    void SetProperties([In] [MarshalAs(UnmanagedType.Interface)] IntPtr pStore);
+    void SetProperties([In][MarshalAs(UnmanagedType.Interface)] IntPtr pStore);
 
-    void SetCollectedProperties([In] [MarshalAs(UnmanagedType.Interface)] IntPtr pList, [In] int fAppendDefault);
+    void SetCollectedProperties([In][MarshalAs(UnmanagedType.Interface)] IntPtr pList, [In] int fAppendDefault);
 
     void GetProperties([MarshalAs(UnmanagedType.Interface)] out IntPtr ppStore);
 
     void ApplyProperties(
-        [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi,
-        [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pStore,
-        [In] [ComAliasName("ShellObjects.wireHWND")] ref IntPtr hwnd,
-        [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pSink
+        [In][MarshalAs(UnmanagedType.Interface)] IShellItem psi,
+        [In][MarshalAs(UnmanagedType.Interface)] IntPtr pStore,
+        [In][ComAliasName("ShellObjects.wireHWND")] ref IntPtr hwnd,
+        [In][MarshalAs(UnmanagedType.Interface)] IntPtr pSink
     );
 }
 
@@ -255,29 +256,29 @@ internal interface IFileDialogEvents
     // support this, we need to use the PreserveSig attribute to enable us to return
     // the proper HRESULT
     [PreserveSig]
-    int OnFileOk([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
+    int OnFileOk([In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
     [PreserveSig]
     int OnFolderChanging(
-        [In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
-        [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psiFolder
+        [In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
+        [In][MarshalAs(UnmanagedType.Interface)] IShellItem psiFolder
     );
 
-    void OnFolderChange([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
+    void OnFolderChange([In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
-    void OnSelectionChange([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
+    void OnSelectionChange([In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
     void OnShareViolation(
-        [In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
-        [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi,
+        [In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
+        [In][MarshalAs(UnmanagedType.Interface)] IShellItem psi,
         out FDE_SHAREVIOLATION_RESPONSE pResponse
     );
 
-    void OnTypeChange([In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
+    void OnTypeChange([In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
     void OnOverwrite(
-        [In] [MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
-        [In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi,
+        [In][MarshalAs(UnmanagedType.Interface)] IFileDialog pfd,
+        [In][MarshalAs(UnmanagedType.Interface)] IShellItem psi,
         out FDE_OVERWRITE_RESPONSE pResponse
     );
 }
@@ -288,7 +289,7 @@ internal interface IFileDialogEvents
 internal interface IShellItem
 {
     void BindToHandler(
-        [In] [MarshalAs(UnmanagedType.Interface)] IntPtr pbc,
+        [In][MarshalAs(UnmanagedType.Interface)] IntPtr pbc,
         [In] ref Guid bhid,
         [In] ref Guid riid,
         out IntPtr ppv
@@ -300,7 +301,7 @@ internal interface IShellItem
 
     void GetAttributes([In] uint sfgaoMask, out uint psfgaoAttribs);
 
-    void Compare([In] [MarshalAs(UnmanagedType.Interface)] IShellItem psi, [In] uint hint, out int piOrder);
+    void Compare([In][MarshalAs(UnmanagedType.Interface)] IShellItem psi, [In] uint hint, out int piOrder);
 }
 
 internal enum SIGDN : uint

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿#nullable disable
+#nullable disable
 namespace PlatynUI.Technology.UiAutomation.Client
 {
     public enum NotificationProcessing

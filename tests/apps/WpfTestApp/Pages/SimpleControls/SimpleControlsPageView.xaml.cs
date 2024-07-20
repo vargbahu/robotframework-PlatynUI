@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace WpfTestApp.Pages.SimpleControls;
+namespace WpfTestApp.Pages.SimpleControls;
 
 public partial class SimpleControlsPageView
 {

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace WpfTestApp.Pages.ListViews;
+namespace WpfTestApp.Pages.ListViews;
 
 public partial class ListViewsPageView
 {

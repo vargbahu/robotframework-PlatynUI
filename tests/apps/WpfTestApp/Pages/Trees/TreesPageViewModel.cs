@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using System.ComponentModel.Composition;
+using System.ComponentModel.Composition;
 
 namespace WpfTestApp.Pages.Trees;
 

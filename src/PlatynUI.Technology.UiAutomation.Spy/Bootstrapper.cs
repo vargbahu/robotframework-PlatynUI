@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using System.ComponentModel.Composition;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.ReflectionModel;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+
 using Caliburn.Micro;
 
 namespace PlatynUI.Technology.UiAutomation.Spy;

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿namespace PlatynUI.Technology.UiAutomation.Client;
+namespace PlatynUI.Technology.UiAutomation.Client;
 
 public enum SynchronizedInputType
 {

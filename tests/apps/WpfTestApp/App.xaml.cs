@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-﻿using System.Windows;
+using System.Windows;
 
 namespace WpfTestApp;
 
