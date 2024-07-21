@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-
 using Caliburn.Micro;
 
 namespace WpfTestApp;

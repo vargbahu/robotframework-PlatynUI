@@ -4,7 +4,6 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
 

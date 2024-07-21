@@ -85,8 +85,9 @@ dependencies = [
 
 [tool.hatch.envs.default.scripts]
 build-runtime-netfx = "dotnet publish -c release -f net481 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/netfx ./src/PlatynUI.Technology.UiAutomation.Spy"
-build-runtime-coreclr = "dotnet publish -c release -f net8.0-windows -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/coreclr ./src/PlatynUI.Technology.UiAutomation.Spy"
-build-runtime = ["build-runtime-netfx", "build-runtime-coreclr"]
+build-runtime-coreclr = "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/coreclr ./src/PlatynUI.Spy"
+#build-runtime = ["build-runtime-netfx", "build-runtime-coreclr"]
+build-runtime = ["build-runtime-coreclr"]
 
 # clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
 clean-runtime = "python scripts/rm.py src/PlatynUI/technology/uiautomation/runtime"

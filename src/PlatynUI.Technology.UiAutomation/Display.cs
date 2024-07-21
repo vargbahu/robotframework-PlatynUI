@@ -4,7 +4,6 @@
 
 using PlatynUI.Runtime;
 using PlatynUI.Technology.UiAutomation.Tools;
-
 using Windows.Win32;
 using Windows.Win32.UI.WindowsAndMessaging;
 

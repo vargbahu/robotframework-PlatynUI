@@ -10,10 +10,12 @@ SPDX-PackageDownloadLocation = "https://github.com/imbus/robotframework-PlatynUI
 
 [[annotations]]
 path = [
+    "**/*.ico",
     "**/*.pyi",
     "**/*.sln",
     "**/*.csproj",
     "**/*.xaml",
+    "**/*.axaml",
     "**/app.manifest",
     "**/NativeMethods.txt",
     "**/App.config",

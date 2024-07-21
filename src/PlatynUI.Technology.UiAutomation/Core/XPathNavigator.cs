@@ -4,7 +4,6 @@
 
 using System.Xml;
 using System.Xml.XPath;
-
 using PlatynUI.Technology.UiAutomation.Client;
 
 namespace PlatynUI.Technology.UiAutomation.Core;
@@ -155,19 +154,19 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
         switch (_current)
         {
             case INode node:
+            {
+                var enumerator = node.GetAttributesEnumerator();
+                enumerator.Reset();
+
+                if (!enumerator.MoveNext())
                 {
-                    var enumerator = node.GetAttributesEnumerator();
-                    enumerator.Reset();
-
-                    if (!enumerator.MoveNext())
-                    {
-                        return false;
-                    }
-
-                    _current = enumerator;
-
-                    return true;
+                    return false;
                 }
+
+                _current = enumerator;
+
+                return true;
+            }
             default:
                 return false;
         }
@@ -198,16 +197,16 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
         switch (_current)
         {
             case INode node:
+            {
+                var sibling = node.GetNextSibling();
+                if (sibling == null)
                 {
-                    var sibling = node.GetNextSibling();
-                    if (sibling == null)
-                    {
-                        return false;
-                    }
-
-                    _current = sibling;
-                    return true;
+                    return false;
                 }
+
+                _current = sibling;
+                return true;
+            }
 
             default:
                 return false;
@@ -219,16 +218,16 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
         switch (_current)
         {
             case INode node:
+            {
+                var sibling = node.GetPreviousSibling();
+                if (sibling == null)
                 {
-                    var sibling = node.GetPreviousSibling();
-                    if (sibling == null)
-                    {
-                        return false;
-                    }
-
-                    _current = sibling;
-                    return true;
+                    return false;
                 }
+
+                _current = sibling;
+                return true;
+            }
 
             default:
                 return false;
@@ -240,16 +239,16 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
         switch (_current)
         {
             case INode node:
+            {
+                var child = node.GetFirstChild();
+                if (child == null)
                 {
-                    var child = node.GetFirstChild();
-                    if (child == null)
-                    {
-                        return false;
-                    }
-
-                    _current = child;
-                    return true;
+                    return false;
                 }
+
+                _current = child;
+                return true;
+            }
 
             default:
                 return false;
@@ -261,16 +260,16 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
         switch (_current)
         {
             case INode node:
+            {
+                var parent = node.Parent;
+                if (parent == null)
                 {
-                    var parent = node.Parent;
-                    if (parent == null)
-                    {
-                        return false;
-                    }
-
-                    _current = parent;
-                    return true;
+                    return false;
                 }
+
+                _current = parent;
+                return true;
+            }
 
             default:
                 return false;

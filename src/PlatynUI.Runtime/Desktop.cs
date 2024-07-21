@@ -4,8 +4,6 @@
 
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
-using System.Reflection;
 using PlatynUI.Runtime.Core;
 using Attribute = PlatynUI.Runtime.Core.Attribute;
 
@@ -36,25 +34,25 @@ public class Desktop : INode
         container.ComposeParts(this);
     }
 
-    public IList<INode> Children
+    private IList<INode>? _children;
+    public IList<INode> Children => _children ??= GetChildren();
+
+    protected IList<INode> GetChildren()
     {
-        get
+        ImportProviders();
+
+        var children = new List<INode>();
+
+        if (Providers == null)
         {
-            ImportProviders();
-
-            var children = new List<INode>();
-
-            if (Providers == null)
-            {
-                return children;
-            }
-
-            foreach (var item in Providers)
-            {
-                children.AddRange(item.GetNodes(this));
-            }
             return children;
         }
+
+        foreach (var item in Providers)
+        {
+            children.AddRange(item.GetNodes(this));
+        }
+        return children;
     }
 
     public string LocalName => "Desktop";
@@ -73,6 +71,9 @@ public class Desktop : INode
             .OrderBy(x => x.Name)
             .ToDictionary(x => x.Name);
 
+    private static Desktop? _instance;
+    public static INode Instance => _instance ??= new Desktop();
+
     public INode Clone()
     {
         return new Desktop();
@@ -81,5 +82,10 @@ public class Desktop : INode
     public bool IsSamePosition(INode other)
     {
         return this == other;
+    }
+
+    public void Refresh()
+    {
+        _children = null;
     }
 }

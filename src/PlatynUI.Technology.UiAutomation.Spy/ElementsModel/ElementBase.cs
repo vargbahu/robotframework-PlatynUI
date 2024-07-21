@@ -5,7 +5,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-
 using Caliburn.Micro;
 
 namespace PlatynUI.Technology.UiAutomation.Spy.ElementsModel;

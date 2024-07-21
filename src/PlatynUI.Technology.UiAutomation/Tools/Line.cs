@@ -6,13 +6,10 @@ namespace PlatynUI.Technology.UiAutomation.Tools;
 
 using System;
 using System.Runtime.InteropServices;
-
 using PlatynUI.Runtime;
-
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
-
 using static Windows.Win32.PInvoke;
 
 internal class Line : IDisposable

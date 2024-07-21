@@ -70,6 +70,20 @@ public interface INode
 
     IList<INode> Children { get; }
 
+    void Refresh();
+
+    virtual IList<INode> GetAncestors()
+    {
+        var result = new List<INode>();
+        INode? current = Parent;
+        while (current != null)
+        {
+            result.Insert(0, current);
+            current = current.Parent;
+        }
+        return result;
+    }
+
     virtual INode? GetFirstChild()
     {
         return Children.FirstOrDefault();

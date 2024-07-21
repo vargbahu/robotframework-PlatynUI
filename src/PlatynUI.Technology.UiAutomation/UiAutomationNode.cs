@@ -10,10 +10,10 @@ using INode = PlatynUI.Runtime.Core.INode;
 
 namespace PlatynUI.Technology.UiAutomation;
 
-public class UiAutomationNode(INode? parent, IUIAutomationElement e) : INode
+public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INode
 {
     public INode? Parent { get; } = parent;
-    public IUIAutomationElement Element { get; } = e;
+    public IUIAutomationElement Element { get; } = element;
 
     List<INode>? _children = null;
     public IList<INode> Children => _children ??= GetChildren();
@@ -49,7 +49,8 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement e) : INode
 
         result = props
             .Select(x => new Runtime.Core.Attribute(x.Name, () => GetPropertyValue(x)) as IAttribute)
-            .Where(x => x.Value != InvalidValue).OrderBy(x => x.Name)
+            .Where(x => x.Value != InvalidValue)
+            .OrderBy(x => x.Name)
             .ToDictionary(x => x.Name);
 
         return result;
@@ -97,5 +98,10 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement e) : INode
     public bool IsSamePosition(INode other)
     {
         return other is UiAutomationNode node && Automation.CompareElements(Element, node.Element);
+    }
+
+    public void Refresh()
+    {
+        _children = null;
     }
 }

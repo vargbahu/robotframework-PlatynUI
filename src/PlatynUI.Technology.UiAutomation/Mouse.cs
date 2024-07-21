@@ -6,9 +6,7 @@ namespace PlatynUI.Technology.UiAutomation;
 
 using System;
 using System.Runtime.InteropServices;
-
 using PlatynUI.Runtime;
-
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;

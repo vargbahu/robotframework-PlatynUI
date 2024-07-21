@@ -26,60 +26,96 @@
             </MenuItem>
         </Menu>
 
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="3" Margin="3">
             <Button Name="Refresh" Command="{Binding Refresh}" Content="Refresh" />
-            <Button Name="AlwaysOnTop" Command="{Binding AlwaysOnTop}" Content="Always On Top" />
+            <ToggleButton Name="AlwaysOnTop" IsChecked="{Binding $parent[Window].Topmost}}"
+                Content="Always On Top" />
         </StackPanel>
 
-        <Grid DockPanel.Dock="Top">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="5"
-                    MinWidth="50" />
-            </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" x:Name="XPath" />
-            <Button x:Name="SearchXPath" Grid.Column="1"
-                Width="50"
-                Content="Search" />
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*, Auto">
+            <TextBox Grid.Column="0" Margin="3" Text="{Binding SearchText, Mode=TwoWay}"
+                Watermark="Enter your XPath Expression here and then click search...">
+                <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter"
+                        Command="{Binding Search}" />
+                </TextBox.KeyBindings>
+            </TextBox>
+            <Button Grid.Column="1" Margin="3" Content="Search" Command="{Binding Search}"
+                IsVisible="{Binding !InSearch}" />
+            <Button Grid.Column="1" Margin="3" Content="Cancel" Command="{Binding CancelSearch}"
+                IsVisible="{Binding InSearch}" />
         </Grid>
 
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-            <TextBlock Text="Status:" />
-            <TextBlock Text="Ready" />
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="3">
+            <TextBlock Text="{Binding SearchResults.Count}"
+                IsVisible="{Binding SearchResults.Count>0}" />
+            <TextBlock Text="Element(s) found." IsVisible="{Binding SearchResults.Count>0}" />
+            <TextBlock Text="{Binding LastError}" />
         </StackPanel>
 
-        <Grid ColumnDefinitions="0.40*,4,0.60*">
-            <TreeView Grid.Column="0" ItemsSource="{Binding Root}"
-                SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
-                <TreeView.DataTemplates>
-                    <TreeDataTemplate DataType="vm:TreeNode"
-                        ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="{Binding NodeName}" />
-                            <TextBlock Foreground="Gray" Text="{Binding Description}" />
-                            <!-- <TextBlock Foreground="Gray" Text="{Binding ElementName}" /> -->
-                        </StackPanel>
-                    </TreeDataTemplate>
-                </TreeView.DataTemplates>
-                <TreeView.Styles>
-                    <Style Selector="TreeViewItem" x:DataType="vm:TreeNode">
-                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    </Style>
-                </TreeView.Styles>
-            </TreeView>
+        <Grid RowDefinitions="*,4,0.20*">
+            <Grid Grid.Row="0" ColumnDefinitions="0.60*,4,0.40*">
+                <TreeView Grid.Column="0" ItemsSource="{Binding Root}"
+                    SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    AutoScrollToSelectedItem="True"
+                >
+                    <TreeView.DataTemplates>
+                        <TreeDataTemplate DataType="vm:TreeNode"
+                            ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="{Binding NodeName}" FontWeight="Bold" />
+                                <TextBlock Text="{Binding Description}" />
+                                <!-- <TextBlock Foreground="Gray" Text="{Binding ElementName}" /> -->
+                            </StackPanel>
+                        </TreeDataTemplate>
+                    </TreeView.DataTemplates>
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem" x:DataType="vm:TreeNode">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        </Style>
+                    </TreeView.Styles>
+                </TreeView>
 
-            <GridSplitter Grid.Column="1" />
+                <GridSplitter Grid.Column="1" />
 
-            <DataGrid Grid.Column="2" ItemsSource="{Binding SelectedNode.Node.Attributes.Values}"
-                CanUserResizeColumns="true">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" CanUserSort="true" />
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-                </DataGrid.Columns>
-            </DataGrid>
+                <DataGrid Grid.Column="2" ItemsSource="{Binding SelectedNode.Attributes}"
+                    CanUserResizeColumns="true">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"
+                            CanUserSort="true" />
+                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+            <Border Grid.Row="2" BorderThickness="1">
+                <Grid RowDefinitions="Auto,*">
+                    <Label Grid.Row="0" Content="Results" />
+                    <ListBox Grid.Row="1" ItemsSource="{Binding SearchResults}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding ResultsSelectedNode, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding NodeName}" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Description}" />
+                                    <!-- <TextBlock Foreground="Gray" Text="{Binding ElementName}"
+                                    /> -->
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem" x:DataType="vm:TreeNode">
+                                <Setter Property="IsSelected"
+                                    Value="{Binding IsSelected, Mode=TwoWay}" />
+                            </Style>
+                        </ListBox.Styles>
+                    </ListBox>
+                </Grid>
+            </Border>
         </Grid>
-
     </DockPanel>
 
 </Window>

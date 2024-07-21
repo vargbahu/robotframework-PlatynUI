@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
+//
+// SPDX-License-Identifier: Apache-2.0
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -17,10 +21,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
+            desktop.MainWindow = new MainWindow { DataContext = new MainWindowViewModel(), };
         }
 
         base.OnFrameworkInitializationCompleted();

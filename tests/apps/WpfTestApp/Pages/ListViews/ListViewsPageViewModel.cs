@@ -6,7 +6,6 @@ using System;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Windows.Data;
-
 using Caliburn.Micro;
 
 namespace WpfTestApp.Pages.ListViews;

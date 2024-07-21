@@ -4,7 +4,6 @@
 
 using System.Diagnostics;
 using System.Xml.XPath;
-
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
 
