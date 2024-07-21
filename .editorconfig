@@ -16,6 +16,10 @@ dotnet_separate_import_directive_groups = true
 max_line_length = 120
 
 # 4 space indentation
+
+# CA1416: Validate platform compatibility
+dotnet_diagnostic.CA1416.severity = silent
+
 [*.py]
 indent_style = space
 indent_size = 4

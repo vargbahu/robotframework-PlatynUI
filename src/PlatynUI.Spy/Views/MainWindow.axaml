@@ -7,7 +7,10 @@
     x:Class="PlatynUI.Spy.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
-    Title="PlatynUI.Spy">
+    Title="PlatynUI.Spy"
+    Width="800"
+    Height="600"
+>
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -22,20 +25,22 @@
                 <MenuItem Header="E_xit" Command="{Binding $parent[Window].Close}" />
             </MenuItem>
         </Menu>
+
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-            <Button Content="Refresh" />
-            <Button Content="Always On Top" />
+            <Button Name="Refresh" Command="{Binding Refresh}" Content="Refresh" />
+            <Button Name="AlwaysOnTop" Command="{Binding AlwaysOnTop}" Content="Always On Top" />
         </StackPanel>
-         <Grid DockPanel.Dock="Top">
+
+        <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="5"
-                                  MinWidth="50"/>
+                    MinWidth="50" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" x:Name="XPath"/>
+            <TextBox Grid.Column="0" x:Name="XPath" />
             <Button x:Name="SearchXPath" Grid.Column="1"
-                    Width="50"
-                    Content="Search"/>
+                Width="50"
+                Content="Search" />
         </Grid>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
@@ -43,21 +48,34 @@
             <TextBlock Text="Ready" />
         </StackPanel>
 
-        <Grid ColumnDefinitions="0.35*,4,0.65*">
-            <TreeView Grid.Column="0">
-                <TreeViewItem Header="Root">
-                    <TreeViewItem Header="Child 1" />
-                    <TreeViewItem Header="Child 2" />
-                </TreeViewItem>
+        <Grid ColumnDefinitions="0.40*,4,0.60*">
+            <TreeView Grid.Column="0" ItemsSource="{Binding Root}"
+                SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="vm:TreeNode"
+                        ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="{Binding NodeName}" />
+                            <TextBlock Foreground="Gray" Text="{Binding Description}" />
+                            <!-- <TextBlock Foreground="Gray" Text="{Binding ElementName}" /> -->
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.DataTemplates>
+                <TreeView.Styles>
+                    <Style Selector="TreeViewItem" x:DataType="vm:TreeNode">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    </Style>
+                </TreeView.Styles>
             </TreeView>
-            <GridSplitter Grid.Column="1"
-                          VerticalAlignment="Stretch"
-                          HorizontalAlignment="Center"
-                          Background="{DynamicResource ThemeControlMidBrush}"/>
-            <DataGrid Grid.Column="2">
+
+            <GridSplitter Grid.Column="1" />
+
+            <DataGrid Grid.Column="2" ItemsSource="{Binding SelectedNode.Node.Attributes.Values}"
+                CanUserResizeColumns="true">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" />
-                    <DataGridTextColumn Header="Value" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" CanUserSort="true" />
+                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

@@ -13,36 +13,39 @@ public interface IAttribute
     string NamespaceURI { get; }
 }
 
-public interface IAttributesEnumerator : IEnumerator<IAttribute> { }
-
-public interface INode
+public class Attribute : IAttribute
 {
-    object? UnderlyingObject { get; }
+    public Attribute(string name, Func<object?> valueGetter, string namespaceURI = Namespaces.Raw)
+    {
+        Name = name;
+        _value = null;
+        _valueGetter = valueGetter;
+        NamespaceURI = namespaceURI;
+    }
 
-    INode? Parent { get; }
+    public Attribute(string name, object? value, string namespaceURI = Namespaces.Raw)
+    {
+        Name = name;
+        _value = value;
+        NamespaceURI = namespaceURI;
+    }
 
-    bool FindVirtual { get; }
+    private readonly Func<object?>? _valueGetter;
+    private readonly object? _value;
 
-    INode? GetFirstChild();
-    INode? GetLastChild();
-    INode? GetNextSibling();
-    INode? GetPreviousSibling();
+    public string Name { get; }
 
-    IReadOnlyList<INode> Children { get; }
+    public object? Value => _valueGetter != null ? _valueGetter() : _value;
 
-    string LocalName { get; }
-    string NamespaceURI { get; }
-
-    INode Clone();
-    bool IsSamePosition(INode other);
-
-    IAttributesEnumerator GetAttributesEnumerator();
+    public string NamespaceURI { get; }
 }
 
-public class AttributesEnumerator<T>(IEnumerable<T> properties) : IAttributesEnumerator
+public interface IAttributesEnumerator : IEnumerator<IAttribute> { }
+
+public class AttributesEnumerator<T>(IEnumerable<T> attributes) : IAttributesEnumerator
     where T : IAttribute
 {
-    private readonly IEnumerator<T> _enumerator = properties.GetEnumerator();
+    private readonly IEnumerator<T> _enumerator = attributes.GetEnumerator();
 
     public IAttribute Current => _enumerator.Current;
 
@@ -59,61 +62,25 @@ public class AttributesEnumerator<T>(IEnumerable<T> properties) : IAttributesEnu
     public void Reset() => _enumerator.MoveNext();
 }
 
-public abstract class Node<T, TAttr>(Node<T, TAttr>? parent, T element, bool findVirtual = false) : INode
-    where TAttr : IAttribute
+public interface INode
 {
-    public Node(T element, bool findVirtual = false)
-        : this(null, element, findVirtual) { }
+    object? UnderlyingObject => this;
 
-    INode? INode.Parent => Parent;
+    INode? Parent { get; }
 
-    public virtual Node<T, TAttr>? Parent { get; set; } = parent;
+    IList<INode> Children { get; }
 
-    public object? UnderlyingObject => Element;
-    public virtual T Element { get; } = element;
-
-    public bool FindVirtual { get; } = findVirtual;
-
-    IReadOnlyList<INode> INode.Children => Children.Cast<INode>().ToList();
-    public abstract List<Node<T, TAttr>> Children { get; }
-
-    public abstract string NamespaceURI { get; }
-
-    public abstract string LocalName { get; }
-
-    INode INode.Clone()
-    {
-        return Clone();
-    }
-
-    public abstract Node<T, TAttr> Clone();
-
-    INode? INode.GetFirstChild()
-    {
-        return GetFirstChild();
-    }
-
-    public Node<T, TAttr>? GetFirstChild()
+    virtual INode? GetFirstChild()
     {
         return Children.FirstOrDefault();
     }
 
-    INode? INode.GetLastChild()
-    {
-        return GetLastChild();
-    }
-
-    public Node<T, TAttr>? GetLastChild()
+    virtual INode? GetLastChild()
     {
         return Children.LastOrDefault();
     }
 
-    INode? INode.GetNextSibling()
-    {
-        return GetNextSibling();
-    }
-
-    public Node<T, TAttr>? GetNextSibling()
+    virtual INode? GetNextSibling()
     {
         if (Parent == null)
             return default;
@@ -123,12 +90,7 @@ public abstract class Node<T, TAttr>(Node<T, TAttr>? parent, T element, bool fin
         return (index >= 0 && index < siblings.Count - 1) ? siblings[index + 1] : null;
     }
 
-    INode? INode.GetPreviousSibling()
-    {
-        return GetPreviousSibling();
-    }
-
-    public Node<T, TAttr>? GetPreviousSibling()
+    virtual INode? GetPreviousSibling()
     {
         if (Parent == null)
             return null;
@@ -137,18 +99,21 @@ public abstract class Node<T, TAttr>(Node<T, TAttr>? parent, T element, bool fin
         int index = siblings.IndexOf(this);
         return (index > 0) ? siblings[index - 1] : null;
     }
+    string LocalName { get; }
+    string NamespaceURI { get; }
 
-    public abstract bool IsSamePosition(INode other);
+    INode Clone();
+    bool IsSamePosition(INode other);
 
-    protected abstract IEnumerable<TAttr> GetProperties();
+    IDictionary<string, IAttribute> Attributes { get; }
 
-    IAttributesEnumerator INode.GetAttributesEnumerator()
+    IAttributesEnumerator GetAttributesEnumerator()
     {
-        return GetPropertiesEnumerator();
+        return new AttributesEnumerator<IAttribute>(Attributes.Values);
     }
+}
 
-    public virtual AttributesEnumerator<TAttr> GetPropertiesEnumerator()
-    {
-        return new AttributesEnumerator<TAttr>(GetProperties());
-    }
+public interface INodeProvider
+{
+    IEnumerable<INode> GetNodes(INode parent);
 }

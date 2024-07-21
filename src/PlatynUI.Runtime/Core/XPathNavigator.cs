@@ -9,7 +9,7 @@ namespace PlatynUI.Runtime.Core;
 
 internal class XPathNavigator : System.Xml.XPath.XPathNavigator
 {
-    private INode _node;
+    private readonly INode _node;
     private object? _current;
     private bool _findVirtual;
     private XmlNameTable _nameTable;

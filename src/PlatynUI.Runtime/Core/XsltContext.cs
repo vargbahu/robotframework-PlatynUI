@@ -12,28 +12,12 @@ public class XsltContext : System.Xml.Xsl.XsltContext
     public XsltContext()
         : base()
     {
-        AddNamespace("", "http://platynui.io/raw");
-        AddNamespace("raw", "http://platynui.io/raw");
-        AddNamespace("native", "http://platynui.io/native");
-        AddNamespace("element", "http://platynui.io/element");
-        AddNamespace("item", "http://platynui.io/item");
-        AddNamespace("app", "http://platynui.io/app");
-    }
-
-    public override bool HasNamespace(string prefix)
-    {
-        return base.HasNamespace(prefix);
-    }
-
-    public override string? LookupNamespace(string prefix)
-    {
-        var result = base.LookupNamespace(prefix);
-
-        if (result == null)
-        {
-            result = "";
-        }
-        return result;
+        AddNamespace("", Namespaces.Raw);
+        AddNamespace("raw", Namespaces.Raw);
+        AddNamespace("native", Namespaces.Native);
+        AddNamespace("element", Namespaces.Element);
+        AddNamespace("item", Namespaces.Item);
+        AddNamespace("app", Namespaces.App);
     }
 
     public override bool Whitespace => true;

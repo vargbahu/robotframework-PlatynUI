@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>PlatynUI .NET Interface</Description>
     <Version>0.1.0</Version>
-    <TargetFrameworks>net8.0-windows;net481</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

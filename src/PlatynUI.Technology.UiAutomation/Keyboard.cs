@@ -466,7 +466,7 @@ public static class KeyboardDevice
                 var inpArray = inputs.ToArray();
                 fixed (INPUT* inpArrayPtr = inpArray)
                 {
-                    PInvoke.SendInput((uint)inpArray.Length, inpArrayPtr, Marshal.SizeOf<INPUT>());
+                    _ = PInvoke.SendInput((uint)inpArray.Length, inpArrayPtr, Marshal.SizeOf<INPUT>());
                 }
             }
 
