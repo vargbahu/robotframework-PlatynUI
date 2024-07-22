@@ -10,9 +10,11 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <!-- <FluentTheme />
+        <!-- <FluentTheme  DensityStyle="Compact"/>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/> -->
-        <SimpleTheme />
-        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml"/>
+        <!-- <SimpleTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml"/> -->
+        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+        <StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
     </Application.Styles>
 </Application>

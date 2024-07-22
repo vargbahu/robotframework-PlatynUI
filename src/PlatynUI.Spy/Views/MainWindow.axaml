@@ -10,6 +10,7 @@
     Title="PlatynUI.Spy"
     Width="800"
     Height="600"
+    ExtendClientAreaToDecorationsHint="True"
 >
 
     <Design.DataContext>
@@ -20,40 +21,42 @@
     </Design.DataContext>
 
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="E_xit" Command="{Binding $parent[Window].Close}" />
-            </MenuItem>
-        </Menu>
 
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="3" Margin="3">
-            <Button Name="Refresh" Command="{Binding Refresh}" Content="Refresh" />
-            <ToggleButton Name="AlwaysOnTop" IsChecked="{Binding $parent[Window].Topmost}}"
-                Content="Always On Top" />
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="3" Margin="12"
+            IsHitTestVisible="False">
+            <Label VerticalAlignment="Center">PlatynUI.Spy</Label>
         </StackPanel>
 
-        <Grid DockPanel.Dock="Top" ColumnDefinitions="*, Auto">
-            <TextBox Grid.Column="0" Margin="3" Text="{Binding SearchText, Mode=TwoWay}"
-                Watermark="Enter your XPath Expression here and then click search...">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto, *, Auto" Background="Transparent"
+            Margin="6">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="3">
+                <Button Name="Refresh" Command="{Binding Refresh}" Content="Refresh"
+                    VerticalAlignment="Center" />
+                <CheckBox Name="AlwaysOnTop" IsChecked="{Binding $parent[Window].Topmost}}"
+                    Content="Always On Top" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBox Grid.Column="1" Margin="3" Text="{Binding SearchText, Mode=TwoWay}"
+                Watermark="Enter your XPath Expression here and then click search..."
+                VerticalAlignment="Center">
                 <TextBox.KeyBindings>
                     <KeyBinding Gesture="Enter"
                         Command="{Binding Search}" />
                 </TextBox.KeyBindings>
             </TextBox>
-            <Button Grid.Column="1" Margin="3" Content="Search" Command="{Binding Search}"
-                IsVisible="{Binding !InSearch}" />
-            <Button Grid.Column="1" Margin="3" Content="Cancel" Command="{Binding CancelSearch}"
-                IsVisible="{Binding InSearch}" />
+            <Button Grid.Column="2" Margin="3" Content="Search" Command="{Binding Search}"
+                IsVisible="{Binding !InSearch}" VerticalAlignment="Center" />
+            <Button Grid.Column="2" Margin="3" Content="Cancel" Command="{Binding CancelSearch}"
+                IsVisible="{Binding InSearch}" VerticalAlignment="Center" />
         </Grid>
 
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="3">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="3" Margin="6">
             <TextBlock Text="{Binding SearchResults.Count}"
                 IsVisible="{Binding SearchResults.Count>0}" />
             <TextBlock Text="Element(s) found." IsVisible="{Binding SearchResults.Count>0}" />
             <TextBlock Text="{Binding LastError}" />
         </StackPanel>
 
-        <Grid RowDefinitions="*,4,0.20*">
+        <Grid RowDefinitions="*,4,0.20*" Margin="6">
             <Grid Grid.Row="0" ColumnDefinitions="0.60*,4,0.40*">
                 <TreeView Grid.Column="0" ItemsSource="{Binding Root}"
                     SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
@@ -95,7 +98,8 @@
                     <Label Grid.Row="0" Content="Results" />
                     <ListBox Grid.Row="1" ItemsSource="{Binding SearchResults}"
                         SelectionMode="Single"
-                        SelectedItem="{Binding ResultsSelectedNode, Mode=TwoWay}">
+                        SelectedItem="{Binding ResultsSelectedNode, Mode=TwoWay}"
+                        Background="Transparent">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="6">
