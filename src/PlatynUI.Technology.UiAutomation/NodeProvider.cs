@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.ComponentModel.Composition;
+
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 using PlatynUI.Technology.UiAutomation.Core;
@@ -16,10 +17,17 @@ class NodeProvider : INodeProvider
 {
     public IEnumerable<Runtime.Core.INode> GetNodes(Runtime.Core.INode parent)
     {
+        var processIds = new HashSet<int>();
+
         foreach (var e in Automation.RootElement.EnumerateChildren(Automation.RawViewWalker, true))
         {
-            yield return new UiAutomationNode(parent, e);
+            processIds.Add(e.CurrentProcessId);
+            yield return new ElementNode(parent, e);
         }
-        ;
+
+        foreach (var processId in processIds)
+        {
+            yield return new ApplicationNode(parent, processId);
+        }
     }
 }

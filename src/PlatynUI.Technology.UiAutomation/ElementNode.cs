@@ -6,12 +6,15 @@ using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using IAttribute = PlatynUI.Runtime.Core.IAttribute;
 using INode = PlatynUI.Runtime.Core.INode;
 
 namespace PlatynUI.Technology.UiAutomation;
 
-public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INode, IElement
+public class ElementNode(INode? parent, IUIAutomationElement element) : INode, IElement
 {
     public INode? Parent { get; } = parent;
     public IUIAutomationElement Element { get; } = element;
@@ -24,7 +27,7 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INo
         var result = new List<INode>();
         foreach (var e in Element.EnumerateChildren(Automation.RawViewWalker, true))
         {
-            result.Add(new UiAutomationNode(this, e));
+            result.Add(new ElementNode(this, e));
         }
         return result;
     }
@@ -59,6 +62,8 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INo
         [
             new Automation.PropertyIdAndName(-1, "Role"),
             new Automation.PropertyIdAndName(-2, "ProcessName"),
+            new Automation.PropertyIdAndName(-3, "Technology"),
+            new Automation.PropertyIdAndName(-4, "IsTopLevel"),
             .. Automation.GetSupportedPropertyIdAndNames(Element)
         ];
 
@@ -91,6 +96,30 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INo
 
                 return null;
             }
+            else if (attribute.Id == -3)
+            {
+                if (attribute.Name == "Technology")
+                {
+                    return "UIAutomation";
+                }
+
+                return null;
+            }
+            else if (attribute.Id == -4)
+            {
+                if (attribute.Name == "IsTopLevel")
+                {
+                    if (Element.CurrentNativeWindowHandle == IntPtr.Zero)
+                    {
+                        return false;
+                    }
+
+                    return (HWND)Element.CurrentNativeWindowHandle
+                        == PInvoke.GetAncestor((HWND)Element.CurrentNativeWindowHandle, GET_ANCESTOR_FLAGS.GA_ROOT);
+                }
+
+                return null;
+            }
 
             var value = Element.GetCurrentPropertyValueEx(attribute.Id, 1);
             if (Automation.UiAutomation.CheckNotSupported(value) != 0)
@@ -107,12 +136,12 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INo
 
     public INode Clone()
     {
-        return new UiAutomationNode(Parent, Element);
+        return new ElementNode(Parent, Element);
     }
 
     public bool IsSamePosition(INode other)
     {
-        return other is UiAutomationNode node && Automation.CompareElements(Element, node.Element);
+        return other is ElementNode node && Automation.CompareElements(Element, node.Element);
     }
 
     public void Refresh()
