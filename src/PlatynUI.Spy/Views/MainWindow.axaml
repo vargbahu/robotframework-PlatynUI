@@ -106,12 +106,6 @@
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                        <ListBox.Styles>
-                            <Style Selector="ListBoxItem" x:DataType="vm:TreeNode">
-                                <Setter Property="IsSelected"
-                                    Value="{Binding IsSelected, Mode=TwoWay}" />
-                            </Style>
-                        </ListBox.Styles>
                     </ListBox>
                 </Grid>
             </Border>

@@ -56,13 +56,12 @@ public class MainWindowViewModel : ViewModelBase
                 var treeNode = FindNodeInTree(value.Node);
                 if (treeNode != null)
                 {
-                    SelectedNode = null;
-
                     foreach (var ancestor in treeNode.GetAncestors())
                     {
                         ancestor.IsExpanded = true;
                     }
 
+                    SelectedNode = null;
                     treeNode.IsSelected = true;
                 }
             }
