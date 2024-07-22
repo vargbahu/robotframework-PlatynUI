@@ -11,36 +11,21 @@ namespace PlatynUI.Runtime;
 
 public class Desktop : INode
 {
+    private Desktop()
+    {
+        PlatynUiExtensions.ComposeParts(this);
+    }
+
     [ImportMany]
     IEnumerable<INodeProvider>? Providers { get; set; }
 
     public INode? Parent => null;
-
-    private bool _providerImported = false;
-
-    protected void ImportProviders()
-    {
-        if (_providerImported)
-        {
-            return;
-        }
-
-        _providerImported = true;
-
-        AggregateCatalog catalog = PlatynUiExtensions.GetPlatynUIExtensionCatalog();
-
-        var container = new CompositionContainer(catalog);
-
-        container.ComposeParts(this);
-    }
 
     private IList<INode>? _children;
     public IList<INode> Children => _children ??= GetChildren();
 
     protected IList<INode> GetChildren()
     {
-        ImportProviders();
-
         var children = new List<INode>();
 
         if (Providers == null)
@@ -72,7 +57,7 @@ public class Desktop : INode
             .ToDictionary(x => x.Name);
 
     private static Desktop? _instance;
-    public static INode Instance => _instance ??= new Desktop();
+    public static Desktop Instance => _instance ??= new Desktop();
 
     public INode Clone()
     {

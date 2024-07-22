@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 using PlatynUI.Technology.UiAutomation.Client;
 using PlatynUI.Technology.UiAutomation.Core;
@@ -10,7 +11,7 @@ using INode = PlatynUI.Runtime.Core.INode;
 
 namespace PlatynUI.Technology.UiAutomation;
 
-public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INode
+public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INode, IElement
 {
     public INode? Parent { get; } = parent;
     public IUIAutomationElement Element { get; } = element;
@@ -34,6 +35,20 @@ public class UiAutomationNode(INode? parent, IUIAutomationElement element) : INo
 
     Dictionary<string, IAttribute>? _attributes;
     public IDictionary<string, IAttribute> Attributes => _attributes ??= GetAttributes();
+
+    public bool IsEnabled => throw new NotImplementedException();
+
+    public bool IsVisible => throw new NotImplementedException();
+
+    public bool IsInView => throw new NotImplementedException();
+
+    public bool TopLevelParentIsActive => throw new NotImplementedException();
+
+    public Rect BoundingRectangle => Element.CurrentBoundingRectangle.ToRect();
+
+    public Rect VisibleRectangle => throw new NotImplementedException();
+
+    public Point DefaultClickPosition => throw new NotImplementedException();
 
     static readonly object InvalidValue = new();
 

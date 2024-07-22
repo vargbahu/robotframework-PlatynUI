@@ -8,13 +8,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Avalonia.Metadata;
 using Avalonia.Threading;
-
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
-
 using ReactiveUI;
 
 namespace PlatynUI.Spy.ViewModels;
@@ -38,7 +35,14 @@ public class MainWindowViewModel : ViewModelBase
     public TreeNode? SelectedNode
     {
         get => _selectedNode;
-        set => this.RaiseAndSetIfChanged(ref _selectedNode, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedNode, value);
+            if (value != null && value.Node is IElement element)
+            {
+                Display.HighlightRect(element.BoundingRectangle, 2);
+            }
+        }
     }
 
     private TreeNode? _resultsSelectedNode;

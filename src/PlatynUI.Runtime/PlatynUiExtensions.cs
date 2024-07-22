@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Reflection;
@@ -9,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace PlatynUI.Runtime;
 
-public enum Platform
+public enum RuntimePlatform
 {
     Any,
     Windows,
@@ -23,43 +24,43 @@ public enum Platform
 
 public static class PlatformHelper
 {
-    public static Platform GetCurrentPlatform()
+    public static RuntimePlatform GetCurrentPlatform()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return Platform.Windows;
+            return RuntimePlatform.Windows;
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            return Platform.Linux;
+            return RuntimePlatform.Linux;
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
         {
-            return Platform.FreeBSD;
+            return RuntimePlatform.FreeBSD;
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            return Platform.MacOS;
+            return RuntimePlatform.MacOS;
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Create("ANDROID")))
         {
-            return Platform.Android;
+            return RuntimePlatform.Android;
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Create("IOS")))
         {
-            return Platform.IOS;
+            return RuntimePlatform.IOS;
         }
         else
         {
-            return Platform.Unknown;
+            return RuntimePlatform.Unknown;
         }
     }
 }
 
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
-public class PlatynUiExtensionAttribute(Platform[] supportedPlatforms) : Attribute
+public class PlatynUiExtensionAttribute(RuntimePlatform[] supportedPlatforms) : Attribute
 {
-    public Platform[] SupportedPlatforms { get; } = supportedPlatforms;
+    public RuntimePlatform[] SupportedPlatforms { get; } = supportedPlatforms;
 }
 
 static class PlatynUiExtensions
@@ -69,7 +70,7 @@ static class PlatynUiExtensions
         var platformAttribute = assembly.GetCustomAttribute<PlatynUiExtensionAttribute>();
         if (platformAttribute != null)
         {
-            if (platformAttribute.SupportedPlatforms.Contains(Platform.Any))
+            if (platformAttribute.SupportedPlatforms.Contains(RuntimePlatform.Any))
             {
                 return true;
             }
@@ -77,6 +78,21 @@ static class PlatynUiExtensions
             return platformAttribute.SupportedPlatforms.Contains(currentPlatform);
         }
         return false;
+    }
+
+    private static CompositionContainer? _compositionContainer;
+    public static CompositionContainer CompositionContainer =>
+        _compositionContainer ??= GetPlatynUIExtensionContainer();
+
+    public static CompositionContainer GetPlatynUIExtensionContainer()
+    {
+        var catalog = GetPlatynUIExtensionCatalog();
+        return new CompositionContainer(catalog);
+    }
+
+    public static void ComposeParts(object obj)
+    {
+        CompositionContainer.ComposeParts(obj);
     }
 
     public static AggregateCatalog GetPlatynUIExtensionCatalog()

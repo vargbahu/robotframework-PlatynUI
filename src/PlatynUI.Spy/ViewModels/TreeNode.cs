@@ -5,9 +5,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
 using PlatynUI.Runtime.Core;
-
 using ReactiveUI;
 
 namespace PlatynUI.Spy.ViewModels;

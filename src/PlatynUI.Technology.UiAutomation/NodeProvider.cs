@@ -7,7 +7,7 @@ using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 using PlatynUI.Technology.UiAutomation.Core;
 
-[assembly: PlatynUiExtension(supportedPlatforms: [Platform.Windows])]
+[assembly: PlatynUiExtension(supportedPlatforms: [RuntimePlatform.Windows])]
 
 namespace PlatynUI.Technology.UiAutomation;
 
