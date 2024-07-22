@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, cast
 
@@ -75,7 +74,7 @@ class DotNetInterface:
         else:
             logger.error(
                 f"Load PlatynUI failed: Could not find the assembly at {debug_assembly_path} or {runtime_assembly_path}"
-            )  # noqa: G004
+            )
             raise RuntimeError(
                 f"Load PlatynUI failed: Could not find the assembly at {debug_assembly_path} or {runtime_assembly_path}"
             )

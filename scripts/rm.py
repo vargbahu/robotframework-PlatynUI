@@ -5,21 +5,27 @@
 import os
 import shutil
 import sys
+from typing import Union
+
+
+def rm(*paths: Union["os.PathLike[str]", str]) -> None:
+    for path in paths:
+        if not os.path.exists(path):
+            print(f"Path {path!r} does not exist")
+            continue
+        try:
+            print(f"Remove path {path!r}")
+            shutil.rmtree(path)
+        except BaseException:
+            try:
+                os.remove(path)
+            except BaseException:
+                raise RuntimeError(f"Failed to remove {path!r}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: rm.py <file>")
         sys.exit(1)
 
-    for i in range(1, len(sys.argv)):
-        if not os.path.exists(sys.argv[i]):
-            print("File", sys.argv[i], "does not exist")
-            continue
-        try:
-            shutil.rmtree(sys.argv[i])
-        except BaseException:
-            try:
-                os.remove(sys.argv[i])
-            except BaseException:
-                print("Failed to remove", sys.argv[i])
-                sys.exit(1)
+    rm(*sys.argv[1:])

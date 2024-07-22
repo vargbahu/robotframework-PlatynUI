@@ -45,12 +45,12 @@ def main() -> None:
     version = get_version()
     python_version_files: List[Path] = list(Path().rglob("__about__.py"))
 
-    # for f in python_version_files:
-    #     replace_in_file(
-    #         f,
-    #         re.compile(r"""(^_*version_*\s*=\s*['"])([^'"]*)(['"])""", re.MULTILINE),
-    #         rf"\g<1>{version or ''}\g<3>",
-    #     )
+    for f in python_version_files:
+        replace_in_file(
+            f,
+            re.compile(r"""(^_*version_*\s*=\s*['"])([^'"]*)(['"])""", re.MULTILINE),
+            rf"\g<1>{version or ''}\g<3>",
+        )
 
     csproj_version_files: List[Path] = list(Path().rglob("*.csproj"))
 
