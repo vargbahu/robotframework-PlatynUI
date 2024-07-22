@@ -10,6 +10,7 @@
     Title="PlatynUI.Spy"
     Width="800"
     Height="600"
+
     ExtendClientAreaToDecorationsHint="True"
 >
 
@@ -99,7 +100,7 @@
                     <ListBox Grid.Row="1" ItemsSource="{Binding SearchResults}"
                         SelectionMode="Single"
                         SelectedItem="{Binding ResultsSelectedNode, Mode=TwoWay}"
-                        Background="Transparent">
+                        >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="6">
