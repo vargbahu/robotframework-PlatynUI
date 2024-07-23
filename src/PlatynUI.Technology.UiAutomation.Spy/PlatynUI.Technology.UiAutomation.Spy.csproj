@@ -1,14 +1,7 @@
-<!--
-SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
-
-SPDX-License-Identifier: Apache-2.0
--->
-
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <Version>0.1.1-dev.10</Version>
     <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>

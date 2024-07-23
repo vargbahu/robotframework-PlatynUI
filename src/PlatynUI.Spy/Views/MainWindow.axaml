@@ -10,7 +10,6 @@
     Title="PlatynUI.Spy"
     Width="800"
     Height="600"
-
     ExtendClientAreaToDecorationsHint="True"
 >
 
@@ -68,9 +67,19 @@
                         <TreeDataTemplate DataType="vm:TreeNode"
                             ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <TextBlock Text="{Binding NodeName}" FontWeight="Bold" />
+                                <TextBlock Text="{Binding NodeName}" FontWeight="Bold">
+                                </TextBlock>
                                 <TextBlock Text="{Binding Description}" />
                                 <!-- <TextBlock Foreground="Gray" Text="{Binding ElementName}" /> -->
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Refresh" Command="{Binding Refresh}"
+                                            CommandParameter="{Binding .}" />
+                                    </ContextMenu>
+                                    <!-- <MenuItem Header="Copy XPath" Command="{Binding CopyXPath}"
+                                    />
+                                    <MenuItem Header="Copy Text" Command="{Binding CopyText}" /> -->
+                                </StackPanel.ContextMenu>
                             </StackPanel>
                         </TreeDataTemplate>
                     </TreeView.DataTemplates>
@@ -100,7 +109,7 @@
                     <ListBox Grid.Row="1" ItemsSource="{Binding SearchResults}"
                         SelectionMode="Single"
                         SelectedItem="{Binding ResultsSelectedNode, Mode=TwoWay}"
-                        >
+                    >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="6">

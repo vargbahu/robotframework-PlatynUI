@@ -52,7 +52,7 @@ def main() -> None:
             rf"\g<1>{version or ''}\g<3>",
         )
 
-    csproj_version_files: List[Path] = list(Path().rglob("*.csproj"))
+    csproj_version_files: List[Path] = [*list(Path().rglob("*.csproj")), *list(Path().rglob("Directory.Build.props"))]
 
     for f in csproj_version_files:
         replace_in_file(
