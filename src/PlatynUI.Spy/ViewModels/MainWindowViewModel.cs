@@ -18,6 +18,36 @@ namespace PlatynUI.Spy.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    public MainWindowViewModel()
+    {
+        this.WhenAnyValue(x => x.SelectedNode)
+            .Subscribe(node =>
+            {
+                if (node != null && node.Node is IElement element)
+                {
+                    Display.HighlightRect(element.BoundingRectangle, 2);
+                }
+            });
+        this.WhenAnyValue(x => x.ResultsSelectedNode)
+            .Subscribe(node =>
+            {
+                if (node != null)
+                {
+                    var treeNode = FindNodeInTree(node.Node);
+                    if (treeNode != null)
+                    {
+                        foreach (var ancestor in treeNode.GetAncestors())
+                        {
+                            ancestor.IsExpanded = true;
+                        }
+
+                        SelectedNode = null;
+                        treeNode.IsSelected = true;
+                    }
+                }
+            });
+    }
+
     public void Refresh()
     {
         SelectedNode?.Refresh();
@@ -35,38 +65,14 @@ public class MainWindowViewModel : ViewModelBase
     public TreeNode? SelectedNode
     {
         get => _selectedNode;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _selectedNode, value);
-            if (value != null && value.Node is IElement element)
-            {
-                Display.HighlightRect(element.BoundingRectangle, 2);
-            }
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedNode, value);
     }
 
     private TreeNode? _resultsSelectedNode;
     public TreeNode? ResultsSelectedNode
     {
         get => _resultsSelectedNode;
-        set
-        {
-            if (value != null)
-            {
-                var treeNode = FindNodeInTree(value.Node);
-                if (treeNode != null)
-                {
-                    foreach (var ancestor in treeNode.GetAncestors())
-                    {
-                        ancestor.IsExpanded = true;
-                    }
-
-                    SelectedNode = null;
-                    treeNode.IsSelected = true;
-                }
-            }
-            this.RaiseAndSetIfChanged(ref _resultsSelectedNode, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _resultsSelectedNode, value);
     }
 
     private string? _searchText;
