@@ -6,11 +6,12 @@
     xmlns:ui="using:FluentAvalonia.UI.Controls"
     xmlns:uip="using:FluentAvalonia.UI.Controls.Primitives"
     xmlns:wnd="using:FluentAvalonia.UI.Windowing"
+    xmlns:converters="using:PlatynUI.Spy.Converters"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="PlatynUI.Spy.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
-    Title="PlatynUI.Spy"
+    Title="PlatynUI Spy"
     Width="800"
     Height="600"
 >
@@ -20,6 +21,10 @@
         App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
+
+    <Window.Resources>
+        <converters:ValueToStringConverter x:Key="ValueToString" />
+    </Window.Resources>
 
     <Window.KeyBindings>
         <KeyBinding Gesture="F5"
@@ -72,22 +77,57 @@
                                         <Button Content="&#xE74D;"
                                             FontFamily="{StaticResource SymbolThemeFontFamily}"
                                             Theme="{StaticResource TransparentButton}"
-                                            Command="{Binding $parent[TextBox].Clear}"
+                                            Command="{Binding ClearSearch}"
                                             IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                         <Button Content="&#xE721;"
                                             FontFamily="{StaticResource SymbolThemeFontFamily}"
                                             Theme="{StaticResource TransparentButton}"
                                             Command="{Binding Search}"
-                                            IsVisible="{Binding !InSearch}"
-                                        />
+                                            IsVisible="{Binding !InSearch}" />
                                         <Button Content="&#xE711;"
                                             FontFamily="{StaticResource SymbolThemeFontFamily}"
                                             Theme="{StaticResource TransparentButton}"
                                             Command="{Binding CancelSearch}"
-                                            IsVisible="{Binding InSearch}"
-                                        />
+                                            IsVisible="{Binding InSearch}" />
                                     </StackPanel>
                                 </Template>
+                            </Setter>
+                        </Style>
+                        <Style Selector="DataValidationErrors">
+                            <Setter Property="Template">
+                                <ControlTemplate>
+                                    <DockPanel LastChildFill="True">
+                                        <ContentControl DockPanel.Dock="Right"
+                                            ContentTemplate="{TemplateBinding ErrorTemplate}"
+                                            DataContext="{TemplateBinding Owner}"
+                                            Content="{Binding (DataValidationErrors.Errors)}"
+                                            IsVisible="{Binding (DataValidationErrors.HasErrors)}" />
+                                        <ContentPresenter Name="PART_ContentPresenter"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding CornerRadius}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Content="{TemplateBinding Content}"
+                                            Padding="{TemplateBinding Padding}" />
+                                    </DockPanel>
+                                </ControlTemplate>
+                            </Setter>
+                            <Setter Property="ErrorTemplate">
+                                <DataTemplate x:DataType="{x:Type x:Object}">
+                                    <ui:InfoBadge Classes="Critical Icon"
+                                        HorizontalAlignment="Left" Margin="3">
+                                        <ui:InfoBadge.Styles>
+                                            <Style Selector="ToolTip">
+                                                <Setter Property="Background" Value="DarkRed" />
+                                                <Setter Property="BorderBrush" Value="Red" />
+                                            </Style>
+                                        </ui:InfoBadge.Styles>
+                                        <ToolTip.Tip>
+                                            <ItemsControl ItemsSource="{Binding}" />
+                                        </ToolTip.Tip>
+                                    </ui:InfoBadge>
+                                </DataTemplate>
                             </Setter>
                         </Style>
                     </AutoCompleteBox.Styles>
@@ -100,7 +140,7 @@
                 </AutoCompleteBox>
             </Border>
             <ToggleSwitch Grid.Column="3" OnContent="" OffContent="" ToolTip.Tip="Always On Top"
-                IsChecked="{Binding $parent[Window].Topmost}}" />
+                IsChecked="{Binding $parent[Window].Topmost}" />
         </Grid>
 
 
@@ -108,7 +148,7 @@
             <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto, *, Auto" IsVisible="False"
                 Margin="6">
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="3">
-                    <CheckBox Name="AlwaysOnTop" IsChecked="{Binding $parent[Window].Topmost}}"
+                    <CheckBox Name="AlwaysOnTop" IsChecked="{Binding $parent[Window].Topmost}"
                         Content="Always On Top" />
                 </StackPanel>
                 <TextBox Grid.Column="1" Margin="3" Text="{Binding SearchText, Mode=TwoWay}"
@@ -125,16 +165,9 @@
                     IsVisible="{Binding InSearch}" />
             </Grid>
 
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="3" Margin="6">
-                <TextBlock Text="{Binding SearchResults.Count}"
-                    IsVisible="{Binding SearchResults.Count>0}" />
-                <TextBlock Text="Element(s) found." IsVisible="{Binding SearchResults.Count>0}" />
-                <TextBlock Text="{Binding LastError}" />
-            </StackPanel>
-
-            <Grid RowDefinitions="*,4,0.20*" Margin="6">
+            <Grid RowDefinitions="*,4,0.40*" Margin="6">
                 <Grid Grid.Row="0" ColumnDefinitions="0.60*,4,0.40*">
-                    <Border Grid.Column="0" Padding="6">
+                    <Border Grid.Column="0" Margin="6">
                         <TreeView ItemsSource="{Binding Root}"
                             SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
                             SelectionMode="Single"
@@ -143,7 +176,7 @@
                                 <TreeDataTemplate DataType="vm:TreeNode"
                                     ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="{Binding NodeName}" FontWeight="Bold">
+                                        <TextBlock Text="{Binding NodeName}">
                                         </TextBlock>
                                         <TextBlock Text="{Binding Description}" />
                                         <StackPanel.ContextFlyout>
@@ -167,21 +200,47 @@
                         </TreeView>
                     </Border>
                     <GridSplitter Grid.Column="1" />
-                    <Border Grid.Column="2" Padding="6">
+                    <Border Grid.Column="2" Margin="6">
                         <DataGrid ItemsSource="{Binding SelectedNode.Attributes}"
-                            CanUserResizeColumns="true">
+                            CanUserResizeColumns="true" ClipboardCopyMode="ExcludeHeader">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"
-                                    CanUserSort="true" />
-                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                                x:DataType="vm:TreeNodeAttribute"
+                                    CanUserSort="true" ClipboardContentBinding="{Binding Name}" />
+                                <DataGridTextColumn Header="Value"
+                                    Binding="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
+                                    x:DataType="vm:TreeNodeAttribute"
+                                    ClipboardContentBinding="{Binding Value}"
+                                    Width="*" />
                             </DataGrid.Columns>
+                            <DataGrid.Styles>
+                                <Style Selector="TextBlock">
+                                    <Setter Property="FontSize"
+                                        Value="{DynamicResource ControlContentThemeFontSize}" />
+                                </Style>
+                            </DataGrid.Styles>
                         </DataGrid>
                     </Border>
                 </Grid>
+
                 <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+
                 <Border Grid.Row="2" Padding="6">
                     <Grid RowDefinitions="Auto,*">
-                        <Label Grid.Row="0" Content="Results" />
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <Label Grid.Row="0" Content="Results" />
+                            <ui:InfoBadge Margin="3" Value="{Binding SearchResults.Count}"
+                                IsVisible="{Binding SearchResults.Count>0}" />
+
+                            <StackPanel Orientation="Horizontal"
+                                IsVisible="{Binding LastError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <ui:InfoBadge Classes="Critical Icon"
+                                    HorizontalAlignment="Left" Margin="3" VerticalAlignment="Center">
+                                </ui:InfoBadge>
+                                <TextBlock Text="{Binding LastError}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+
                         <ListBox Grid.Row="1" ItemsSource="{Binding SearchResults}"
                             SelectionMode="Single"
                             SelectedItem="{Binding ResultsSelectedNode, Mode=TwoWay}"
@@ -189,11 +248,8 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="{Binding NodeName}" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding NodeName}" />
                                         <TextBlock Text="{Binding Description}" />
-                                        <!-- <TextBlock Foreground="Gray" Text="{Binding
-                                        ElementName}"
-                                    /> -->
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

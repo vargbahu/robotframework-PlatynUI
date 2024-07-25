@@ -27,7 +27,7 @@ public class Display
 
     public static void HighlightRect(Rect rect, double time)
     {
-        Instance.displayDevice?.HighlightRect(rect.X, rect.Y, rect.Width, rect.Height, time);
+        HighlightRect(rect.X, rect.Y, rect.Width, rect.Height, time);
     }
 
     public static void HighlightRect(double x, double y, double width, double height, double time)

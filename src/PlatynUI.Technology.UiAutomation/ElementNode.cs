@@ -80,45 +80,40 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
     {
         try
         {
-            if (attribute.Id == -1)
+            switch (attribute.Id)
             {
-                if (attribute.Name == "Role")
-                    return Element.GetCurrentControlTypeName();
+                case -1:
+                    if (attribute.Name == "Role")
+                        return Element.GetCurrentControlTypeName();
 
-                return null;
-            }
-            else if (attribute.Id == -2)
-            {
-                if (attribute.Name == "ProcessName")
-                {
-                    return System.Diagnostics.Process.GetProcessById(Element.CurrentProcessId).ProcessName;
-                }
-
-                return null;
-            }
-            else if (attribute.Id == -3)
-            {
-                if (attribute.Name == "Technology")
-                {
-                    return "UIAutomation";
-                }
-
-                return null;
-            }
-            else if (attribute.Id == -4)
-            {
-                if (attribute.Name == "IsTopLevel")
-                {
-                    if (Element.CurrentNativeWindowHandle == IntPtr.Zero)
+                    return null;
+                case -2:
+                    if (attribute.Name == "ProcessName")
                     {
-                        return false;
+                        return System.Diagnostics.Process.GetProcessById(Element.CurrentProcessId).ProcessName;
                     }
 
-                    return (HWND)Element.CurrentNativeWindowHandle
-                        == PInvoke.GetAncestor((HWND)Element.CurrentNativeWindowHandle, GET_ANCESTOR_FLAGS.GA_ROOT);
-                }
+                    return null;
+                case -3:
+                    if (attribute.Name == "Technology")
+                    {
+                        return "UIAutomation";
+                    }
 
-                return null;
+                    return null;
+                case -4:
+                    if (attribute.Name == "IsTopLevel")
+                    {
+                        if (Element.CurrentNativeWindowHandle == IntPtr.Zero)
+                        {
+                            return false;
+                        }
+
+                        return (HWND)Element.CurrentNativeWindowHandle
+                            == PInvoke.GetAncestor((HWND)Element.CurrentNativeWindowHandle, GET_ANCESTOR_FLAGS.GA_ROOT);
+                    }
+
+                    return null;
             }
 
             var value = Element.GetCurrentPropertyValueEx(attribute.Id, 1);
@@ -126,6 +121,24 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
             {
                 return InvalidValue;
             }
+
+            if (
+                attribute.Id == UIA_PropertyIds.UIA_BoundingRectanglePropertyId
+                && value is double[] r and { Length: 4 }
+            )
+            {
+                return new Rect(r[0], r[1], r[2], r[3]);
+            }
+            else if (
+                (
+                    attribute.Id == UIA_PropertyIds.UIA_ClickablePointPropertyId
+                    || attribute.Id == UIA_PropertyIds.UIA_CenterPointPropertyId
+                ) && value is double[] p and { Length: 2 }
+            )
+            {
+                return new Point(p[0], p[1]);
+            }
+
             return value;
         }
         catch (Exception e)

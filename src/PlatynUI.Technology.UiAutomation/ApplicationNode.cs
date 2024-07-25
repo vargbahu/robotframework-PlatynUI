@@ -47,7 +47,7 @@ public class ApplicationNode(Runtime.Core.INode? parent, int processId) : Runtim
         {
             new Runtime.Core.Attribute("Technology", "UIAutomation"),
             new Runtime.Core.Attribute("Name", process.ProcessName),
-            new Runtime.Core.Attribute("Id", process.Id),
+            new Runtime.Core.Attribute("ProcessId", process.Id),
             new Runtime.Core.Attribute("SessionId", process.SessionId),
             new Runtime.Core.Attribute("MainWindowHandle", process.MainWindowHandle),
             new Runtime.Core.Attribute("MainWindowTitle", process.MainWindowTitle),

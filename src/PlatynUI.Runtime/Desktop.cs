@@ -50,7 +50,8 @@ public class Desktop : INode
             new Attribute("Name", Environment.MachineName),
             new Attribute("Platform", Environment.OSVersion.Platform.ToString()),
             new Attribute("Version", Environment.OSVersion.VersionString),
-            new Attribute("Role", "Desktop")
+            new Attribute("Role", "Desktop"),
+            new Attribute("BoundingRectangle", Display.GetBoundingRectangle())
         }
             .OrderBy(x => x.Name)
             .ToDictionary(x => x.Name);

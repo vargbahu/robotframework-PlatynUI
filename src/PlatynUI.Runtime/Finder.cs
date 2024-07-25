@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Diagnostics;
 using System.Xml.XPath;
 using PlatynUI.Runtime.Core;
 using XPathNavigator = PlatynUI.Runtime.Core.XPathNavigator;

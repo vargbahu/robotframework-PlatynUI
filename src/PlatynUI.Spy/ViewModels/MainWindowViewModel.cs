@@ -3,11 +3,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 using Avalonia.Metadata;
 using Avalonia.Threading;
 using PlatynUI.Runtime;
@@ -16,7 +20,7 @@ using ReactiveUI;
 
 namespace PlatynUI.Spy.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
 {
     public MainWindowViewModel()
     {
@@ -26,6 +30,23 @@ public class MainWindowViewModel : ViewModelBase
                 if (node != null && node.Node is IElement element)
                 {
                     Display.HighlightRect(element.BoundingRectangle, 2);
+                }
+            });
+        this.WhenAnyValue(x => x.SearchText)
+            .Subscribe(text =>
+            {
+                RemoveErrors(nameof(SearchText));
+
+                if (string.IsNullOrWhiteSpace(text))
+                    return;
+
+                try
+                {
+                    XPathExpression.Compile(text);
+                }
+                catch (XPathException ex)
+                {
+                    SetError(nameof(SearchText), ex.Message);
                 }
             });
         this.WhenAnyValue(x => x.ResultsSelectedNode)
@@ -73,6 +94,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _resultsSelectedNode;
         set => this.RaiseAndSetIfChanged(ref _resultsSelectedNode, value);
+    }
+
+    public void ClearSearch()
+    {
+        SearchText = "";
     }
 
     private string? _searchText;
@@ -203,12 +229,58 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private Dictionary<string, List<string>> _errorsByPropertyName = [];
+    private static readonly string[] NO_ERRORS = [];
+
+    public IEnumerable GetErrors(string? propertyName)
+    {
+        if (string.IsNullOrEmpty(propertyName))
+        {
+            return _errorsByPropertyName.Values.SelectMany(x => x);
+        }
+
+        if (_errorsByPropertyName.TryGetValue(propertyName, out var errorList))
+        {
+            return errorList;
+        }
+        return NO_ERRORS;
+    }
+
+    protected virtual void SetError(string propertyName, string error)
+    {
+        if (_errorsByPropertyName.TryGetValue(propertyName, out var errorList))
+        {
+            if (!errorList.Contains(error))
+            {
+                errorList.Add(error);
+            }
+        }
+        else
+        {
+            _errorsByPropertyName.Add(propertyName, [error]);
+        }
+        ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+    }
+
+    protected virtual void RemoveErrors(string propertyName)
+    {
+        if (_errorsByPropertyName.Remove(propertyName))
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+    }
+
     public ObservableCollection<TreeNode> SearchResults { get; } = [];
 
     private string _lastError = "";
+
+    public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
     public string LastError
     {
         get => _lastError;
         set => this.RaiseAndSetIfChanged(ref _lastError, value);
     }
+
+    public bool HasErrors => throw new NotImplementedException();
 }

@@ -104,6 +104,11 @@ public static class UiAutomationElementExtensions
         return new Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
     }
 
+    public static Point ToPoint(this tagPOINT point)
+    {
+        return new Point(point.x, point.y);
+    }
+
 #pragma warning disable CA1837 // Use 'Environment.ProcessId'
     public static int CurrentProcessId => Process.GetCurrentProcess().Id;
 #pragma warning restore CA1837 // Use 'Environment.ProcessId'
