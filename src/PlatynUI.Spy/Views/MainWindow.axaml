@@ -230,7 +230,7 @@
                         <StackPanel Grid.Row="0" Orientation="Horizontal">
                             <Label Grid.Row="0" Content="Results" />
                             <ui:InfoBadge Margin="3" Value="{Binding SearchResults.Count}"
-                                IsVisible="{Binding SearchResults.Count>0}" />
+                                IsVisible="{Binding SearchResults.Count}" />
 
                             <StackPanel Orientation="Horizontal"
                                 IsVisible="{Binding LastError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
