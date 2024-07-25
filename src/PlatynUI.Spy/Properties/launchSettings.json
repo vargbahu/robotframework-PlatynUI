@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "PlatynUI.Spy": {
+      "commandName": "Project"
+    },
+    "PlatynUI.Spy X11 ssh": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DISPLAY": ":10.0"
+      }
+    }
+  }
+}
