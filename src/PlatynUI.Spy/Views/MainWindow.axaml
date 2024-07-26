@@ -75,17 +75,20 @@
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
                                 Command="{Binding ClearSearch}"
-                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            />
                             <Button Content="&#xE721;"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
                                 Command="{Binding Search}"
-                                IsVisible="{Binding !InSearch}" />
+                                IsVisible="{Binding !InSearch}"
+                            />
                             <Button Content="&#xE711;"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
                                 Command="{Binding CancelSearch}"
-                                IsVisible="{Binding InSearch}" />
+                                IsVisible="{Binding InSearch}"
+                            />
                         </StackPanel>
                     </TextBox.InnerRightContent>
                     <TextBox.Styles>

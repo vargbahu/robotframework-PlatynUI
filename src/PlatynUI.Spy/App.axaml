@@ -22,6 +22,11 @@
             UseSystemFontOnWindows="True" />
 
         <OnPlatform>
+            <On Options="Windows">
+                <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True"
+                    UseSystemFontOnWindows="True" />
+            </On>
+
             <On Options="Linux">
                 <FluentTheme DensityStyle="Compact" />
             </On>
