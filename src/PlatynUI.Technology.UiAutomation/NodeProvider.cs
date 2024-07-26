@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.ComponentModel.Composition;
-
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 using PlatynUI.Technology.UiAutomation.Core;

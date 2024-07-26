@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace PlatynUI.Runtime;
@@ -90,9 +91,16 @@ static class PlatynUiExtensions
         return new CompositionContainer(catalog);
     }
 
-    public static void ComposeParts(object obj)
+    public static void ComposeParts(object obj, [CallerMemberName] string callerMemberName = "")
     {
-        CompositionContainer.ComposeParts(obj);
+        try
+        {
+            CompositionContainer.ComposeParts(obj);
+        }
+        catch (ChangeRejectedException e)
+        {
+            Debug.WriteLine($"ComposeParts for {callerMemberName} failed: {e.Message}");
+        }
     }
 
     public static AggregateCatalog GetPlatynUIExtensionCatalog()

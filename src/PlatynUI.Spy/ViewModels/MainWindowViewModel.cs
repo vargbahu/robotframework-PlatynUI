@@ -27,6 +27,8 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
         this.WhenAnyValue(x => x.SelectedNode)
             .Subscribe(node =>
             {
+                SelectedNodeAttributes = node?.Attributes ?? [];
+
                 if (node != null && node.Node is IElement element)
                 {
                     Display.HighlightRect(element.BoundingRectangle, 2);
@@ -87,6 +89,13 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
     {
         get => _selectedNode;
         set => this.RaiseAndSetIfChanged(ref _selectedNode, value);
+    }
+
+    ObservableCollection<TreeNodeAttribute> _selectedNodeAttributes = [];
+    public ObservableCollection<TreeNodeAttribute> SelectedNodeAttributes
+    {
+        get => _selectedNodeAttributes;
+        set => this.RaiseAndSetIfChanged(ref _selectedNodeAttributes, value);
     }
 
     private TreeNode? _resultsSelectedNode;

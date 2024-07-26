@@ -65,34 +65,30 @@
             </TextBlock>
 
             <Border Grid.Column="2" Padding="6">
-                <AutoCompleteBox Name="SearchBox"
+                <TextBox Name="SearchBox"
                     MaxWidth="500"
                     Watermark="Search..."
                     Text="{Binding SearchText, Mode=TwoWay}">
-                    <AutoCompleteBox.Styles>
-                        <Style Selector="AutoCompleteBox /template/ TextBox#PART_TextBox">
-                            <Setter Property="InnerRightContent">
-                                <Template>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Content="&#xE74D;"
-                                            FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                            Theme="{StaticResource TransparentButton}"
-                                            Command="{Binding ClearSearch}"
-                                            IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                        <Button Content="&#xE721;"
-                                            FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                            Theme="{StaticResource TransparentButton}"
-                                            Command="{Binding Search}"
-                                            IsVisible="{Binding !InSearch}" />
-                                        <Button Content="&#xE711;"
-                                            FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                            Theme="{StaticResource TransparentButton}"
-                                            Command="{Binding CancelSearch}"
-                                            IsVisible="{Binding InSearch}" />
-                                    </StackPanel>
-                                </Template>
-                            </Setter>
-                        </Style>
+                    <TextBox.InnerRightContent>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="&#xE74D;"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Theme="{StaticResource TransparentButton}"
+                                Command="{Binding ClearSearch}"
+                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <Button Content="&#xE721;"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Theme="{StaticResource TransparentButton}"
+                                Command="{Binding Search}"
+                                IsVisible="{Binding !InSearch}" />
+                            <Button Content="&#xE711;"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Theme="{StaticResource TransparentButton}"
+                                Command="{Binding CancelSearch}"
+                                IsVisible="{Binding InSearch}" />
+                        </StackPanel>
+                    </TextBox.InnerRightContent>
+                    <TextBox.Styles>
                         <Style Selector="DataValidationErrors">
                             <Setter Property="Template">
                                 <ControlTemplate>
@@ -130,14 +126,14 @@
                                 </DataTemplate>
                             </Setter>
                         </Style>
-                    </AutoCompleteBox.Styles>
-                    <AutoCompleteBox.KeyBindings>
+                    </TextBox.Styles>
+                    <TextBox.KeyBindings>
                         <KeyBinding Gesture="Enter"
                             Command="{Binding Search}" />
                         <KeyBinding Gesture="Escape"
                             Command="{Binding CancelSearch}" />
-                    </AutoCompleteBox.KeyBindings>
-                </AutoCompleteBox>
+                    </TextBox.KeyBindings>
+                </TextBox>
             </Border>
             <ToggleSwitch Grid.Column="3" OnContent="" OffContent="" ToolTip.Tip="Always On Top"
                 IsChecked="{Binding $parent[Window].Topmost}" />
@@ -145,26 +141,6 @@
 
 
         <DockPanel Grid.Row="1">
-            <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto, *, Auto" IsVisible="False"
-                Margin="6">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="3">
-                    <CheckBox Name="AlwaysOnTop" IsChecked="{Binding $parent[Window].Topmost}"
-                        Content="Always On Top" />
-                </StackPanel>
-                <TextBox Grid.Column="1" Margin="3" Text="{Binding SearchText, Mode=TwoWay}"
-                    Watermark="Enter your XPath Expression here and then click search..."
-                    VerticalAlignment="Center">
-                    <TextBox.KeyBindings>
-                        <KeyBinding Gesture="Enter"
-                            Command="{Binding Search}" />
-                    </TextBox.KeyBindings>
-                </TextBox>
-                <Button Grid.Column="2" Margin="3" Content="Search" Command="{Binding Search}"
-                    IsVisible="{Binding !InSearch}" />
-                <Button Grid.Column="2" Margin="3" Content="Cancel" Command="{Binding CancelSearch}"
-                    IsVisible="{Binding InSearch}" />
-            </Grid>
-
             <Grid RowDefinitions="*,4,0.40*" Margin="6">
                 <Grid Grid.Row="0" ColumnDefinitions="0.60*,4,0.40*">
                     <Border Grid.Column="0" Margin="6">
@@ -201,11 +177,11 @@
                     </Border>
                     <GridSplitter Grid.Column="1" />
                     <Border Grid.Column="2" Margin="6">
-                        <DataGrid ItemsSource="{Binding SelectedNode.Attributes}"
+                        <DataGrid ItemsSource="{Binding SelectedNodeAttributes}"
                             CanUserResizeColumns="true" ClipboardCopyMode="ExcludeHeader">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"
-                                x:DataType="vm:TreeNodeAttribute"
+                                    x:DataType="vm:TreeNodeAttribute"
                                     CanUserSort="true" ClipboardContentBinding="{Binding Name}" />
                                 <DataGridTextColumn Header="Value"
                                     Binding="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
