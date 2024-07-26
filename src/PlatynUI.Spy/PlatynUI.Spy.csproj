@@ -33,5 +33,6 @@
     <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj" />
     <ProjectReference Include="..\PlatynUI.Technology.UiAutomation\PlatynUI.Technology.UiAutomation.csproj" />
     <ProjectReference Include="..\PlatynUI.Platform.Win32\PlatynUI.Platform.Win32.csproj" />
+    <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
   </ItemGroup>
 </Project>
