@@ -39,7 +39,7 @@
             Background="Transparent">
             <Image Margin="12 4"
                 IsHitTestVisible="False"
-                Source="/Assets/avalonia-logo.ico"
+                Source="/Assets/platynui-spy.png"
                 Width="18" Height="18"
                 DockPanel.Dock="Left"
                 Name="WindowIcon"
