@@ -24,10 +24,12 @@ public class DisplayDevice() : IDisplayDevice
         );
     }
 
-    private static readonly Highlighter _highlighter = new(true);
+    private Highlighter? _highlighter = null;
+
+    Highlighter Highlighter => _highlighter ??= new(true);
 
     public void HighlightRect(double x, double y, double width, double height, double time)
     {
-        _highlighter.Show(new Rect(x, y, width, height), (int)time * 1000);
+        Highlighter.Show(new Rect(x, y, width, height), (int)time * 1000);
     }
 }

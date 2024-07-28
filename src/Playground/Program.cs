@@ -1,37 +1,15 @@
-// SPDX-FileCopyrightText: 2024 Daniel Biehl <daniel.biehl@imbus.de>
-//
-// SPDX-License-Identifier: Apache-2.0
+using PlatynUI.Runtime;
 
-// using PlatynUI.Technology.UiAutomation;
-// using PlatynUI.Technology.UiAutomation.Core;
+Display.HighlightRect(0, 0, 100, 200, 20);
+var r = Display.GetBoundingRectangle();
 
-// //Console.OutputEncoding = System.Text.Encoding.Unicode;
-// var stopwatch = new System.Diagnostics.Stopwatch();
+var yInc = 1 * r.Height / r.Width;
 
-// stopwatch.Start();
-// //var result = Finder.EnumAllElements(null, "Window[@Name='WPF Test Application']//DataGrid//Text/../../../../..");
-// var result = Finder.Evaluate(null, "namespace-uri(/*)");
-// Console.WriteLine(stopwatch.Elapsed);
-// stopwatch.Restart();
-// foreach (var item in result)
-// {
-//     Console.WriteLine(stopwatch.Elapsed);
-//     Console.WriteLine($"{item} {item?.GetType()}");
-//     stopwatch.Restart();
-// }
+for (double x = 0, y = 0; x < r.Width; x++, y+=yInc)
+{
+    Console.WriteLine($"{x}, {y}");
+    Display.HighlightRect(x, y, 100, 200, 20);
+    Thread.Sleep(2);
+}
 
-
-// //var result = Finder.FindAllElements(null, "Application[@Name='Calculator']");
-// //var result = Finder.FindAllElements(null, "//*[@Name='Start']");
-// //var result = Finder.FindAllElements(null, "/app:Application");
-
-// Console.WriteLine(result);
-
-// // var result = Finder.Evaluate(null, "1+2");
-
-// // foreach (var item in result)
-// // {
-// //     Console.WriteLine($"{item.GetDisplayName()} {item?.GetType()}");
-// // }
-
-Console.WriteLine(OperatingSystem.IsWindows());
+//Thread.Sleep(20000);

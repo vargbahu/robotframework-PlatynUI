@@ -7,8 +7,8 @@ xcb-xtest
 --namespace
 PlatynUI.Platform.X11.Interop.XCB
 --methodClassName
-XCBXTest
---prefixStrip
-xcb_test
+XCB
+#--prefixStrip
+#xcb
 --output
 ../../Interop/XTest/

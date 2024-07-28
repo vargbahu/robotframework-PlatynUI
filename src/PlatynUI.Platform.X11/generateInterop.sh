@@ -25,6 +25,9 @@ gen()
 gen "xproto"
 gen "xcb"
 gen "xtest"
+gen "ewmh"
+gen "icccm"
+
 #gen "shape"
 #gen "render"
 #gen "xfixes"

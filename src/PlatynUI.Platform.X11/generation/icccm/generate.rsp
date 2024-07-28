@@ -1,9 +1,9 @@
 @../config.rsp
 
 --file
-/usr/include/xcb/xcb.h
+/usr/include/xcb/xcb_icccm.h
 --libraryPath
-xcb
+xcb-util
 --namespace
 PlatynUI.Platform.X11.Interop.XCB
 --methodClassName
@@ -11,4 +11,4 @@ XCB
 #--prefixStrip
 #xcb_
 --output
-../../Interop/XCB/
+../../Interop/ICCM/

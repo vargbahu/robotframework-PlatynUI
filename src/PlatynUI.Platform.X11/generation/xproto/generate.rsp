@@ -8,7 +8,7 @@ xcb
 PlatynUI.Platform.X11.Interop.XCB
 --methodClassName
 XCB
---prefixStrip
-xcb_
+#--prefixStrip
+#xcb_
 --output
 ../../Interop/XProto/

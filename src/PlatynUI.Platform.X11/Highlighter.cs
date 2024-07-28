@@ -2,14 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Runtime.InteropServices;
 using PlatynUI.Runtime;
-using Windows.Win32;
-using Windows.Win32.UI.HiDpi;
-using Windows.Win32.UI.WindowsAndMessaging;
+using static PlatynUI.Platform.X11.Interop.XCB.XCB;
 using Timer = System.Timers.Timer;
 
-namespace PlatynUI.Platform.Win32;
+namespace PlatynUI.Platform.X11;
 
 public class Highlighter : IDisposable
 {
@@ -45,29 +42,22 @@ public class Highlighter : IDisposable
         {
             _thread = new Thread(() =>
             {
-#pragma warning disable CA1416 // Validate platform compatibility
+                var connection = XCBConnection.Default;
 
-                try
-                {
-                    PInvoke.SetThreadDpiAwarenessContext(
-                        DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-                    );
-                }
-                catch (EntryPointNotFoundException)
-                {
-                    System.Diagnostics.Debug.WriteLine("SetThreadDpiAwarenessContext not found");
-                }
-
-#pragma warning restore CA1416 // Validate platform compatibility
-
-                _highlightHolder = new HighlightHolder();
+                _highlightHolder = new HighlightHolder(connection);
 
                 _holderCreatedEvent.Set();
 
-                while (PInvoke.GetMessage(out MSG msg, default, 0, 0))
+                unsafe
                 {
-                    PInvoke.TranslateMessage(msg);
-                    PInvoke.DispatchMessage(msg);
+                    while (true)
+                    {
+                        var ev = xcb_wait_for_event(connection);
+                        if (ev == null)
+                            break;
+
+                        free(ev);
+                    }
                 }
             })
             {
@@ -230,17 +220,19 @@ public class Highlighter : IDisposable
         }
     }
 
-    private sealed class HighlightHolder : IDisposable
+    private sealed class HighlightHolder(XCBConnection connection) : IDisposable
     {
-        public readonly Line Bottom = new();
+        public readonly Line Bottom = new(connection, "Bottom");
 
-        public readonly Line Left = new();
+        public readonly Line Left = new(connection, "Left");
 
-        public readonly Line Right = new();
+        public readonly Line Right = new(connection, "Right");
 
-        public readonly Line Top = new();
+        public readonly Line Top = new(connection, "Top");
 
         private bool _disposed;
+
+        public XCBConnection Connection { get; } = connection;
 
         public void Dispose()
         {

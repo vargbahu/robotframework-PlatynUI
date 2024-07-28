@@ -14,12 +14,16 @@ public class DisplayDevice() : IDisplayDevice
 {
     public Rect GetBoundingRectangle()
     {
-        var size = XCBConnection.Instance.ScreenSize;
+        var size = XCBConnection.Default.ScreenSize;
         return new Rect(0, 0, size.Width, size.Height);
     }
 
+    private Highlighter? _highlighter = null;
+
+    Highlighter Highlighter => _highlighter ??= new(true);
+
     public void HighlightRect(double x, double y, double width, double height, double time)
     {
-        // TODO
+        Highlighter.Show(new Rect(x, y, width, height), (int)time * 1000);
     }
 }

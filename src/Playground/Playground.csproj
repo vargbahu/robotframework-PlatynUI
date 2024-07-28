@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlatynUI.Technology.UiAutomation\PlatynUI.Technology.UiAutomation.csproj" />
+    <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -9,6 +10,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 </Project>
