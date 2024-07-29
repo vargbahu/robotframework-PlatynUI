@@ -10,6 +10,32 @@ public struct Point(double x, double y)
     public double Y { get; set; } = y;
 
     public override readonly string ToString() => $"({X}, {Y})";
+
+    public static bool operator ==(Point obj1, Point obj2)
+    {
+        return obj1.X == obj2.X && obj1.Y == obj2.Y;
+    }
+
+    // this is second one '!='
+    public static bool operator !=(Point obj1, Point obj2)
+    {
+        return !(obj1.X == obj2.X && obj1.Y == obj2.Y);
+    }
+
+    // this is third one 'Equals'
+    public override readonly bool Equals(object? obj)
+    {
+        return obj switch
+        {
+            Point p => this == p,
+            _ => false
+        };
+    }
+
+    public override readonly int GetHashCode()
+    {
+        return X.GetHashCode() ^ Y.GetHashCode();
+    }
 }
 
 public struct Size(double width, double height)
@@ -18,6 +44,32 @@ public struct Size(double width, double height)
     public double Height { get; set; } = height;
 
     public override readonly string ToString() => $"({Width}, {Height})";
+
+    public static bool operator ==(Size obj1, Size obj2)
+    {
+        return obj1.Width == obj2.Width && obj1.Height == obj2.Height;
+    }
+
+    // this is second one '!='
+    public static bool operator !=(Size obj1, Size obj2)
+    {
+        return !(obj1.Width == obj2.Width && obj1.Height == obj2.Height);
+    }
+
+    // this is third one 'Equals'
+    public override readonly bool Equals(object? obj)
+    {
+        return obj switch
+        {
+            Size p => this == p,
+            _ => false
+        };
+    }
+
+    public override readonly int GetHashCode()
+    {
+        return Width.GetHashCode() ^ Height.GetHashCode();
+    }
 }
 
 public struct Rect(double x, double y, double width, double height)

@@ -1,15 +1,25 @@
+using PlatynUI.Platform.X11;
+using PlatynUI.Platform.X11.Interop.XCB;
 using PlatynUI.Runtime;
+using static PlatynUI.Platform.X11.Interop.XCB.XCB;
 
-Display.HighlightRect(0, 0, 100, 200, 20);
-var r = Display.GetBoundingRectangle();
-
-var yInc = 1 * r.Height / r.Width;
-
-for (double x = 0, y = 0; x < r.Width; x++, y+=yInc)
+unsafe
 {
-    Console.WriteLine($"{x}, {y}");
-    Display.HighlightRect(x, y, 100, 200, 20);
-    Thread.Sleep(2);
-}
+    Point p;
+    Point oldP = new(-1, -1);
 
+    while (true)
+    {
+        var cookie = xcb_query_pointer(XCBConnection.Default, XCBConnection.Default.RootWindow);
+        var reply = xcb_query_pointer_reply(XCBConnection.Default, cookie, null);
+        p = new Point(reply->root_x, reply->root_y);
+        if (p != oldP)
+        {
+            Console.WriteLine($"{p}");
+
+            Display.HighlightRect(p.X - 1, p.Y - 1, 2, 2);
+        }
+        oldP = p;
+    }
+}
 //Thread.Sleep(20000);

@@ -93,7 +93,7 @@ internal class Line : IDisposable
                         data
                     );
 
-                fixed (void* data = new uint[] { Connection.Ewmh._NET_WM_WINDOW_TYPE_DESKTOP })
+                fixed (void* data = new uint[] { Connection.Ewmh._NET_WM_WINDOW_TYPE_TOOLTIP })
                     xcb_change_property(
                         XCBConnection.Default.Connection,
                         (byte)xcb_prop_mode_t.XCB_PROP_MODE_REPLACE,
