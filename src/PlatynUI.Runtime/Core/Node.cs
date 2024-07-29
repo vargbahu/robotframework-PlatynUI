@@ -35,7 +35,19 @@ public class Attribute : IAttribute
 
     public string Name { get; }
 
-    public object? Value => _valueGetter != null ? _valueGetter() : _value;
+    private object? GetValue()
+    {
+        try
+        {
+            return _valueGetter != null ? _valueGetter() : _value;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public object? Value => _valueGetter != null ? GetValue() : _value;
 
     public string NamespaceURI { get; }
 }
