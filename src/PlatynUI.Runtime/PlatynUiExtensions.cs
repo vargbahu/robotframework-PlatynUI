@@ -132,7 +132,7 @@ static class PlatynUiExtensions
             try
             {
                 var assemblyName = AssemblyName.GetAssemblyName(dll);
-                if (addedAssemblies.Contains(assemblyName))
+                if (addedAssemblies.Any(x => AssemblyName.ReferenceMatchesDefinition(x, assemblyName)))
                 {
                     continue;
                 }
