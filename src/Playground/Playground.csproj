@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PlatynUI.Technology.UiAutomation\PlatynUI.Technology.UiAutomation.csproj" />
     <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
+    <ProjectReference Include="..\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

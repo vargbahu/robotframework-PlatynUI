@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj" />
+    <ProjectReference Include="..\PlatynUI.Provider.Server\PlatynUI.Provider.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamJsonRpc" Version="2.18.48" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.1.1" />
   </ItemGroup>
 
   <PropertyGroup>

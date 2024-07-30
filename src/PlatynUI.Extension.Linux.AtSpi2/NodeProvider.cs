@@ -72,7 +72,13 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
 
             if (interfaces.Contains("org.a11y.atspi.Application"))
             {
+                var childCount = acc.GetChildCountPropertyAsync().GetAwaiter().GetResult();
+                if (childCount == 0)
+                {
+                    continue;
+                }
                 result.Add(new ApplicationAdapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
+
                 continue;
             }
 
@@ -108,14 +114,25 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
         }
     }
 
-    public string NamespaceURI => Namespaces.Raw;
+    public virtual string NamespaceURI => Namespaces.Raw;
 
     public IDictionary<string, IAttribute> Attributes => _attributes ??= GetAttributes();
+
+    private Dictionary<string, string> GetAttributesDictionary()
+    {
+        try
+        {
+            return Element.GetAttributesAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception) { }
+        return [];
+    }
 
     protected virtual List<IAttribute> GetAttributesList()
     {
         return
         [
+            .. GetAttributesDictionary().Select(x => new Attribute("Native." + x.Key, () => x.Value)),
             new Attribute("Name", () => Element.GetNamePropertyAsync().GetAwaiter().GetResult()),
             new Attribute("Description", () => Element.GetDescriptionPropertyAsync().GetAwaiter().GetResult()),
             new Attribute("Role", () => LocalName),
@@ -182,11 +199,30 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
 }
 
 class ApplicationAdapter(Connection connection, INode? parent, ElementReference elementReference)
-    : Adapter(connection, parent, elementReference) { }
-
-class ComponentAdapter : Adapter, IElement
+    : Adapter(connection, parent, elementReference)
 {
-    OrgA11yAtspiComponent Component { get; }
+    OrgA11yAtspiApplication Application { get; } = new(connection, elementReference.Service, elementReference.Path);
+
+    public override string NamespaceURI => Namespaces.App;
+
+    protected override List<IAttribute> GetAttributesList()
+    {
+        return
+        [
+            .. base.GetAttributesList(),
+            new Attribute("AtspiVersion", () => Application.GetAtspiVersionPropertyAsync().GetAwaiter().GetResult()),
+            new Attribute("Id", () => Application.GetIdPropertyAsync().GetAwaiter().GetResult()),
+            new Attribute("Version", () => Application.GetVersionPropertyAsync().GetAwaiter().GetResult()),
+            new Attribute("ToolkitName", () => Application.GetToolkitNamePropertyAsync().GetAwaiter().GetResult()),
+        ];
+    }
+}
+
+class ComponentAdapter(Connection connection, INode? parent, ElementReference elementReference)
+    : Adapter(connection, parent, elementReference),
+        IElement
+{
+    OrgA11yAtspiComponent Component { get; } = new(connection, elementReference.Service, elementReference.Path);
 
     public bool IsEnabled => Element.GetStateAsync().GetAwaiter().GetResult().Any(c => c == 8);
 
@@ -216,12 +252,6 @@ class ComponentAdapter : Adapter, IElement
             var b = BoundingRectangle;
             return new Point(b.X + b.Width / 2, b.Y + b.Height / 2);
         }
-    }
-
-    public ComponentAdapter(Connection connection, INode? parent, ElementReference elementReference)
-        : base(connection, parent, elementReference)
-    {
-        Component = new(connection, elementReference.Service, elementReference.Path);
     }
 
     protected override List<IAttribute> GetAttributesList()
@@ -258,6 +288,7 @@ class NodeProvider : INodeProvider
 
     public IEnumerable<INode> GetNodes(INode parent)
     {
+        Root.Refresh();
         return Root.Children;
     }
 

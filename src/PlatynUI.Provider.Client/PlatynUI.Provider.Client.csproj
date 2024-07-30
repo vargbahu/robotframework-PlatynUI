@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="StreamJsonRpc" Version="2.18.48" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj" />
+    <ProjectReference Include="..\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj" />
+  </ItemGroup>
+
 </Project>
