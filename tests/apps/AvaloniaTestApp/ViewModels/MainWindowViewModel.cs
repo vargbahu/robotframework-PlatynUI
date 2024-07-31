@@ -16,4 +16,9 @@ public class MainWindowViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _greeting, value);
         }
     }
+
+    public void ClickCommand()
+    {
+        Greeting = "Hello Avalonia!";
+    }
 }

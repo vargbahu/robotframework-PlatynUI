@@ -41,4 +41,37 @@ public static class Finder
                 yield return element;
         }
     }
+
+    public static IEnumerable<object?> Evaluate(INode? parent, string xpath, bool findVirtual = false)
+    {
+        parent ??= Desktop.Instance;
+        parent.Refresh();
+
+        var navigator = new XPathNavigator(parent, findVirtual);
+        var expression = XPathExpression.Compile(xpath, xsltContext);
+
+        var nodes = navigator.Evaluate(expression);
+
+        if (nodes is XPathNodeIterator iterator)
+        {
+            while (iterator.MoveNext())
+            {
+                if (iterator.Current is System.Xml.XPath.XPathNavigator node)
+                {
+                    if (node?.UnderlyingObject is INode n)
+                    {
+                        yield return n;
+                    }
+                    else
+                    {
+                        yield return node?.TypedValue;
+                    }
+                }
+            }
+        }
+        else
+        {
+            yield return nodes;
+        }
+    }
 }

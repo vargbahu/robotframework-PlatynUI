@@ -1,6 +1,6 @@
 namespace PlatynUI.Provider.Core
 {
-    public struct NodeReference(int[] runtimeId)
+    public readonly struct ElementReference(int[] runtimeId)
     {
         public readonly int[] RuntimeId = runtimeId;
 
@@ -9,19 +9,19 @@ namespace PlatynUI.Provider.Core
             return $"NodeReference(RuntimeId: {string.Join(", ", RuntimeId)})";
         }
 
-        public static bool operator ==(NodeReference left, NodeReference right)
+        public static bool operator ==(ElementReference left, ElementReference right)
         {
             return left.RuntimeId.SequenceEqual(right.RuntimeId);
         }
 
-        public static bool operator !=(NodeReference left, NodeReference right)
+        public static bool operator !=(ElementReference left, ElementReference right)
         {
             return !left.RuntimeId.SequenceEqual(right.RuntimeId);
         }
 
         public override readonly bool Equals(object? obj)
         {
-            return obj is NodeReference reference && this == reference;
+            return obj is ElementReference reference && this == reference;
         }
 
         public override readonly int GetHashCode()
@@ -32,16 +32,26 @@ namespace PlatynUI.Provider.Core
 
     public interface IApplicationInfoAsync
     {
-        Task<string> GetTechnology();
-        Task<IList<NodeReference>> GetChildren();
+        Task<ElementReference?> GetRootAsync();
+    }
+
+    public enum NodeType
+    {
+        Unknown,
+        Element,
+        Application,
+        Item,
     }
 
     public interface INodeInfoAsync
     {
-        Task<bool> IsValid(NodeReference node);
+        Task<bool> IsValidAsync(ElementReference reference);
 
-        Task<IList<NodeReference>> GetChildren(NodeReference parent);
-        Task<string[]> GetAttributeNames(NodeReference node);
-        Task<object?> GetAttributeValue(NodeReference node, string attributeName);
+        Task<string> GetLocalNameAsync(ElementReference reference);
+        Task<NodeType> GetNodeTypeAsync(ElementReference reference);
+        Task<IList<ElementReference>> GetChildrenAsync(ElementReference parentReference);
+        Task<string[]> GetAttributeNamesAsync(ElementReference reference);
+        Task<object?> GetAttributeValueAsync(ElementReference reference, string attributeName);
+        Task<string> GetAttributeTypeAsync(ElementReference reference, string attributeName);
     }
 }

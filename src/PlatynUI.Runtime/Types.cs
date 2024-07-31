@@ -36,6 +36,8 @@ public struct Point(double x, double y)
     {
         return X.GetHashCode() ^ Y.GetHashCode();
     }
+
+    public static readonly Point Empty = new(0, 0);
 }
 
 public struct Size(double width, double height)

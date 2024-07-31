@@ -74,12 +74,13 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
     {
         get
         {
-            return _current switch
+            var result = _current switch
             {
                 INode node => node.LocalName,
                 IAttributesEnumerator enumerator => enumerator.Current.Name,
                 _ => throw new NotSupportedException(),
             };
+            return result ?? string.Empty;
         }
     }
 
@@ -100,12 +101,13 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
     {
         get
         {
-            return _current switch
+            var result = _current switch
             {
                 INode node => node.NamespaceURI ?? string.Empty,
                 IAttributesEnumerator enumerator => enumerator.Current.NamespaceURI,
                 _ => string.Empty,
             };
+            return result ?? string.Empty;
         }
     }
 
@@ -149,11 +151,6 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
             {
                 var enumerator = node.GetAttributesEnumerator();
                 enumerator.Reset();
-
-                if (!enumerator.MoveNext())
-                {
-                    return false;
-                }
 
                 _current = enumerator;
 

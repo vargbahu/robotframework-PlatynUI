@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\PlatynUI.Technology.UiAutomation\PlatynUI.Technology.UiAutomation.csproj" />
     <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
     <ProjectReference Include="..\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj" />
+    <ProjectReference Include="..\PlatynUI.Extension.Linux.AtSpi2\PlatynUI.Extension.Linux.AtSpi2.csproj" />
+    <ProjectReference Include="..\PlatynUI.Provider.Client\PlatynUI.Provider.Client.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

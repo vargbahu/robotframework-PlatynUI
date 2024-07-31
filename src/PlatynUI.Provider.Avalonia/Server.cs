@@ -1,7 +1,5 @@
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.VisualStudio.Threading;
-using PlatynUI.Provider.Core;
+
 using PlatynUI.Provider.Server;
 
 namespace PlatynUI.Provider.Avalonia;
@@ -11,11 +9,11 @@ public static class Server
     static readonly JoinableTaskContext JoinableTaskContext = new();
     static readonly JoinableTaskFactory JoinableTaskFactory = new(JoinableTaskContext);
 
-    public static void Start(IClassicDesktopStyleApplicationLifetime lifetime)
+    public static void Start()
     {
         new Thread(() =>
         {
-            JoinableTaskFactory.Run(() => RunAsync(lifetime));
+            JoinableTaskFactory.Run(() => RunAsync());
         }).Start();
     }
 
@@ -26,15 +24,10 @@ public static class Server
 
     private static readonly CancellationTokenSource cts = new();
 
-    public static async Task RunAsync(IClassicDesktopStyleApplicationLifetime lifetime)
+    public static async Task RunAsync()
     {
+        var server = new ProviderServer(new ApplicationInfo(), new NodeInfo());
 
-        if (lifetime != null)
-        {
-            Console.WriteLine("Lifetime is AvaloniaObject");
-            var server = new ProviderServer(new ApplicationInfo(), NodeInfo.GetNodeInfo(lifetime));
-
-            await server.RunAsync(cts.Token);
-        }
+        await server.RunAsync(cts.Token);
     }
 }

@@ -2,6 +2,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
+using PlatynUI.Provider.Avalonia;
 
 namespace AvaloniaTestApp;
 
@@ -13,17 +14,23 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, BuildLifeTime);
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
-    static void BuildLifeTime(IClassicDesktopStyleApplicationLifetime lifetime)
-    {
-        PlatynUI.Provider.Avalonia.Server.Start(lifetime);
+    // static void BuildLifeTime(IClassicDesktopStyleApplicationLifetime lifetime)
+    // {
+    //     PlatynUI.Provider.Avalonia.Server.Start(lifetime);
 
-        lifetime.Exit += (sender, e) => PlatynUI.Provider.Avalonia.Server.Stop();
-    }
+    //     lifetime.Exit += (sender, e) => PlatynUI.Provider.Avalonia.Server.Stop();
+    // }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().LogToTrace().UseReactiveUI();
+        AppBuilder
+            .Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace()
+            .UseReactiveUI()
+            .EnablePlatynUIServer();
 }
