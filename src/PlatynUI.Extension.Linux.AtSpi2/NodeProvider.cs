@@ -13,6 +13,56 @@ using Attribute = PlatynUI.Runtime.Core.Attribute;
 
 namespace PlatynUI.Extension.Linux.AtSpi2;
 
+[Flags]
+enum AtspiState : long
+{
+    ATSPI_STATE_INVALID = 1L << 0,
+    ATSPI_STATE_ACTIVE = 1L << 1,
+    ATSPI_STATE_ARMED = 1L << 2,
+    ATSPI_STATE_BUSY = 1L << 3,
+    ATSPI_STATE_CHECKED = 1L << 4,
+    ATSPI_STATE_COLLAPSED = 1L << 5,
+    ATSPI_STATE_DEFUNCT = 1L << 6,
+    ATSPI_STATE_EDITABLE = 1L << 7,
+    ATSPI_STATE_ENABLED = 1L << 8,
+    ATSPI_STATE_EXPANDABLE = 1L << 9,
+    ATSPI_STATE_EXPANDED = 1L << 10,
+    ATSPI_STATE_FOCUSABLE = 1L << 11,
+    ATSPI_STATE_FOCUSED = 1L << 12,
+    ATSPI_STATE_HAS_TOOLTIP = 1L << 13,
+    ATSPI_STATE_HORIZONTAL = 1L << 14,
+    ATSPI_STATE_ICONIFIED = 1L << 15,
+    ATSPI_STATE_MODAL = 1L << 16,
+    ATSPI_STATE_MULTI_LINE = 1L << 17,
+    ATSPI_STATE_MULTISELECTABLE = 1L << 18,
+    ATSPI_STATE_OPAQUE = 1L << 19,
+    ATSPI_STATE_PRESSED = 1L << 20,
+    ATSPI_STATE_RESIZABLE = 1L << 21,
+    ATSPI_STATE_SELECTABLE = 1L << 22,
+    ATSPI_STATE_SELECTED = 1L << 23,
+    ATSPI_STATE_SENSITIVE = 1L << 24,
+    ATSPI_STATE_SHOWING = 1L << 25,
+    ATSPI_STATE_SINGLE_LINE = 1L << 26,
+    ATSPI_STATE_STALE = 1L << 27,
+    ATSPI_STATE_TRANSIENT = 1L << 28,
+    ATSPI_STATE_VERTICAL = 1L << 29,
+    ATSPI_STATE_VISIBLE = 1L << 30,
+    ATSPI_STATE_MANAGES_DESCENDANTS = 1L << 31,
+    ATSPI_STATE_INDETERMINATE = 1L << 32,
+    ATSPI_STATE_REQUIRED = 1L << 33,
+    ATSPI_STATE_TRUNCATED = 1L << 34,
+    ATSPI_STATE_ANIMATED = 1L << 35,
+    ATSPI_STATE_INVALID_ENTRY = 1L << 36,
+    ATSPI_STATE_SUPPORTS_AUTOCOMPLETION = 1L << 37,
+    ATSPI_STATE_SELECTABLE_TEXT = 1L << 38,
+    ATSPI_STATE_IS_DEFAULT = 1L << 39,
+    ATSPI_STATE_VISITED = 1L << 40,
+    ATSPI_STATE_CHECKABLE = 1L << 41,
+    ATSPI_STATE_HAS_POPUP = 1L << 42,
+    ATSPI_STATE_READ_ONLY = 1L << 43,
+    ATSPI_STATE_LAST_DEFINED = 1L << 44,
+};
+
 struct ElementReference(string service, ObjectPath path)
 {
     public string Service = service;
@@ -50,7 +100,11 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
     private IDictionary<string, IAttribute>? _attributes;
     private string[]? _interfaces = null;
 
-    public INode? Parent => parent;
+    public INode? Parent
+    {
+        get { return parent; }
+        set { parent = value; }
+    }
 
     public IList<INode> Children => _children ??= GetChildren();
 
@@ -128,6 +182,19 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
         return [];
     }
 
+    protected AtspiState GetState()
+    {
+        try
+        {
+            var state = Element.GetStateAsync().GetAwaiter().GetResult();
+            ulong ustate = state[0];
+            ustate += (ulong)state[1] << 32;
+            return (AtspiState)ustate;
+        }
+        catch (Exception) { }
+        return AtspiState.ATSPI_STATE_INVALID;
+    }
+
     protected virtual List<IAttribute> GetAttributesList()
     {
         return
@@ -141,7 +208,7 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
             new Attribute("AccessibleId", () => Element.GetAccessibleIdPropertyAsync().GetAwaiter().GetResult()),
             new Attribute("Locale", () => Element.GetLocalePropertyAsync().GetAwaiter().GetResult()),
             //new Attribute("HelpText", () => Element.GetHelpTextPropertyAsync().GetAwaiter().GetResult().ToString()),
-            new Attribute("State", () => Element.GetStateAsync().GetAwaiter().GetResult()),
+            new Attribute("State", () => GetState()),
             new Attribute("GetRelationSetAsync", () => Element.GetRelationSetAsync().GetAwaiter().GetResult()),
             new Attribute("Interfaces", () => Interfaces),
         ];
@@ -224,11 +291,11 @@ class ComponentAdapter(Connection connection, INode? parent, ElementReference el
 {
     OrgA11yAtspiComponent Component { get; } = new(connection, elementReference.Service, elementReference.Path);
 
-    public bool IsEnabled => Element.GetStateAsync().GetAwaiter().GetResult().Any(c => c == 8);
+    public bool IsEnabled => GetState().HasFlag(AtspiState.ATSPI_STATE_ENABLED);
 
-    public bool IsVisible => Element.GetStateAsync().GetAwaiter().GetResult().Any(c => c == 25);
+    public bool IsVisible => GetState().HasFlag(AtspiState.ATSPI_STATE_VISIBLE);
 
-    public bool IsInView => true; // TODO
+    public bool IsInView => GetState().HasFlag(AtspiState.ATSPI_STATE_SHOWING);
 
     public bool TopLevelParentIsActive => true; // TODO
 
@@ -266,6 +333,9 @@ class ComponentAdapter(Connection connection, INode? parent, ElementReference el
             new Attribute("BoundingRectangle", () => BoundingRectangle),
             new Attribute("VisibleRectangle", () => VisibleRectangle),
             new Attribute("DefaultClickPosition", () => DefaultClickPosition),
+            new Attribute("Extents.Root", () => Component.GetExtentsAsync(0).GetAwaiter().GetResult()),
+            new Attribute("Extents.TopLevel", () => Component.GetExtentsAsync(1).GetAwaiter().GetResult()),
+            new Attribute("Extents.Parent", () => Component.GetExtentsAsync(2).GetAwaiter().GetResult()),
         ];
     }
 }
@@ -289,7 +359,13 @@ class NodeProvider : INodeProvider
     public IEnumerable<INode> GetNodes(INode parent)
     {
         Root.Refresh();
-        return Root.Children;
+        Root.Parent = parent;
+        foreach (var e in Root.Children)
+        {
+            if (e is Adapter a)
+                a.Parent = parent;
+            yield return e;
+        }
     }
 
     public Adapter Root =>
