@@ -15,10 +15,11 @@ namespace PlatynUI.Spy.Converters
 {
     public class ValueToStringConverter : IValueConverter
     {
+        static CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+
         private static string ToLiteral(object input)
         {
             using var writer = new StringWriter();
-            using var provider = CodeDomProvider.CreateProvider("CSharp");
 
             provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, new() { });
             return writer.ToString();
@@ -33,8 +34,7 @@ namespace PlatynUI.Spy.Converters
 
                 return value switch
                 {
-                    string
-                    or bool
+                    bool
                     or char
                     or byte
                     or sbyte
@@ -57,6 +57,7 @@ namespace PlatynUI.Spy.Converters
 
                     Array a => $"[{string.Join(", ", a.OfType<object>().Select(Converts))}]",
 
+                    string s => ToLiteral(s),
                     _ => value.ToString(),
                 };
             }

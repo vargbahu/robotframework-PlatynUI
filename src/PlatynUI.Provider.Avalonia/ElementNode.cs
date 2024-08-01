@@ -33,11 +33,23 @@ internal class ElementNode : Node<Control>
         return new Rect(control.Bounds.Size).TransformToAABB(transform.Value);
     }
 
+    private static IEnumerable<string> YieldSupportedRoles(object? control)
+    {
+        var type = control?.GetType();
+        while (type != null)
+        {
+            yield return type.Name;
+            type = type.BaseType;
+        }
+    }
+
     private Dictionary<string, Func<object?>> GetAttributes()
     {
         var result = new Dictionary<string, Func<object?>>
         {
             ["Name"] = () => Element?.Name,
+            ["Role"] = () => new string[] { LocalName },
+            ["SupportedRoles"] = () => YieldSupportedRoles(Element).ToArray(),
             ["AutomationId"] = () => Dispatcher.UIThread.Invoke(() => AutomationPeer?.GetAutomationId()),
             ["ClassName"] = () => Element?.GetType().ToString() ?? "",
             ["BoundingRectangle"] = () =>
@@ -72,6 +84,36 @@ internal class ElementNode : Node<Control>
 
             ["IsHitTestVisible"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsHitTestVisible) ?? false,
         };
+
+        if (Element != null)
+        {
+            foreach (
+                var prop in AvaloniaPropertyRegistry
+                    .Instance.GetRegistered(Element)
+                    .Union(AvaloniaPropertyRegistry.Instance.GetRegisteredAttached(Element.GetType()))
+            )
+            {
+                if (result.ContainsKey("Native.Registered." + prop.Name))
+                {
+                    continue;
+                }
+                result.Add(
+                    "Native.Registered." + prop.Name,
+                    () => Dispatcher.UIThread.Invoke(() => Element.GetValue(prop))
+                );
+            }
+
+            foreach (var prop in Element.GetType().GetProperties().Where(x => x.GetIndexParameters().Length == 0))
+            {
+                if (result.ContainsKey("Native.Clr." + prop.Name))
+                {
+                    continue;
+                }
+
+                result.Add("Native.Clr." + prop.Name, () => Dispatcher.UIThread.Invoke(() => prop.GetValue(Element)));
+            }
+        }
+
         return result;
     }
 
@@ -97,7 +139,7 @@ internal class ElementNode : Node<Control>
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Debug.WriteLine($"Error getting value for `{attributeName}`: {e}");
             }
         }
         return null;

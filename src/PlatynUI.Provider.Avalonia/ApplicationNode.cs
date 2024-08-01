@@ -1,9 +1,7 @@
 using System.Diagnostics;
-
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-
 using PlatynUI.Provider.Core;
 
 namespace PlatynUI.Provider.Avalonia;
@@ -25,6 +23,7 @@ public class ApplicationNode : Node
         _attributes ??= new()
         {
             ["Technology"] = () => "Avalonia",
+            ["Role"] = () => new string[] { LocalName },
             ["Name"] = () => Application.Current?.Name,
             ["RuntimeId"] = () => Reference.RuntimeId,
             ["ProcessId"] = () => Environment.ProcessId,

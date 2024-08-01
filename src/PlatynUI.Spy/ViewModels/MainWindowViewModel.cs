@@ -170,7 +170,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
 
     CancellationTokenSource? _searchCancellationTokenSource;
 
-    public async void Search()
+    public void Search()
     {
         CancelSearch();
 
@@ -184,8 +184,8 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
         LastError = "";
         try
         {
-            await Task.Run(
-                async () =>
+            _ = Task.Run(
+                () =>
                 {
                     var first = true;
 
@@ -198,7 +198,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
 
                         if (treeNode != null)
                         {
-                            await Dispatcher.UIThread.InvokeAsync(
+                            Dispatcher.UIThread.Invoke(
                                 () =>
                                 {
                                     token.ThrowIfCancellationRequested();
@@ -211,7 +211,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
                             if (first)
                             {
                                 first = false;
-                                await Dispatcher.UIThread.InvokeAsync(
+                                Dispatcher.UIThread.Invoke(
                                     () =>
                                     {
                                         token.ThrowIfCancellationRequested();
