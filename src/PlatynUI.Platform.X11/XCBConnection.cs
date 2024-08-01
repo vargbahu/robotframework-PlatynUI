@@ -26,17 +26,10 @@ public unsafe class XCBConnection : IDisposable
     private static XCBConnection? _instance = null;
     private xcb_connection_t* _connection = null;
 
-    public XCBConnection(bool connect = true)
+    public XCBConnection()
     {
-        if (connect)
-        {
-            Connect();
-        }
-    }
-
-    public XCBConnection(xcb_connection_t* connection)
-    {
-        _connection = connection;
+        Connect();
+        Atoms = new BuiltinAtoms(this);
     }
 
     ~XCBConnection()
@@ -56,8 +49,6 @@ public unsafe class XCBConnection : IDisposable
     }
 
     public static implicit operator xcb_connection_t*(XCBConnection c) => c.Connection;
-
-    public static explicit operator XCBConnection(xcb_connection_t* c) => new(c);
 
     public xcb_connection_t* Connection
     {
@@ -163,9 +154,10 @@ public unsafe class XCBConnection : IDisposable
 
     unsafe uint CreateInternAtom(string name)
     {
-        fixed (sbyte* chars = Array.ConvertAll(System.Text.Encoding.UTF8.GetBytes(name), q => Convert.ToSByte(q)))
+        fixed (sbyte* chars = Array.ConvertAll(System.Text.Encoding.UTF8.GetBytes(name), Convert.ToSByte))
         {
-            var utf8_string_cookie = xcb_intern_atom(this, 0, (ushort)name.Length, chars);
+            var utf8_string_cookie = xcb_intern_atom(this._connection, 0, (ushort)name.Length, chars);
+
             var reply = xcb_intern_atom_reply(this, utf8_string_cookie, null);
             return reply->atom;
         }
@@ -173,10 +165,12 @@ public unsafe class XCBConnection : IDisposable
 
     public class BuiltinAtoms(XCBConnection connection)
     {
-        public uint _MOTIF_WM_HINTS = connection.CreateInternAtom("_MOTIF_WM_HINTS");
         public uint _NET_WM_BYPASS_COMPOSITOR = connection.CreateInternAtom("_NET_WM_BYPASS_COMPOSITOR");
+        public uint _KDE_NET_WM_WINDOW_TYPE_OVERRIDE = connection.CreateInternAtom("_KDE_NET_WM_WINDOW_TYPE_OVERRIDE");
+        public uint WM_CLIENT_LEADER = connection.CreateInternAtom("WM_CLIENT_LEADER");
+
+        public uint _MOTIF_WM_HINTS = connection.CreateInternAtom("_MOTIF_WM_HINTS");
     }
 
-    private BuiltinAtoms? _atoms = null;
-    public BuiltinAtoms Atoms => _atoms ??= new(this);
+    public BuiltinAtoms Atoms { get; }
 }

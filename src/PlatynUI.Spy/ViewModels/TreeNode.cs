@@ -42,9 +42,9 @@ public class TreeNode(TreeNode? parent, INode node) : ViewModelBase
                 {
                     result = $"\"{automationId.Value}\"";
                 }
-                if (string.IsNullOrEmpty(result))
+                if (result == "\"\"")
                 {
-                    result = $"\"{result}\"";
+                    result = "";
                 }
                 _description = result;
             }

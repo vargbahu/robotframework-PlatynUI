@@ -185,12 +185,25 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"
                                     x:DataType="vm:TreeNodeAttribute"
-                                    CanUserSort="true" ClipboardContentBinding="{Binding Name}" />
-                                <DataGridTextColumn Header="Value"
+                                    CanUserSort="true" ClipboardContentBinding="{Binding Name}" CanUserResize="True"
+                                />
+                                <!-- <DataGridTextColumn Header="Value"
                                     Binding="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
                                     x:DataType="vm:TreeNodeAttribute"
                                     ClipboardContentBinding="{Binding Value}"
-                                    Width="*" />
+                                    Width="Auto">
+                                </DataGridTextColumn> -->
+                                <DataGridTemplateColumn Header="Value" Width="*" CanUserResize="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Text="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
+                                                ToolTip.Tip="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
+                                                VerticalAlignment="Center"
+                                            />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                             <DataGrid.Styles>
                                 <Style Selector="TextBlock">

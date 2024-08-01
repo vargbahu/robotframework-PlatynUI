@@ -20,9 +20,13 @@ internal class Line : IDisposable
 
     private Rect _position;
 
+    string Title { get; set; }
+
     public Line(XCBConnection connection, string title)
     {
         Connection = connection;
+
+        Title = title;
 
         Valid = false;
 
@@ -34,7 +38,9 @@ internal class Line : IDisposable
                 void* data = new uint[]
                 {
                     0xff0000, // RED
-                    (uint)xcb_event_mask_t.XCB_EVENT_MASK_EXPOSURE
+                    1,
+                    0,
+                    (uint)xcb_event_mask_t.XCB_EVENT_MASK_EXPOSURE,
                 }
             )
             {
@@ -50,22 +56,23 @@ internal class Line : IDisposable
                     0,
                     (ushort)xcb_window_class_t.XCB_WINDOW_CLASS_INPUT_OUTPUT,
                     Connection.RootVisual,
-                    (uint)xcb_cw_t.XCB_CW_BACK_PIXEL | (uint)xcb_cw_t.XCB_CW_EVENT_MASK,
+                    (uint)xcb_cw_t.XCB_CW_BACK_PIXEL
+                        | (uint)xcb_cw_t.XCB_CW_OVERRIDE_REDIRECT
+                        | (uint)xcb_cw_t.XCB_CW_SAVE_UNDER
+                        | (uint)xcb_cw_t.XCB_CW_EVENT_MASK,
                     data
                 );
 
                 var error = xcb_request_check(Connection.Connection, cookie);
                 if (error != null)
                 {
-                    Debug.WriteLine($"Error: Can't create XCB Window code {error->error_code}");
+                    Debug.WriteLine($"Error: Can't create XCB Window {error->error_code}");
                     free(error);
                     return;
                 }
             }
 
-            title = "PlatynUI Highlight" + title;
-
-            var title_ascii = System.Text.Encoding.ASCII.GetBytes(title);
+            var title_ascii = System.Text.Encoding.ASCII.GetBytes(Title);
             fixed (void* data = title_ascii)
                 xcb_change_property(
                     Connection,
@@ -93,7 +100,14 @@ internal class Line : IDisposable
                         data
                     );
 
-                fixed (void* data = new uint[] { Connection.Ewmh._NET_WM_WINDOW_TYPE_TOOLTIP })
+                fixed (
+                    void* data = new uint[]
+                    {
+                        Connection.Ewmh._NET_WM_WINDOW_TYPE_TOOLTIP,
+                        Connection.Atoms._KDE_NET_WM_WINDOW_TYPE_OVERRIDE,
+                        Connection.Ewmh._NET_WM_WINDOW_TYPE_NORMAL
+                    }
+                )
                     xcb_change_property(
                         XCBConnection.Default.Connection,
                         (byte)xcb_prop_mode_t.XCB_PROP_MODE_REPLACE,
@@ -101,9 +115,10 @@ internal class Line : IDisposable
                         Connection.Ewmh._NET_WM_WINDOW_TYPE,
                         (uint)xcb_atom_enum_t.XCB_ATOM_ATOM,
                         32,
-                        1,
+                        3,
                         data
                     );
+
                 fixed (
                     void* data = new uint[]
                     {
@@ -163,7 +178,7 @@ internal class Line : IDisposable
                 }
             }
 
-            fixed (void* data = new uint[] { XCBConnection.Default.RootWindow })
+            fixed (void* data = new uint[] { Connection.RootWindow })
             {
                 xcb_change_property(
                     XCBConnection.Default.Connection,

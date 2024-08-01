@@ -195,6 +195,12 @@ public class Highlighter : IDisposable
 
     public void Show(Rect r, bool timed, int timeout)
     {
+        if (r.Width == 0 || r.Height == 0)
+        {
+            Hide();
+            return;
+        }
+
         Area = r;
         _highlightHolder?.Top.Show();
         _highlightHolder?.Left.Show();
@@ -220,19 +226,29 @@ public class Highlighter : IDisposable
         }
     }
 
-    private sealed class HighlightHolder(XCBConnection connection) : IDisposable
+    private sealed class HighlightHolder : IDisposable
     {
-        public readonly Line Bottom = new(connection, "Bottom");
+        public readonly Line Bottom;
 
-        public readonly Line Left = new(connection, "Left");
+        public readonly Line Left;
 
-        public readonly Line Right = new(connection, "Right");
+        public readonly Line Right;
 
-        public readonly Line Top = new(connection, "Top");
+        public readonly Line Top;
 
         private bool _disposed;
 
-        public XCBConnection Connection { get; } = connection;
+        public HighlightHolder(XCBConnection connection)
+        {
+            Connection = connection;
+
+            Bottom = new(Connection, "Bottom");
+            Left = new(Connection, "Left");
+            Right = new(Connection, "Right");
+            Top = new(Connection, "Top");
+        }
+
+        public XCBConnection Connection { get; }
 
         public void Dispose()
         {

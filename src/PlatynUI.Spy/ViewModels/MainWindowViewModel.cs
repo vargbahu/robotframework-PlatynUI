@@ -29,9 +29,10 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
             {
                 SelectedNodeAttributes = node?.Attributes ?? [];
 
-                if (node != null && node.Node is IElement element)
+                if (node != null && node.Node is IElement element && element.IsVisible && element.IsInView)
                 {
-                    Display.HighlightRect(element.BoundingRectangle, 2);
+                    var r = element.BoundingRectangle;
+                    Display.HighlightRect(r, 2);
                 }
             });
         this.WhenAnyValue(x => x.SearchText)
