@@ -57,7 +57,7 @@ public class Desktop : INode
             .ToDictionary(x => x.Name);
 
     private static Desktop? _instance;
-    public static Desktop Instance => _instance ??= new Desktop();
+    public static Desktop GetInstance() => _instance ??= new Desktop();
 
     public INode Clone()
     {

@@ -7,7 +7,7 @@ from .buttons import AbstractButton, Button, CheckBox, Link, RadioButton
 from .combobox import ComboBox
 from .container import Container
 from .control import Control, CustomControl
-from .desktopbase import DesktopBase
+from .desktop import Desktop
 from .dialog import Dialog
 from .edit import Edit
 from .element import Element
@@ -15,6 +15,7 @@ from .graphic import Graphic, GraphicItem
 from .header import Header, HeaderItem
 from .item import Item
 from .lists import List, ListItem
+from .locator import Locator, locator
 from .menus import Menu, MenuBar, MenuItem
 from .orientation import Orientation
 from .pane import Group, Pane
@@ -35,12 +36,14 @@ __all__ = [
     "AbstractButton",
     "Button",
     "Link",
+    "Locator",
+    "locator",
     "ToggleState",
     "CheckBox",
     "RadioButton",
     "Element",
     "Container",
-    "DesktopBase",
+    "Desktop",
     "Dialog",
     "Text",
     "Edit",
@@ -66,6 +69,7 @@ __all__ = [
     "Window",
     "ScrollBar",
     "Graphic",
+    "GraphicItem",
     "Pane",
     "Group",
 ]

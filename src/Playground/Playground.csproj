@@ -4,7 +4,7 @@
     <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
     <ProjectReference Include="..\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj" />
     <ProjectReference Include="..\PlatynUI.Extension.Linux.AtSpi2\PlatynUI.Extension.Linux.AtSpi2.csproj" />
-    <ProjectReference Include="..\PlatynUI.Provider.Client\PlatynUI.Provider.Client.csproj" />
+    <ProjectReference Include="..\PlatynUI.Extension.Provider.Client\PlatynUI.Extension.Provider.Client.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

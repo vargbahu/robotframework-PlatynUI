@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # pyright: reportMissingModuleSource=false
 
 if TYPE_CHECKING:
-    from PlatynUI.Technology.UiAutomation import (
+    from PlatynUI.Extension.Win32.UiAutomation import (
         Adapter,
         DisplayDevice,
         Finder,
@@ -56,12 +56,12 @@ class DotNetInterface:
 
         logger.debug(f"Runtime kind: {rt_kind}")  # noqa: G004
 
-        assembly_name = "PlatynUI.Technology.UiAutomation.dll"
+        assembly_name = "PlatynUI.Extension.Win32.UiAutomation.dll"
         debug_assembly_path = (
             Path(__file__).parent
-            / f"../../../../PlatynUI.Technology.UiAutomation/bin/Debug/net8.0-windows/{assembly_name}"
+            / f"../../../../PlatynUI.Extension.Win32.UiAutomation/bin/Debug/net8.0-windows/{assembly_name}"
             # Path(__file__).parent
-            # / f"../../../../PlatynUI.Technology.UiAutomation/bin/Debug/net481/{ASSEMBLY_NAME}"
+            # / f"../../../../PlatynUI.Extension.Win32.UiAutomation/bin/Debug/net481/{ASSEMBLY_NAME}"
         )
         runtime_assembly_path = Path(__file__).parent.parent / f"runtime/{kind}/{assembly_name}"
 
@@ -84,7 +84,7 @@ class DotNetInterface:
         if cls._adapter is None:
             cls._ensure_loaded()
 
-            from PlatynUI.Technology.UiAutomation import Adapter
+            from PlatynUI.Extension.Win32.UiAutomation import Adapter
 
             cls._adapter = cast("Adapter", Adapter)
 
@@ -95,7 +95,7 @@ class DotNetInterface:
         if cls._finder is None:
             cls._ensure_loaded()
 
-            from PlatynUI.Technology.UiAutomation import Finder
+            from PlatynUI.Extension.Win32.UiAutomation import Finder
 
             cls._finder = cast("Finder", Finder)
 
@@ -106,7 +106,7 @@ class DotNetInterface:
         if cls._mouse_device is None:
             cls._ensure_loaded()
 
-            from PlatynUI.Technology.UiAutomation import MouseDevice
+            from PlatynUI.Extension.Win32.UiAutomation import MouseDevice
 
             cls._mouse_device = cast("MouseDevice", MouseDevice)
 
@@ -117,7 +117,7 @@ class DotNetInterface:
         if cls._keyboard_device is None:
             cls._ensure_loaded()
 
-            from PlatynUI.Technology.UiAutomation import KeyboardDevice
+            from PlatynUI.Extension.Win32.UiAutomation import KeyboardDevice
 
             cls._keyboard_device = cast("KeyboardDevice", KeyboardDevice)
 
@@ -128,7 +128,7 @@ class DotNetInterface:
         if cls._display_device is None:
             cls._ensure_loaded()
 
-            from PlatynUI.Technology.UiAutomation import DisplayDevice
+            from PlatynUI.Extension.Win32.UiAutomation import DisplayDevice
 
             cls._display_device = cast("DisplayDevice", DisplayDevice)
 
@@ -139,7 +139,7 @@ class DotNetInterface:
         if cls._patterns is None:
             cls._ensure_loaded()
 
-            from PlatynUI.Technology.UiAutomation import Patterns
+            from PlatynUI.Extension.Win32.UiAutomation import Patterns
 
             cls._patterns = cast("Patterns", Patterns)
 

@@ -31,10 +31,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj" />
-    <ProjectReference Include="..\PlatynUI.Technology.UiAutomation\PlatynUI.Technology.UiAutomation.csproj" />
     <ProjectReference Include="..\PlatynUI.Platform.Win32\PlatynUI.Platform.Win32.csproj" />
     <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
+    <ProjectReference Include="..\PlatynUI.Extension.Win32.UiAutomation\PlatynUI.Extension.Win32.UiAutomation.csproj" />
     <ProjectReference Include="..\PlatynUI.Extension.Linux.AtSpi2\PlatynUI.Extension.Linux.AtSpi2.csproj" />
-    <ProjectReference Include="..\PlatynUI.Provider.Client\PlatynUI.Provider.Client.csproj" />
+    <ProjectReference Include="..\PlatynUI.Extension.Provider.Client\PlatynUI.Extension.Provider.Client.csproj" />
   </ItemGroup>
 </Project>

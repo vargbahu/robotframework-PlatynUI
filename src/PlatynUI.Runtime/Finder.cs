@@ -14,7 +14,7 @@ public static class Finder
 
     public static INode? FindSingleNode(INode? parent, string xpath, bool findVirtual = false)
     {
-        parent ??= Desktop.Instance;
+        parent ??= Desktop.GetInstance();
         parent.Refresh();
 
         var navigator = new XPathNavigator(parent, findVirtual, xsltContext.NameTable);
@@ -27,7 +27,7 @@ public static class Finder
 
     public static IEnumerable<INode> EnumAllNodes(INode? parent, string xpath, bool findVirtual = false)
     {
-        parent ??= Desktop.Instance;
+        parent ??= Desktop.GetInstance();
         parent.Refresh();
 
         var navigator = new XPathNavigator(parent, findVirtual);
@@ -42,9 +42,14 @@ public static class Finder
         }
     }
 
+    public static IList<INode> FindNodes(INode? parent, string xpath, bool findVirtual = false)
+    {
+        return [..EnumAllNodes(parent, xpath, findVirtual)];
+    }
+
     public static IEnumerable<object?> Evaluate(INode? parent, string xpath, bool findVirtual = false)
     {
-        parent ??= Desktop.Instance;
+        parent ??= Desktop.GetInstance();
         parent.Refresh();
 
         var navigator = new XPathNavigator(parent, findVirtual);

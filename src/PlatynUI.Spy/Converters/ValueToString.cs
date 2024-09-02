@@ -15,7 +15,7 @@ namespace PlatynUI.Spy.Converters
 {
     public class ValueToStringConverter : IValueConverter
     {
-        static CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+        static readonly CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
 
         private static string ToLiteral(object input)
         {

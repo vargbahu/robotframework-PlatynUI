@@ -4,7 +4,7 @@
 
 from robotlibcore import keyword
 
-from ..core.contextbase import ContextBase
+from ..ui import Element
 from ..ui.strategies import Activatable
 
 __all__ = ["Buttons"]
@@ -16,5 +16,5 @@ class Buttons:
         element.activate()
 
     @keyword
-    def click(self, locator: ContextBase) -> None:
-        locator.mouse.click()
+    def click(self, element: Element) -> None:
+        element.mouse.click()

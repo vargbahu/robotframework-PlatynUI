@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F967758C-F430-4A3B-AB8C-C6D2B4B4B521}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Technology.UiAutomation", "src\PlatynUI.Technology.UiAutomation\PlatynUI.Technology.UiAutomation.csproj", "{3C4EA5A8-8758-4001-900C-EB1049EE1CF7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "src\Playground\Playground.csproj", "{44D1156A-7E2E-4B57-97E3-2E0FD26A86D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Runtime", "src\PlatynUI.Runtime\PlatynUI.Runtime.csproj", "{B464DD8E-F7C7-4111-B7DF-28989AFB2B9B}"
@@ -17,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Platform.Win32", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Provider.Core", "src\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj", "{C32E2562-1C58-4FD0-8D33-D22E8D8AAE76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Provider.Client", "src\PlatynUI.Provider.Client\PlatynUI.Provider.Client.csproj", "{7CFD130B-64FF-4783-A994-A15D212330A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Extension.Provider.Client", "src\PlatynUI.Extension.Provider.Client\PlatynUI.Extension.Provider.Client.csproj", "{7CFD130B-64FF-4783-A994-A15D212330A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Provider.Server", "src\PlatynUI.Provider.Server\PlatynUI.Provider.Server.csproj", "{EDF1D2A1-E9EB-493E-9119-A14C0E6D1A79}"
 EndProject
@@ -33,16 +31,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Extension.Linux.At
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Provider.Avalonia", "src\PlatynUI.Provider.Avalonia\PlatynUI.Provider.Avalonia.csproj", "{D6B596C5-BEE9-4B3F-BD4B-347D6F770EAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatynUI.Extension.Win32.UiAutomation", "src\PlatynUI.Extension.Win32.UiAutomation\PlatynUI.Extension.Win32.UiAutomation.csproj", "{FA30508E-DEEE-4A61-AD0A-3D45C2D7CFC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3C4EA5A8-8758-4001-900C-EB1049EE1CF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C4EA5A8-8758-4001-900C-EB1049EE1CF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C4EA5A8-8758-4001-900C-EB1049EE1CF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C4EA5A8-8758-4001-900C-EB1049EE1CF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44D1156A-7E2E-4B57-97E3-2E0FD26A86D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44D1156A-7E2E-4B57-97E3-2E0FD26A86D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44D1156A-7E2E-4B57-97E3-2E0FD26A86D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -87,12 +83,15 @@ Global
 		{D6B596C5-BEE9-4B3F-BD4B-347D6F770EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6B596C5-BEE9-4B3F-BD4B-347D6F770EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6B596C5-BEE9-4B3F-BD4B-347D6F770EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA30508E-DEEE-4A61-AD0A-3D45C2D7CFC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA30508E-DEEE-4A61-AD0A-3D45C2D7CFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA30508E-DEEE-4A61-AD0A-3D45C2D7CFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA30508E-DEEE-4A61-AD0A-3D45C2D7CFC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3C4EA5A8-8758-4001-900C-EB1049EE1CF7} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
 		{44D1156A-7E2E-4B57-97E3-2E0FD26A86D2} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
 		{B464DD8E-F7C7-4111-B7DF-28989AFB2B9B} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
 		{04BF2F8B-45B4-4939-8C22-32EC3DD1B7CC} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
@@ -105,5 +104,6 @@ Global
 		{FC17D606-A97B-483E-AE91-9DBBC68C8C7E} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
 		{81391ED9-694D-4E8B-B12D-5756B2F1E8B8} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
 		{D6B596C5-BEE9-4B3F-BD4B-347D6F770EAC} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
+		{FA30508E-DEEE-4A61-AD0A-3D45C2D7CFC3} = {F967758C-F430-4A3B-AB8C-C6D2B4B4B521}
 	EndGlobalSection
 EndGlobal

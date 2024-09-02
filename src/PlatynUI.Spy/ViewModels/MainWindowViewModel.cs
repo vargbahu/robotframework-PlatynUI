@@ -32,7 +32,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
                 if (node != null && node.Node is IElement element && element.IsVisible && element.IsInView)
                 {
                     var r = element.BoundingRectangle;
-                    Display.HighlightRect(r, 2);
+                    Display.HighlightRect(r.X, r.Y, r.Width, r.Height, 2);
                 }
             });
         this.WhenAnyValue(x => x.SearchText)
@@ -83,7 +83,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
         return SelectedNode != null;
     }
 
-    public TreeNode[] Root { get; } = [new TreeNode(null, Desktop.Instance) { IsExpanded = true, IsSelected = true }];
+    public TreeNode[] Root { get; } = [new TreeNode(null, Desktop.GetInstance()) { IsExpanded = true, IsSelected = true }];
 
     private TreeNode? _selectedNode;
     public TreeNode? SelectedNode
@@ -193,7 +193,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
                 {
                     var first = true;
 
-                    foreach (var node in Finder.EnumAllNodes(Desktop.Instance, SearchText))
+                    foreach (var node in Finder.EnumAllNodes(Desktop.GetInstance(), SearchText))
                     {
                         token.ThrowIfCancellationRequested();
 

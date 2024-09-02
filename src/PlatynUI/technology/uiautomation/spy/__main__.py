@@ -28,12 +28,12 @@ def main() -> None:
         warnings.warn(f"Unsupported runtime: {get_runtime_info().kind}")
         raise RuntimeError(f"Unsupported runtime: {get_runtime_info().kind}")
 
-    exe_name = "PlatynUI.Technology.UiAutomation.Spy.exe"
+    exe_name = "PlatynUI.Extension.Win32.UiAutomation.Spy.exe"
     debug_path = (
         Path(__file__).parent
-        / f"../../../../PlatynUI.Technology.UiAutomation.Spy/bin/Debug/net8.0-windows/{exe_name}"
+        / f"../../../../PlatynUI.Extension.Win32.UiAutomation.Spy/bin/Debug/net8.0-windows/{exe_name}"
         # Path(__file__).parent
-        # / f"../../../../PlatynUI.Technology.UiAutomation.Spy/bin/Debug/net481/{ASSEMBLY_NAME}"
+        # / f"../../../../PlatynUI.Extension.Win32.UiAutomation.Spy/bin/Debug/net481/{ASSEMBLY_NAME}"
     )
     runtime_path = Path(__file__).parent.parent / f"runtime/{kind}/{exe_name}"
 

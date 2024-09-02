@@ -8,7 +8,7 @@ from PlatynUI.core import Adapter
 from PlatynUI.core.adapterproxy import AdapterProxyFactory
 from PlatynUI.core.strategies import Properties
 from PlatynUI.core.types import Point, Rect
-from PlatynUI.technology.uiautomation.core.technology import UiaTechnology
+from PlatynUI.Extension.Win32.UiAutomation.core.technology import UiaTechnology
 from PlatynUI.ui.strategies import Element
 
 from .loader import DotNetInterface
@@ -17,7 +17,7 @@ from .uiabase import UiaBase
 # pyright: reportMissingModuleSource=false
 
 if TYPE_CHECKING:
-    from PlatynUI.Technology.UiAutomation.Client import IUIAutomationElement
+    from PlatynUI.Extension.Win32.UiAutomation.Client import IUIAutomationElement
 
 
 class UiaElement(Element, UiaBase):

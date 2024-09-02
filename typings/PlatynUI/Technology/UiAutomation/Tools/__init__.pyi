@@ -2,7 +2,7 @@
 # mypy: ignore-errors
 import typing
 from System import IDisposable
-from PlatynUI.Technology.UiAutomation import Rect
+from PlatynUI.Extension.Win32.UiAutomation import Rect
 
 class Highlighter(IDisposable):
     def __init__(self, autoHide: bool = ..., autoHideTimeout: int = ...) -> None: ...
@@ -29,5 +29,3 @@ class Highlighter(IDisposable):
         # Method Show(r : Rect, timed : Boolean) was skipped since it collides with above method
         @typing.overload
         def __call__(self, r: Rect, timed: bool, timeout: int) -> None:...
-
-

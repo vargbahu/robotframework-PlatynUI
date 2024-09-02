@@ -18,7 +18,7 @@ public class Mouse
     }
 
     private static Mouse? _instance;
-    public static Mouse Instance => _instance ??= new Mouse();
+    private static Mouse Instance => _instance ??= new Mouse();
 
     public static double GetDoubleClickTime()
     {

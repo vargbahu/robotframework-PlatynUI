@@ -9,10 +9,10 @@ from typing import cast
 from PlatynUI.core import Rect
 from PlatynUI.core.adapter import Adapter
 from PlatynUI.core.strategyimpl import StrategyImpl, strategy_impl_for
-from PlatynUI.technology.uiautomation import Desktop, locator
-from PlatynUI.technology.uiautomation.core.loader import DotNetInterface
-from PlatynUI.technology.uiautomation.core.technology import UiaTechnology
-from PlatynUI.technology.uiautomation.core.uiabase import UiaBase
+from PlatynUI.Extension.Win32.UiAutomation import Desktop, locator
+from PlatynUI.Extension.Win32.UiAutomation.core.loader import DotNetInterface
+from PlatynUI.Extension.Win32.UiAutomation.core.technology import UiaTechnology
+from PlatynUI.Extension.Win32.UiAutomation.core.uiabase import UiaBase
 from PlatynUI.ui import Application, Button, Group, Pane, Text, Window, strategies
 
 # mypy: disable-error-code="empty-body"

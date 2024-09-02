@@ -18,16 +18,11 @@ public class Display
     }
 
     private static Display? _instance;
-    public static Display Instance => _instance ??= new Display();
+    private static Display Instance => _instance ??= new Display();
 
     public static Rect GetBoundingRectangle()
     {
         return Instance.displayDevice?.GetBoundingRectangle() ?? new Rect();
-    }
-
-    public static void HighlightRect(Rect rect, double time = 2)
-    {
-        HighlightRect(rect.X, rect.Y, rect.Width, rect.Height, time);
     }
 
     public static void HighlightRect(double x, double y, double width, double height, double time = 2)

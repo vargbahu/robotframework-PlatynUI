@@ -18,7 +18,7 @@ public class Keyboard
     }
 
     private static Keyboard? _instance;
-    public static Keyboard Instance => _instance ??= new Keyboard();
+    private static Keyboard Instance => _instance ??= new Keyboard();
 
     public static Keycode KeyToKeyCode(object? key)
     {

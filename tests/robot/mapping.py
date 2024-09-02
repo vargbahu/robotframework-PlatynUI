@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from PlatynUI.technology.uiautomation.locator import locator
-from PlatynUI.ui import Button, Pane, Text, Window
+from PlatynUI.ui import Button, Pane, Text, Window, locator
 
 # mypy: disable-error-code="empty-body"
 

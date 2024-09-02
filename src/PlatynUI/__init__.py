@@ -8,7 +8,7 @@ from robot.api.deco import library
 from robot.utils import timestr_to_secs
 from robotlibcore import DynamicCore, keyword
 
-from PlatynUI.technology.uiautomation import Locator
+from PlatynUI.ui import Locator
 
 from .core.contextbase import ContextBase, ContextFactory
 from .core.locatorbase import LocatorBase

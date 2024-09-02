@@ -41,7 +41,7 @@ Issues = "https://github.com/imbus/robotframework-platynui/issues"
 Source = "https://github.com/imbus/robotframework-platynui"
 
 [project.scripts]
-"PlatynUI.UiAutomation.Spy" = "PlatynUI.technology.uiautomation.spy.__main__:main"
+"PlatynUI.UiAutomation.Spy" = "PlatynUI.Extension.Win32.UiAutomation.spy.__main__:main"
 
 [tool.hatch.version]
 path = "src/PlatynUI/__about__.py"
@@ -84,12 +84,12 @@ dependencies = [
 # pre-install-commands = ["install-packages"]
 
 [tool.hatch.envs.default.scripts]
-build-runtime-netfx = "dotnet publish -c release -f net481 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/netfx ./src/PlatynUI.Technology.UiAutomation.Spy"
+build-runtime-netfx = "dotnet publish -c release -f net481 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/netfx ./src/PlatynUI.Extension.Win32.UiAutomation.Spy"
 build-runtime-coreclr = "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/coreclr ./src/PlatynUI.Spy"
 #build-runtime = ["build-runtime-netfx", "build-runtime-coreclr"]
 build-runtime = ["build-runtime-coreclr"]
 
-# clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Technology.UiAutomation.Spy"
+# clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Extension.Win32.UiAutomation.Spy"
 clean-runtime = "python scripts/rm.py src/PlatynUI/technology/uiautomation/runtime"
 
 [tool.hatch.envs.types]
@@ -255,7 +255,7 @@ no_implicit_reexport = false
 module = [
   "Sytem.*",
   "Microsoft.*",
-  "PlatynUI.Technology.UiAutomation.*",
+  "PlatynUI.Extension.Win32.UiAutomation.*",
   "typings.*",
 ]
 ignore_errors = true

@@ -125,26 +125,39 @@ static class PlatynUiExtensions
             }
         }
 
-        string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        // TODO: Load assemblies from extensions/plugins directory
 
-        foreach (var dll in Directory.GetFiles(currentDirectory, "PlatynUI.*.dll"))
+        string? currentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName;
+
+        if (currentDirectory != null)
         {
             try
             {
-                var assemblyName = AssemblyName.GetAssemblyName(dll);
-                if (addedAssemblies.Any(x => AssemblyName.ReferenceMatchesDefinition(x, assemblyName)))
+                Console.WriteLine();
+                foreach (var dll in Directory.GetFiles(currentDirectory, "PlatynUI.*.dll"))
                 {
-                    continue;
-                }
-                var assembly = Assembly.LoadFrom(dll);
-                if (assembly.IsValidPlatyUiPlatformExtension())
-                {
-                    catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+                    try
+                    {
+                        var assemblyName = AssemblyName.GetAssemblyName(dll);
+                        if (addedAssemblies.Any(x => AssemblyName.ReferenceMatchesDefinition(x, assemblyName)))
+                        {
+                            continue;
+                        }
+                        var assembly = Assembly.LoadFrom(dll);
+                        if (assembly.IsValidPlatyUiPlatformExtension())
+                        {
+                            catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Failed to load assembly {dll}: {ex.Message}");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Failed to load assembly {dll}: {ex.Message}");
+                Debug.WriteLine($"Failed to load assemblies from {currentDirectory}: {ex.Message}");
             }
         }
 
