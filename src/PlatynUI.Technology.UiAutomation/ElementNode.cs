@@ -39,19 +39,31 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
     Dictionary<string, IAttribute>? _attributes;
     public IDictionary<string, IAttribute> Attributes => _attributes ??= GetAttributes();
 
-    public bool IsEnabled => throw new NotImplementedException();
+    public bool IsEnabled => Element.CurrentIsEnabled != 0;
 
-    public bool IsVisible => throw new NotImplementedException();
+    public bool IsVisible => Element.CurrentIsOffscreen == 0;
 
-    public bool IsInView => throw new NotImplementedException();
+    public bool IsInView => IsVisible;
 
     public bool TopLevelParentIsActive => throw new NotImplementedException();
 
     public Rect BoundingRectangle => Element.CurrentBoundingRectangle.ToRect();
 
-    public Rect VisibleRectangle => throw new NotImplementedException();
+    public Rect VisibleRectangle => BoundingRectangle;
 
-    public Point DefaultClickPosition => throw new NotImplementedException();
+    public Point DefaultClickPosition
+    {
+        get
+        {
+            if (Element.GetClickablePoint(out var point) == 0)
+            {
+                return point.ToPoint();
+            }
+
+            var r = BoundingRectangle;
+            return new Point(r.X + r.Width / 2, r.Y + r.Height / 2);
+        }
+    }
 
     static readonly object InvalidValue = new();
 
@@ -64,6 +76,7 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
             new Automation.PropertyIdAndName(-2, "ProcessName"),
             new Automation.PropertyIdAndName(-3, "Technology"),
             new Automation.PropertyIdAndName(-4, "IsTopLevel"),
+            new Automation.PropertyIdAndName(-5, "DefaultClickPosition"),
             .. Automation.GetSupportedPropertyIdAndNames(Element)
         ];
 
@@ -111,6 +124,12 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
 
                         return (HWND)Element.CurrentNativeWindowHandle
                             == PInvoke.GetAncestor((HWND)Element.CurrentNativeWindowHandle, GET_ANCESTOR_FLAGS.GA_ROOT);
+                    }
+                    return null;
+                case -5:
+                    if (attribute.Name == "DefaultClickPosition")
+                    {
+                        return DefaultClickPosition;
                     }
 
                     return null;
