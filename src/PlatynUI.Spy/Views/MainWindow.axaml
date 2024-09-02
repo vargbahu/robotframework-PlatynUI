@@ -80,7 +80,7 @@
                             <Button Content="&#xE721;"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
-                                Command="{Binding Search}"
+                                Command="{Binding SearchAsync}"
                                 IsVisible="{Binding !InSearch}"
                             />
                             <Button Content="&#xE711;"
@@ -132,7 +132,7 @@
                     </TextBox.Styles>
                     <TextBox.KeyBindings>
                         <KeyBinding Gesture="Enter"
-                            Command="{Binding Search}" />
+                            Command="{Binding SearchAsync}" />
                         <KeyBinding Gesture="Escape"
                             Command="{Binding CancelSearch}" />
                     </TextBox.KeyBindings>
@@ -187,18 +187,12 @@
                                     x:DataType="vm:TreeNodeAttribute"
                                     CanUserSort="true" ClipboardContentBinding="{Binding Name}" CanUserResize="True"
                                 />
-                                <!-- <DataGridTextColumn Header="Value"
-                                    Binding="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
-                                    x:DataType="vm:TreeNodeAttribute"
-                                    ClipboardContentBinding="{Binding Value}"
-                                    Width="Auto">
-                                </DataGridTextColumn> -->
                                 <DataGridTemplateColumn Header="Value" Width="*" CanUserResize="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock
                                                 Text="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
-                                                ToolTip.Tip="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
+                                                ToolTip.Tip="{Binding Value}"
                                                 VerticalAlignment="Center"
                                             />
                                         </DataTemplate>

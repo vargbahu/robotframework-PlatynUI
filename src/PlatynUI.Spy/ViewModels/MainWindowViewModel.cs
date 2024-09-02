@@ -118,18 +118,20 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
         set => this.RaiseAndSetIfChanged(ref _searchText, value);
     }
 
-    public void CancelSearch()
+    public bool CancelSearch()
     {
         if (_searchCancellationTokenSource != null)
         {
             _searchCancellationTokenSource.Cancel();
             _searchCancellationTokenSource = null;
             InSearch = false;
+            return true;
         }
         else
         {
             Debug.WriteLine("No search in progress");
         }
+        return false;
     }
 
     private bool _inSearch;
@@ -171,7 +173,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
 
     CancellationTokenSource? _searchCancellationTokenSource;
 
-    public void Search()
+    public async Task SearchAsync()
     {
         CancelSearch();
 
@@ -182,10 +184,11 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
         _searchCancellationTokenSource = new();
         var token = _searchCancellationTokenSource.Token;
         InSearch = true;
+
         LastError = "";
         try
         {
-            _ = Task.Run(
+            await Task.Run(
                 () =>
                 {
                     var first = true;

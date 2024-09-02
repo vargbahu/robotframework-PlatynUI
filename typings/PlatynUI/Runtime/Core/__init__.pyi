@@ -4,7 +4,7 @@ import typing, abc
 import System.Xml.Xsl
 from System import Func_1, Array_1
 from System.Collections.Generic import IEnumerable_1, IEnumerator_1, IDictionary_2, IList_1
-from PlatynUI.Runtime import Rect, Point
+from PlatynUI.Runtime import Rect, Point, Size
 from System.Xml import XmlNameTable
 from System.Xml.XPath import XPathNavigator, XPathResultType
 from System.Xml.Xsl import IXsltContextFunction, IXsltContextVariable
@@ -96,6 +96,28 @@ class IElement(typing.Protocol):
     def VisibleRectangle(self) -> Rect: ...
 
 
+class IKeyboardDevice(typing.Protocol):
+    @abc.abstractmethod
+    def KeyToKeyCode(self, key: typing.Optional[typing.Any]) -> Keycode: ...
+    @abc.abstractmethod
+    def SendKeyCode(self, keyCode: typing.Any, pressed: bool) -> bool: ...
+
+
+class IMouseDevice(typing.Protocol):
+    @abc.abstractmethod
+    def GetDoubleClickSize(self) -> Size: ...
+    @abc.abstractmethod
+    def GetDoubleClickTime(self) -> float: ...
+    @abc.abstractmethod
+    def GetPosition(self) -> Point: ...
+    @abc.abstractmethod
+    def Move(self, x: float, y: float) -> None: ...
+    @abc.abstractmethod
+    def Press(self, button: MouseButton) -> None: ...
+    @abc.abstractmethod
+    def Release(self, button: MouseButton) -> None: ...
+
+
 class INode(typing.Protocol):
     @property
     def Attributes(self) -> IDictionary_2[str, IAttribute]: ...
@@ -126,6 +148,34 @@ class INode(typing.Protocol):
 class INodeProvider(typing.Protocol):
     @abc.abstractmethod
     def GetNodes(self, parent: INode) -> IEnumerable_1[INode]: ...
+
+
+class Keycode:
+    def __init__(self, key: typing.Optional[typing.Any], code: typing.Optional[typing.Any], valid: bool, errorText: typing.Optional[str]) -> None: ...
+    @property
+    def Code(self) -> typing.Optional[typing.Any]: ...
+    @property
+    def ErrorText(self) -> typing.Optional[str]: ...
+    @property
+    def Key(self) -> typing.Optional[typing.Any]: ...
+    @property
+    def Valid(self) -> bool: ...
+    def ToString(self) -> str: ...
+
+
+class MouseButton(typing.SupportsInt):
+    @typing.overload
+    def __init__(self, value : int) -> None: ...
+    @typing.overload
+    def __init__(self, value : int, force_if_true: bool) -> None: ...
+    def __int__(self) -> int: ...
+    
+    # Values:
+    Left : MouseButton # 0
+    Right : MouseButton # 1
+    Middle : MouseButton # 2
+    X1 : MouseButton # 3
+    X2 : MouseButton # 4
 
 
 class Namespaces(abc.ABC):
