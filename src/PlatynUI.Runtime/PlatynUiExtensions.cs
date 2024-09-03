@@ -133,8 +133,13 @@ static class PlatynUiExtensions
         {
             try
             {
-                Console.WriteLine();
-                foreach (var dll in Directory.GetFiles(currentDirectory, "PlatynUI.*.dll"))
+                string[] files =
+                [
+                    .. Directory.GetFiles(currentDirectory, "PlatynUI.Platform.*.dll"),
+                    .. Directory.GetFiles(currentDirectory, "PlatynUI.Extension.*.dll")
+                ];
+
+                foreach (var dll in files)
                 {
                     try
                     {
@@ -144,8 +149,10 @@ static class PlatynUiExtensions
                             continue;
                         }
                         var assembly = Assembly.LoadFrom(dll);
+                        Debug.WriteLine($"Loaded assembly {dll}");
                         if (assembly.IsValidPlatyUiPlatformExtension())
                         {
+                            Debug.WriteLine($"Adding assembly {dll} to catalog");
                             catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                         }
                     }

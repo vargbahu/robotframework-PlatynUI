@@ -316,7 +316,7 @@ public class VirtualKey
     }
 }
 
-[Export(typeof(IMouseDevice))]
+[Export(typeof(IKeyboardDevice))]
 [method: ImportingConstructor]
 public class KeyboardDevice() : IKeyboardDevice
 {

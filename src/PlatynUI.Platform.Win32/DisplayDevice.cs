@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 using Windows.Win32;
+using Windows.Win32.UI.HiDpi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace PlatynUI.Platform.Win32;
@@ -14,6 +15,11 @@ namespace PlatynUI.Platform.Win32;
 [method: ImportingConstructor]
 public class DisplayDevice() : IDisplayDevice
 {
+    static DisplayDevice()
+    {
+        PInvoke.SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    }
+
     public Rect GetBoundingRectangle()
     {
         return new Rect(

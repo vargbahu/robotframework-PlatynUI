@@ -7,18 +7,18 @@ using PlatynUI.Runtime.Core;
 
 namespace PlatynUI.Runtime;
 
-public class Mouse
+public class MouseDevice
 {
     [Import]
     protected IMouseDevice? mouseDevice;
 
-    private Mouse()
+    private MouseDevice()
     {
         PlatynUiExtensions.ComposeParts(this);
     }
 
-    private static Mouse? _instance;
-    private static Mouse Instance => _instance ??= new Mouse();
+    private static MouseDevice? _instance;
+    private static MouseDevice Instance => _instance ??= new MouseDevice();
 
     public static double GetDoubleClickTime()
     {
@@ -37,6 +37,8 @@ public class Mouse
 
     public static void Move(double x, double y)
     {
+        Console.WriteLine($"Moving mouse to {x}, {y}");
+        Console.WriteLine($"Mouse device: {Instance.mouseDevice != null}");
         Instance.mouseDevice?.Move(x, y);
     }
 

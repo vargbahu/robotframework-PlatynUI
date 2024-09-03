@@ -23,7 +23,7 @@ class Desktop(INode):
     def Refresh(self) -> None: ...
 
 
-class Display:
+class DisplayDevice:
     @staticmethod
     def GetBoundingRectangle() -> Rect: ...
     @staticmethod
@@ -41,14 +41,14 @@ class Finder(abc.ABC):
     def FindSingleNode(parent: typing.Optional[INode], xpath: str, findVirtual: bool = ...) -> typing.Optional[INode]: ...
 
 
-class Keyboard:
+class KeyboardDevice:
     @staticmethod
     def KeyToKeyCode(key: typing.Optional[typing.Any]) -> Keycode: ...
     @staticmethod
     def SendKeyCode(keyCode: typing.Any, pressed: bool) -> bool: ...
 
 
-class Mouse:
+class MouseDevice:
     @staticmethod
     def GetDoubleClickSize() -> Size: ...
     @staticmethod

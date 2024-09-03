@@ -32,7 +32,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
                 if (node != null && node.Node is IElement element && element.IsVisible && element.IsInView)
                 {
                     var r = element.BoundingRectangle;
-                    Display.HighlightRect(r.X, r.Y, r.Width, r.Height, 2);
+                    DisplayDevice.HighlightRect(r.X, r.Y, r.Width, r.Height, 2);
                 }
             });
         this.WhenAnyValue(x => x.SearchText)

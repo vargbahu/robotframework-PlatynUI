@@ -15,6 +15,6 @@ using PlatynUI.Runtime;
 //     }
 // }
 
-Display.HighlightRect(0,0, 100,100, 5000);
+DisplayDevice.HighlightRect(0,0, 100,100, 5000);
 Thread.Sleep(5000);
 Console.WriteLine("Done");

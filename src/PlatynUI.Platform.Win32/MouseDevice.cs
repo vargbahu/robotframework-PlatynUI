@@ -14,7 +14,6 @@ using Windows.Win32.UI.WindowsAndMessaging;
 namespace PlatynUI.Platform.Win32;
 
 [Export(typeof(IMouseDevice))]
-[method: ImportingConstructor]
 public class MouseDevice() : IMouseDevice
 {
     public double GetDoubleClickTime()

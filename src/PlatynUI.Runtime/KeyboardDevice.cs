@@ -7,18 +7,18 @@ using PlatynUI.Runtime.Core;
 
 namespace PlatynUI.Runtime;
 
-public class Keyboard
+public class KeyboardDevice
 {
     [Import]
     protected IKeyboardDevice? keyboardDevice;
 
-    private Keyboard()
+    private KeyboardDevice()
     {
         PlatynUiExtensions.ComposeParts(this);
     }
 
-    private static Keyboard? _instance;
-    private static Keyboard Instance => _instance ??= new Keyboard();
+    private static KeyboardDevice? _instance;
+    private static KeyboardDevice Instance => _instance ??= new KeyboardDevice();
 
     public static Keycode KeyToKeyCode(object? key)
     {

@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from PlatynUI.Runtime import (
         # Adapter,
-        Display,
+        DisplayDevice,
         Finder,
-        Keyboard,
-        Mouse,
+        KeyboardDevice,
+        MouseDevice,
         # Patterns,
     )
 
@@ -26,9 +26,9 @@ if TYPE_CHECKING:
 class DotNetInterface:
     # _adapter: Optional["Adapter"] = None
     _finder: Optional["Finder"] = None
-    # _mouse_device: Optional["MouseDevice"] = None
-    # _keyboard_device: Optional["KeyboardDevice"] = None
-    # _display_device: Optional["DisplayDevice"] = None
+    _mouse_device: Optional["MouseDevice"] = None
+    _keyboard_device: Optional["KeyboardDevice"] = None
+    _display_device: Optional["DisplayDevice"] = None
     # _patterns: Optional["Patterns"] = None
 
     __loaded = False
@@ -41,6 +41,7 @@ class DotNetInterface:
         cls.__loaded = True
 
         from pythonnet import get_runtime_info, load
+
         load("coreclr")
 
         import clr
@@ -59,10 +60,7 @@ class DotNetInterface:
         logger.debug(f"Runtime kind: {rt_kind}")  # noqa: G004
 
         assembly_name = "PlatynUI.Runtime.dll"
-        debug_assembly_path = (
-            Path(__file__).parent
-            / f"../../../../PlatynUI.Spy/bin/Debug/net8.0/{assembly_name}"
-        )
+        debug_assembly_path = Path(__file__).parent / f"../../../../PlatynUI.Spy/bin/Debug/net8.0/{assembly_name}"
         runtime_assembly_path = Path(__file__).parent.parent / f"{kind}/{assembly_name}"
 
         if debug_assembly_path.exists():
@@ -103,38 +101,38 @@ class DotNetInterface:
 
         return cls._finder
 
-    # @classmethod
-    # def mouse_device(cls) -> "MouseDevice":
-    #     if cls._mouse_device is None:
-    #         cls._ensure_loaded()
+    @classmethod
+    def mouse_device(cls) -> "MouseDevice":
+        if cls._mouse_device is None:
+            cls._ensure_loaded()
 
-    #         from PlatynUI.Extension.Win32.UiAutomation import MouseDevice
+            from PlatynUI.Runtime import MouseDevice
 
-    #         cls._mouse_device = cast("MouseDevice", MouseDevice)
+            cls._mouse_device = cast("MouseDevice", MouseDevice)
 
-    #     return cls._mouse_device
+        return cls._mouse_device
 
-    # @classmethod
-    # def keyboard_device(cls) -> "KeyboardDevice":
-    #     if cls._keyboard_device is None:
-    #         cls._ensure_loaded()
+    @classmethod
+    def keyboard_device(cls) -> "KeyboardDevice":
+        if cls._keyboard_device is None:
+            cls._ensure_loaded()
 
-    #         from PlatynUI.Extension.Win32.UiAutomation import KeyboardDevice
+            from PlatynUI.Runtime import KeyboardDevice
 
-    #         cls._keyboard_device = cast("KeyboardDevice", KeyboardDevice)
+            cls._keyboard_device = cast("KeyboardDevice", KeyboardDevice)
 
-    #     return cls._keyboard_device
+        return cls._keyboard_device
 
-    # @classmethod
-    # def display_device(cls) -> "DisplayDevice":
-    #     if cls._display_device is None:
-    #         cls._ensure_loaded()
+    @classmethod
+    def display_device(cls) -> "DisplayDevice":
+        if cls._display_device is None:
+            cls._ensure_loaded()
 
-    #         from PlatynUI.Extension.Win32.UiAutomation import DisplayDevice
+            from PlatynUI.Runtime import DisplayDevice
 
-    #         cls._display_device = cast("DisplayDevice", DisplayDevice)
+            cls._display_device = cast("DisplayDevice", DisplayDevice)
 
-    #     return cls._display_device
+        return cls._display_device
 
     # @classmethod
     # def patterns(cls) -> "Patterns":

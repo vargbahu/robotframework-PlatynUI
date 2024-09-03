@@ -7,18 +7,18 @@ using PlatynUI.Runtime.Core;
 
 namespace PlatynUI.Runtime;
 
-public class Display
+public class DisplayDevice
 {
     [Import]
     protected IDisplayDevice? displayDevice;
 
-    private Display()
+    private DisplayDevice()
     {
         PlatynUiExtensions.ComposeParts(this);
     }
 
-    private static Display? _instance;
-    private static Display Instance => _instance ??= new Display();
+    private static DisplayDevice? _instance;
+    private static DisplayDevice Instance => _instance ??= new DisplayDevice();
 
     public static Rect GetBoundingRectangle()
     {
