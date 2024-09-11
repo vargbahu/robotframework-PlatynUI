@@ -42,13 +42,13 @@ public class MouseDevice
         Instance.mouseDevice?.Move(x, y);
     }
 
-    public static void Press(MouseButton button)
+    public static void Press(int button)
     {
-        Instance.mouseDevice?.Press(button);
+        Instance.mouseDevice?.Press((MouseButton)button);
     }
 
-    public static void Release(MouseButton button)
+    public static void Release(int button)
     {
-        Instance.mouseDevice?.Release(button);
+        Instance.mouseDevice?.Release((MouseButton)button);
     }
 }
