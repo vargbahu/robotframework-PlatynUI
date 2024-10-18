@@ -58,9 +58,14 @@ public static class Adapter
 
         var parent = Automation.RawViewWalker.GetParentElement(element);
 
+
         if (parent == null)
         {
             return null;
+        }
+
+        if (parent.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var windowPattern)) {
+            return parent;
         }
 
         if (Automation.CompareElements(parent, Automation.RootElement))
@@ -82,7 +87,6 @@ public static class Adapter
 
         if (topLevelParent == null)
         {
-            Console.WriteLine("Top level parent not found");
             return false;
         }
 

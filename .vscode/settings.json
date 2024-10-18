@@ -55,5 +55,6 @@
     },
     "csharp.debug.justMyCode": false,
     "csharp.debug.symbolOptions.searchMicrosoftSymbolServer": false,
-    "csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": false
+    "csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": false,
+    "robotcode.robocop.enabled": false
 }
