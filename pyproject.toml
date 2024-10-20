@@ -84,13 +84,8 @@ dependencies = [
 # pre-install-commands = ["install-packages"]
 
 [tool.hatch.envs.default.scripts]
-build-runtime-netfx = "dotnet publish -c release -f net481 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/netfx ./src/PlatynUI.Extension.Win32.UiAutomation.Spy"
-build-runtime-coreclr = "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None -o src/PlatynUI/technology/uiautomation/runtime/coreclr ./src/PlatynUI.Spy"
-#build-runtime = ["build-runtime-netfx", "build-runtime-coreclr"]
-build-runtime = ["build-runtime-coreclr"]
+# no scripts here
 
-# clean-runtime = "dotnet clean -c release -f net8.0-windows -o src/PlatynUI/technology/uiautomation/runtime ./src/PlatynUI.Extension.Win32.UiAutomation.Spy"
-clean-runtime = "python scripts/rm.py src/PlatynUI/technology/uiautomation/runtime"
 
 [tool.hatch.envs.types]
 extra-dependencies = ["mypy>=1.0.0"]
@@ -201,8 +196,8 @@ filterwarnings = "ignore:.*Using or importing the ABCs from 'collections' instea
 testpaths = ["tests"]
 junit_suite_name = "robotcode"
 #console_output_style = "classic"
-# log_cli = true
-# log_cli_level = 4
+log_cli = true
+log_cli_level = 4
 # log_cli_format = "%(levelname)s %(name)s: %(message)s"
 faulthandler_timeout = 240
 

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Diagnostics;
 using System.Xml.XPath;
 using PlatynUI.Runtime.Core;
 using XPathNavigator = PlatynUI.Runtime.Core.XPathNavigator;
@@ -12,23 +13,25 @@ public static class Finder
 {
     static readonly XsltContext xsltContext = new();
 
-    public static INode? FindSingleNode(INode? parent, string xpath, bool findVirtual = false)
+    public static object? FindSingleNode(INode? parent, string xpath, bool findVirtual = false, bool refresh = true)
     {
         parent ??= Desktop.GetInstance();
-        parent.Refresh();
+
+        if (refresh)
+            parent.Invalidate();
 
         var navigator = new XPathNavigator(parent, findVirtual, xsltContext.NameTable);
         var expression = XPathExpression.Compile(xpath, xsltContext);
 
         var node = navigator.SelectSingleNode(expression);
 
-        return node?.UnderlyingObject as INode;
+        return node?.UnderlyingObject;
     }
 
-    public static IEnumerable<INode> EnumAllNodes(INode? parent, string xpath, bool findVirtual = false)
+    public static IEnumerable<object?> EnumAllNodes(INode? parent, string xpath, bool findVirtual = false)
     {
         parent ??= Desktop.GetInstance();
-        parent.Refresh();
+        parent.Invalidate();
 
         var navigator = new XPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);
@@ -42,15 +45,15 @@ public static class Finder
         }
     }
 
-    public static IList<INode> FindNodes(INode? parent, string xpath, bool findVirtual = false)
+    public static IList<object?> FindNodes(INode? parent, string xpath, bool findVirtual = false)
     {
-        return [..EnumAllNodes(parent, xpath, findVirtual)];
+        return [.. EnumAllNodes(parent, xpath, findVirtual)];
     }
 
     public static IEnumerable<object?> Evaluate(INode? parent, string xpath, bool findVirtual = false)
     {
         parent ??= Desktop.GetInstance();
-        parent.Refresh();
+        parent.Invalidate();
 
         var navigator = new XPathNavigator(parent, findVirtual);
         var expression = XPathExpression.Compile(xpath, xsltContext);

@@ -37,8 +37,6 @@ public class MouseDevice
 
     public static void Move(double x, double y)
     {
-        Console.WriteLine($"Moving mouse to {x}, {y}");
-        Console.WriteLine($"Mouse device: {Instance.mouseDevice != null}");
         Instance.mouseDevice?.Move(x, y);
     }
 

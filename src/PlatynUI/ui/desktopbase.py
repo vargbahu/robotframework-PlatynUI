@@ -21,7 +21,7 @@ class DesktopBase(Element):
 
         @property
         def base_point(self) -> Point:
-            return self._element.bounding_rectangle.top_left
+            return Point(0, 0)
 
         @property
         def base_rect(self) -> Rect:

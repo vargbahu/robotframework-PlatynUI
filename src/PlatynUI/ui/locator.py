@@ -13,7 +13,7 @@ from typing_extensions import Self
 from PlatynUI import ui
 from PlatynUI.core import Adapter, ContextBase, LocatorBase, LocatorScope, TContextBase, Technology
 
-from .runtime.technology import get_technology
+from .runtime.technology_impl import get_technology
 
 __all__ = ["Locator", "locator", "LocatorScope"]
 

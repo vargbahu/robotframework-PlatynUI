@@ -8,7 +8,7 @@ using Attribute = PlatynUI.Runtime.Core.Attribute;
 
 namespace PlatynUI.Runtime;
 
-public class Desktop : INode
+public class Desktop : INode, IAdapter, IElement
 {
     private Desktop()
     {
@@ -56,7 +56,40 @@ public class Desktop : INode
             .OrderBy(x => x.Name)
             .ToDictionary(x => x.Name);
 
+    public string Id => "Desktop";
+
+    public string Name => "Desktop";
+
+    public string Role => "Desktop";
+
+    public string ClassName => "Desktop";
+
+    public string[] SupportedRoles => ["Desktop", "Element"];
+
+    public string Type => "element";
+
+    public string[] SupportedTypes => ["element"];
+
+    public string FrameworkId => throw new NotImplementedException();
+
+    public string RuntimeId => throw new NotImplementedException();
+
+    public bool IsEnabled => true;
+
+    public bool IsVisible => true;
+
+    public bool IsInView => true;
+
+    public bool TopLevelParentIsActive => throw new NotImplementedException();
+
+    public Rect BoundingRectangle => DisplayDevice.GetBoundingRectangle();
+
+    public Rect VisibleRectangle => DisplayDevice.GetBoundingRectangle();
+
+    public Point? DefaultClickPosition => null;
+
     private static Desktop? _instance;
+
     public static Desktop GetInstance() => _instance ??= new Desktop();
 
     public INode Clone()
@@ -69,8 +102,33 @@ public class Desktop : INode
         return this == other;
     }
 
-    public void Refresh()
+    public void Invalidate()
     {
         _children = null;
+    }
+
+    public bool IsValid()
+    {
+        return true;
+    }
+
+    public bool TryEnsureVisible()
+    {
+        return true;
+    }
+
+    public bool TryEnsureApplicationIsReady()
+    {
+        return true;
+    }
+
+    public bool TryEnsureToplevelParentIsActive()
+    {
+        return true;
+    }
+
+    public bool TryBringIntoView()
+    {
+        return true;
     }
 }

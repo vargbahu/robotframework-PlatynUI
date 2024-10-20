@@ -19,4 +19,7 @@ public interface IAdapter
 
     string FrameworkId { get; }
     string RuntimeId { get; }
+
+    bool IsValid();
+    void Invalidate();
 }

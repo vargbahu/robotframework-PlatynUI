@@ -193,7 +193,7 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
                 {
                     var first = true;
 
-                    foreach (var node in Finder.EnumAllNodes(Desktop.GetInstance(), SearchText))
+                    foreach (var node in Finder.EnumAllNodes(Desktop.GetInstance(), SearchText).Cast<INode>())
                     {
                         token.ThrowIfCancellationRequested();
 

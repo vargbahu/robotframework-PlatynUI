@@ -258,10 +258,15 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
         return false;
     }
 
-    public void Refresh()
+    public void Invalidate()
     {
         _children = null;
         _attributes = null;
+    }
+
+    public bool IsValid()
+    {
+        throw new NotImplementedException();
     }
 }
 
@@ -312,7 +317,7 @@ class ComponentAdapter(Connection connection, INode? parent, ElementReference el
 
     public Rect VisibleRectangle => BoundingRectangle;
 
-    public Point DefaultClickPosition
+    public Point? DefaultClickPosition
     {
         get
         {
@@ -338,6 +343,26 @@ class ComponentAdapter(Connection connection, INode? parent, ElementReference el
             new Attribute("Extents.Parent", () => Component.GetExtentsAsync(2).GetAwaiter().GetResult()),
         ];
     }
+
+    public bool TryEnsureVisible()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryEnsureApplicationIsReady()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryEnsureToplevelParentIsActive()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryBringIntoView()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 [Export(typeof(INodeProvider))]
@@ -358,7 +383,7 @@ class NodeProvider : INodeProvider
 
     public IEnumerable<INode> GetNodes(INode parent)
     {
-        Root.Refresh();
+        Root.Invalidate();
         Root.Parent = parent;
         foreach (var e in Root.Children)
         {

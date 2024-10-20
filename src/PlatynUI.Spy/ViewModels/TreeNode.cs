@@ -100,7 +100,7 @@ public class TreeNode(TreeNode? parent, INode node) : ViewModelBase
 
     public void Refresh()
     {
-        Node.Refresh();
+        Node.Invalidate();
         _children = null;
         _attributes = null;
         this.RaisePropertyChanged(nameof(Node));

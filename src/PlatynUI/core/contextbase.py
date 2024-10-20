@@ -6,7 +6,7 @@ import threading
 import time
 import weakref
 from abc import ABCMeta
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type, TypeVar, Union, overload
+from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, Set, Type, TypeVar, Union, overload
 
 from typing_extensions import Self
 
@@ -52,12 +52,12 @@ class ContextBase(metaclass=ABCMeta):
         self._adapter = adapter
 
     def __repr__(self) -> str:
-        return "%s(locator=%s)" % (self.__class__.__name__, self.locator)
+        return "%s(locator=%s)" % (self.__class__.__name__, self._locator)
 
     @property
     def locator(self) -> LocatorBase:
         if self._locator is None:
-            raise NoLocatorDefinedError(f"no locator defined for {self:r}")
+            raise NoLocatorDefinedError(f"no locator defined for {self!r}")
 
         return self._locator
 
@@ -86,7 +86,7 @@ class ContextBase(metaclass=ABCMeta):
         result = self._try_get_adapter(True)
 
         if result is None:
-            raise PlatynUiFatalError("adapter is not valid")
+            raise PlatynUiFatalError("Adapter is not valid")
 
         return result
 
@@ -327,8 +327,8 @@ class ContextBase(metaclass=ABCMeta):
     def __enter__(self) -> "Self":
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> False:
-        pass
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> Literal[False]:
+        return False
 
     def get(
         self, context_class: Optional[Type["TContextBase"]], *args: Any, locator: LocatorBase = None, **kwargs: Any

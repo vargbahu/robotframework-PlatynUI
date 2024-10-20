@@ -106,7 +106,7 @@ public class Node(INode? parent, ElementReference reference, ProcessProvider pro
         };
     }
 
-    public void Refresh()
+    public void Invalidate()
     {
         _localName = null;
         _namespaceURI = null;
@@ -148,6 +148,26 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
         return default;
     }
 
+    public bool TryEnsureVisible()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryEnsureApplicationIsReady()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryEnsureToplevelParentIsActive()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryBringIntoView()
+    {
+        throw new NotImplementedException();
+    }
+
     public bool IsEnabled => GetAttribute<bool?>("IsEnabled") ?? false;
 
     public bool IsVisible => GetAttribute<bool?>("IsVisible") ?? false;
@@ -170,5 +190,5 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
 
     public Rect VisibleRectangle => GetAttribute<Rect?>("VisibleRectangle") ?? Rect.Empty;
 
-    public Point DefaultClickPosition => GetAttribute<Point?>("DefaultClickPosition") ?? Point.Empty;
+    public Point? DefaultClickPosition => GetAttribute<Point?>("DefaultClickPosition") ?? Point.Empty;
 }

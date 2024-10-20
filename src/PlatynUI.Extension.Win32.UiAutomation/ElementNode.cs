@@ -2,19 +2,20 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-using PlatynUI.Runtime;
-using PlatynUI.Runtime.Core;
 using PlatynUI.Extension.Win32.UiAutomation.Client;
 using PlatynUI.Extension.Win32.UiAutomation.Core;
+using PlatynUI.Runtime;
+using PlatynUI.Runtime.Core;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using IAdapter = PlatynUI.Runtime.Core.IAdapter;
 using IAttribute = PlatynUI.Runtime.Core.IAttribute;
 using INode = PlatynUI.Runtime.Core.INode;
 
 namespace PlatynUI.Extension.Win32.UiAutomation;
 
-public class ElementNode(INode? parent, IUIAutomationElement element) : INode, IElement
+public class ElementNode(INode? parent, IUIAutomationElement element) : INode, IAdapter, IElement
 {
     public INode? Parent { get; } = parent;
     public IUIAutomationElement Element { get; } = element;
@@ -51,11 +52,11 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
 
     public Rect VisibleRectangle => BoundingRectangle;
 
-    public Point DefaultClickPosition
+    public Point? DefaultClickPosition
     {
         get
         {
-            if (Element.GetClickablePoint(out var point) == 0)
+            if (Element.GetClickablePoint(out var point) != 0)
             {
                 return point.ToPoint();
             }
@@ -64,6 +65,24 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
             return new Point(r.X + r.Width / 2, r.Y + r.Height / 2);
         }
     }
+
+    public string Id => Element.CurrentAutomationId;
+
+    public string Name => Element.CurrentName;
+
+    public string Role => Element.GetCurrentControlTypeName();
+
+    public string ClassName => Element.CurrentClassName;
+
+    public string[] SupportedRoles => [Role];
+
+    public string Type => "element"; // TODO: use UIAutomation to get the type
+
+    public string[] SupportedTypes => ["element"]; // TODO: use UIAutomation to get the type
+
+    public string FrameworkId => Element.CurrentFrameworkId;
+
+    public string RuntimeId => throw new NotImplementedException();
 
     static readonly object InvalidValue = new();
 
@@ -97,7 +116,7 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
             {
                 case -1:
                     if (attribute.Name == "Role")
-                        return Element.GetCurrentControlTypeName();
+                        return Role;
 
                     return null;
                 case -2:
@@ -176,8 +195,47 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
         return other is ElementNode node && Automation.CompareElements(Element, node.Element);
     }
 
-    public void Refresh()
+    public void Invalidate()
     {
         _children = null;
+    }
+
+    public bool IsValid()
+    {
+        try
+        {
+            return Element.CurrentProcessId != 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool TryEnsureVisible()
+    {
+        return Element.CurrentIsOffscreen == 0;
+    }
+
+    public bool TryEnsureApplicationIsReady()
+    {
+        try
+        {
+            return System.Diagnostics.Process.GetProcessById(Element.CurrentProcessId).WaitForInputIdle(5);
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    public bool TryEnsureToplevelParentIsActive()
+    {
+        return Helper.TryEnsureTopLevelParentIsActive(Element);
+    }
+
+    public bool TryBringIntoView()
+    {
+        return true;
     }
 }

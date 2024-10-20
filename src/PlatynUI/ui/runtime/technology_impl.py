@@ -21,10 +21,12 @@ from ..core.window_manager import WindowManager
 __all__ = ["get_technology"]
 
 
-class Technology(ui_technology.UiTechnology):
-    @property
+class TechnologyImpl(ui_technology.UiTechnology):
+    @cached_property
     def adapter_factory(self) -> adapterfactory.AdapterFactory:
-        raise NotImplementedError
+        from .adapterfactory_impl import AdapterFactoryImpl
+
+        return AdapterFactoryImpl(self)
 
     @cached_property
     def mouse_device(self) -> MouseDevice:
@@ -32,30 +34,30 @@ class Technology(ui_technology.UiTechnology):
 
         return DefaultMouseDevice(MouseDeviceImpl())
 
-    @property
+    @cached_property
     def keyboard_device(self) -> KeyboardDevice:
         from .keyboard_device_impl import KeyboardDeviceImpl
 
         return DefaultKeyboardDevice(KeyboardDeviceImpl())
 
-    @property
+    @cached_property
     def display_device(self) -> DisplayDevice:
         from .display_device_impl import DisplayDeviceImpl
 
         return DefaultDisplayDevice(DisplayDeviceImpl())
 
-    @property
+    @cached_property
     def window_manager(self) -> WindowManager:
         raise NotImplementedError
 
 
-__instance: Optional[Technology] = None
+__instance: Optional[TechnologyImpl] = None
 __lock = threading.Lock()
 
 
-def get_technology() -> Technology:
+def get_technology() -> TechnologyImpl:
     global __instance
     with __lock:
         if __instance is None:
-            __instance = Technology()
+            __instance = TechnologyImpl()
         return __instance

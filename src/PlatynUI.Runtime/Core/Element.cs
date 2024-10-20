@@ -12,5 +12,10 @@ public interface IElement
     bool TopLevelParentIsActive { get; }
     Rect BoundingRectangle { get; }
     Rect VisibleRectangle { get; }
-    Point DefaultClickPosition { get; }
+    Point? DefaultClickPosition { get; }
+
+    bool TryEnsureVisible();
+    bool TryEnsureApplicationIsReady();
+    bool TryEnsureToplevelParentIsActive();
+    bool TryBringIntoView();
 }

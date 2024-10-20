@@ -88,7 +88,7 @@ public class ApplicationNode(Runtime.Core.INode? parent, int processId) : Runtim
         return other is ApplicationNode node && node.ProcessId == ProcessId;
     }
 
-    public void Refresh()
+    public void Invalidate()
     {
         _attributes = null;
     }

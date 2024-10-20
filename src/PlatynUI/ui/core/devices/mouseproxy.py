@@ -74,6 +74,10 @@ class MouseProxy(metaclass=ABCMeta):
         elif not pos:
             default = self.default_click_position
             base = self.base_point
+            if not default.x_is_valid():
+                default.x = base.x
+            if not default.y_is_valid():
+                default.y = base.y
             pos.x = default.x if x is None else base.x
             pos.y = default.y if y is None else base.y
         else:

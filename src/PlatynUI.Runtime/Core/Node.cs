@@ -82,7 +82,7 @@ public interface INode
 
     IList<INode> Children { get; }
 
-    void Refresh();
+    void Invalidate();
 
     virtual IList<INode> GetAncestors()
     {

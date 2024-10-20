@@ -3,16 +3,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
-using PlatynUI.Runtime;
 using PlatynUI.Extension.Win32.UiAutomation.Client;
 using PlatynUI.Extension.Win32.UiAutomation.Core;
+using PlatynUI.Runtime;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace PlatynUI.Extension.Win32.UiAutomation;
 
-public static class Adapter
+public static class Helper
 {
     public static string GetRole(IUIAutomationElement element)
     {
@@ -58,13 +58,13 @@ public static class Adapter
 
         var parent = Automation.RawViewWalker.GetParentElement(element);
 
-
         if (parent == null)
         {
             return null;
         }
 
-        if (parent.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var windowPattern)) {
+        if (parent.TryGetCurrentPattern<IUIAutomationWindowPattern>(out var windowPattern))
+        {
             return parent;
         }
 
@@ -122,16 +122,34 @@ public static class Adapter
                     }
                 }
 
-                PInvoke.SwitchToThisWindow((HWND)topLevelWindowHandle, false);
+                PInvoke.SwitchToThisWindow((HWND)topLevelWindowHandle, true);
 
                 Stopwatch sw = new();
                 sw.Start();
-                while (PInvoke.GetForegroundWindow() != topLevelWindowHandle && sw.ElapsedMilliseconds < 5000)
+
+                while (PInvoke.GetForegroundWindow() != topLevelWindowHandle && sw.ElapsedMilliseconds < 1000)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                 }
 
-                return PInvoke.GetForegroundWindow() != topLevelWindowHandle;
+                sw.Restart();
+
+                while (PInvoke.GetForegroundWindow() != topLevelWindowHandle && sw.ElapsedMilliseconds < 3000)
+                {
+                    PInvoke.SwitchToThisWindow((HWND)topLevelWindowHandle, false);
+                    Thread.Sleep(500);
+                }
+
+                if (PInvoke.GetForegroundWindow() != topLevelWindowHandle)
+                {
+                    Console.WriteLine($"Failed to activate window, try the focus method {Automation.UiAutomation.ElementFromHandle(PInvoke.GetForegroundWindow()).CurrentClassName}");
+                    topLevelParent.SetFocus();
+                    return true;
+                }
+
+                Console.WriteLine($"Succeeded to activate window, try the focus method {Automation.UiAutomation.ElementFromHandle(PInvoke.GetForegroundWindow()).CurrentClassName}");
+
+                return PInvoke.GetForegroundWindow() == topLevelWindowHandle;
             }
             else
             {

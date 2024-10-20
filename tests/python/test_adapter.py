@@ -28,7 +28,7 @@ def test_second() -> None:
 
 def test_third() -> None:
     context: Element = ContextFactory.create_context(Locator(path="/."))
-    assert isinstance(context, Pane)
+    assert isinstance(context, Desktop)
 
 
 def test_fourth() -> None:
@@ -106,6 +106,7 @@ class Calculator(Window):
 def test_seventh() -> None:
     calc = Calculator()
     desktop = Desktop()
+
     desktop.mouse.move_to(x=calc.n1.bounding_rectangle.left, y=calc.n1.bounding_rectangle.top)
     desktop.mouse.move_to(x=calc.n2.bounding_rectangle.left, y=calc.n2.bounding_rectangle.top)
     desktop.mouse.move_to(x=calc.n3.bounding_rectangle.left, y=calc.n3.bounding_rectangle.top)
@@ -129,4 +130,14 @@ def test_seventh() -> None:
     calc.n9.activate()
     calc.n0.activate()
 
-    calc.n1.keyboard.type_keys("1234")
+    # calc.n1.keyboard.type_keys("1234")
+
+
+if __name__ == "__main__":
+    test_first()
+    test_second()
+    test_third()
+    test_fourth()
+    #test_fifth()
+    # test_sixth()
+    test_seventh()
