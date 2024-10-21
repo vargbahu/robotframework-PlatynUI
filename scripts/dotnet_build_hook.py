@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from functools import cached_property
 import contextlib
 import subprocess
 import sys
+from functools import cached_property
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -27,7 +27,7 @@ from scripts.rm import rm  # noqa: E402
 
 
 class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
-    BASE_OUTPUT_DIR = Path("src/PlatynUI/ui/runtime")
+    BASE_OUTPUT_DIR = Path("src/PlatynUI/ui/runtime/coreclr")
     BASE_PROVIDERS_DIR = Path("src/PlatynUI/ui/runtime/providers")
 
     @cached_property
@@ -52,10 +52,11 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
         )
 
     def initialize(self, version: str, build_data: Dict[str, Any]) -> None:
+        self.clean([])
         self._run_shell("dotnet restore")
         self._run_shell(
             "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
-            f"-o {self.BASE_OUTPUT_DIR / 'coreclr'} "
+            f"-o {self.BASE_OUTPUT_DIR} "
             f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Spy"
         )
         self._run_shell(
@@ -64,6 +65,9 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
             f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Provider.Avalonia",
         )
 
+        build_data["infer_tag"] = True
+        build_data["pure_python"] = False
+
     def clean(self, versions: List[str]) -> None:
-        self._run_shell("dotnet clean -c release")
-        rm(self.BASE_OUTPUT_DIR / "coreclr")
+        rm(self.BASE_OUTPUT_DIR)
+        rm(self.BASE_PROVIDERS_DIR)

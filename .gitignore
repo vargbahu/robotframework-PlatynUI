@@ -138,3 +138,6 @@ report.html
 # some local files
 types_playground/
 prof/
+
+## cibuildwheel
+wheelhouse/

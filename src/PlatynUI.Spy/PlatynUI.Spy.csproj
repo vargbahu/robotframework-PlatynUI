@@ -20,8 +20,11 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.4" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.1.4" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.4" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.4" />
+    <!--Condition
+    below is needed to remove Avalonia.Diagnostics package from build output in Release
+    configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics"
+      Version="11.1.4" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.4" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.1.0" />
     <PackageReference Include="System.CodeDom" Version="8.0.0" />
@@ -32,9 +35,18 @@
   <ItemGroup>
     <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj" />
     <ProjectReference Include="..\PlatynUI.Platform.Win32\PlatynUI.Platform.Win32.csproj" />
+    <ProjectReference
+      Include="..\PlatynUI.Extension.Win32.UiAutomation\PlatynUI.Extension.Win32.UiAutomation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PlatynUI.Platform.X11\PlatynUI.Platform.X11.csproj" />
-    <ProjectReference Include="..\PlatynUI.Extension.Win32.UiAutomation\PlatynUI.Extension.Win32.UiAutomation.csproj" />
-    <ProjectReference Include="..\PlatynUI.Extension.Linux.AtSpi2\PlatynUI.Extension.Linux.AtSpi2.csproj" />
-    <ProjectReference Include="..\PlatynUI.Extension.Provider.Client\PlatynUI.Extension.Provider.Client.csproj" />
+    <ProjectReference
+      Include="..\PlatynUI.Extension.Linux.AtSpi2\PlatynUI.Extension.Linux.AtSpi2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference
+      Include="..\PlatynUI.Extension.Provider.Client\PlatynUI.Extension.Provider.Client.csproj" />
   </ItemGroup>
 </Project>

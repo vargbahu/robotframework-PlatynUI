@@ -11,11 +11,12 @@ name = "robotframework-platynui"
 dynamic = ["version"]
 description = 'PlatynUI is a library for Robot Framework that enables easy and cross-platform desktop UI automation with a comprehensive set of keywords for interacting with desktop applications.'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9, < 3.13"
 license = { text = "Apache-2.0" }
 keywords = []
 authors = [{ name = "Daniel Biehl", email = "daniel.biehl@imbus.de" }]
 classifiers = [
+  "Intended Audience :: Developers",
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
@@ -24,7 +25,6 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
   "Framework :: Robot Framework :: Library",
   "Programming Language :: C#",
 ]
@@ -50,7 +50,7 @@ path = "src/PlatynUI/__about__.py"
 dev-mode-dirs = ["src"]
 
 [tool.hatch.build.targets.wheel]
-dependencies = ["pythonnet>=3.0.0"]
+require-runtime-dependencies = true
 only-include = ["src/PlatynUI"]
 sources = ["src"]
 
@@ -280,3 +280,12 @@ pre_bump_hooks = [
   "hatch run build:update-changelog",
   "git add .",
 ]
+
+[tool.cibuildwheel]
+build-verbosity = 1
+skip = [
+  "pp*",
+]
+
+[tool.cibuildwheel.environment]
+HATCH_BUILD_HOOKS_ENABLE = "1"
