@@ -10,14 +10,15 @@
             "request": "launch",
             "projectPath": "${workspaceFolder}/src/Playground/Playground.csproj",
         },
-
         {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
             "justMyCode": false,
             "program": "pytest.exe",
-            "args": ["."],
+            "args": [
+                "."
+            ],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "integratedTerminal"
@@ -27,6 +28,14 @@
             "type": "coreclr",
             "request": "attach"
         },
-
+        {
+            "name": "Python Debugger: PlatynUI.Spy",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "PlatynUI.spy",
+            "env": {
+                "PYTHONNET_RUNTIME": "coreclr"
+            }
+        }
     ]
 }

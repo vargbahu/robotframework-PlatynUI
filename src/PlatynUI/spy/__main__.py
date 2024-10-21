@@ -31,12 +31,11 @@ def main() -> None:
     exe_name = "PlatynUI.Spy.exe"
     debug_path = (
         Path(__file__).parent
-        / f"../../../../PlatynUI.Spy/bin/Debug/net8.0-windows/{exe_name}"
-        # Path(__file__).parent
-        # / f"../../../../PlatynUI.Extension.Win32.UiAutomation.Spy/bin/Debug/net481/{ASSEMBLY_NAME}"
+        / f"../../PlatynUI.Spy/bin/Debug/net8.0/{exe_name}"
     )
-    runtime_path = Path(__file__).parent / f"ui/runtime/{kind}/{exe_name}"
-
+    runtime_path = Path(__file__).parent.parent / f"ui/runtime/{kind}/{exe_name}"
+    print(debug_path.resolve())
+    print(runtime_path)
     if debug_path.exists():
         logger.debug(f"Starting {exe_name} from {debug_path}")  # noqa: G004
         os.startfile(str(debug_path))

@@ -41,7 +41,7 @@ Issues = "https://github.com/imbus/robotframework-platynui/issues"
 Source = "https://github.com/imbus/robotframework-platynui"
 
 [project.scripts]
-"PlatynUI.UiAutomation.Spy" = "PlatynUI.Extension.Win32.UiAutomation.spy.__main__:main"
+"PlatynUI.Spy" = "PlatynUI.spy.__main__:main"
 
 [tool.hatch.version]
 path = "src/PlatynUI/__about__.py"
