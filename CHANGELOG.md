@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.3.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.2.0..v0.3.0) - 2024-10-21
+
+### Bug Fixes
+
+- Use os.name instead of platform.platform ([7e962f0](https://github.com/imbus/robotframework-PlatynUI/commit/7e962f0b4f5802e548396c051754de29c15b5b8c))
+
+
+### Features
+
+- Added first version of the common adapter factory and adapter implementation ([6171b97](https://github.com/imbus/robotframework-PlatynUI/commit/6171b97b8cdafd0cddac47fb75580ee76efcecd8))
+- Introduce a provider folder and put the avalonia provider into it ([7375295](https://github.com/imbus/robotframework-PlatynUI/commit/737529544ceaea7389dcdc3f66f6646557889e62))
+- Add cli to call PlatynUI.Spy ([4ee9a4d](https://github.com/imbus/robotframework-PlatynUI/commit/4ee9a4d4fe89fe738e9e71619accfde9e35fadd6))
+- Make PlatynUI.Spy starting on windows ([9312eb7](https://github.com/imbus/robotframework-PlatynUI/commit/9312eb75535b3b55866f02acbdf2122ebac5a285))
+
+
+### Refactor
+
+- Fix some imports ([90ec684](https://github.com/imbus/robotframework-PlatynUI/commit/90ec6840562d5dd4f28bbfa2957b46950e296e44))
+
+
 ## [0.2.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.1.0..v0.2.0) - 2024-10-18
 
 ### Bug Fixes
