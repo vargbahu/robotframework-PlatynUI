@@ -29,23 +29,26 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
     BASE_OUTPUT_DIR = Path("src/PlatynUI/ui/runtime")
     BASE_PROVIDERS_DIR = Path("src/PlatynUI/ui/runtime/providers")
 
-    def initialize(self, version: str, build_data: Dict[str, Any]) -> None:
-        print("Build Dotnet Runtime")
-        subprocess.run("dotnet restore", shell=True, check=True)
+    def _run_shell(self, command: str) -> None:
         subprocess.run(
-            "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
-            f"-o {self.BASE_OUTPUT_DIR / 'coreclr'} ./src/PlatynUI.Spy",
+            command,
             shell=True,
             check=True,
+            stdout=None if self.app.verbosity else subprocess.DEVNULL,
+            # stderr=None if self.app.verbosity else subprocess.DEVNULL,
         )
-        subprocess.run(
+
+    def initialize(self, version: str, build_data: Dict[str, Any]) -> None:
+        self._run_shell("dotnet restore")
+        self._run_shell(
+            "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
+            f"-o {self.BASE_OUTPUT_DIR / 'coreclr'} ./src/PlatynUI.Spy"
+        )
+        self._run_shell(
             "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
             f"-o {self.BASE_PROVIDERS_DIR / 'avalonia'} ./src/PlatynUI.Provider.Avalonia",
-            shell=True,
-            check=True,
         )
 
     def clean(self, versions: List[str]) -> None:
-        print("Clean Dotnet Runtime")
-        subprocess.check_output("dotnet clean -c release", shell=True)
+        self._run_shell("dotnet clean -c release")
         rm(self.BASE_OUTPUT_DIR / "coreclr")

@@ -142,12 +142,9 @@ public static class Helper
 
                 if (PInvoke.GetForegroundWindow() != topLevelWindowHandle)
                 {
-                    Console.WriteLine($"Failed to activate window, try the focus method {Automation.UiAutomation.ElementFromHandle(PInvoke.GetForegroundWindow()).CurrentClassName}");
                     topLevelParent.SetFocus();
                     return true;
                 }
-
-                Console.WriteLine($"Succeeded to activate window, try the focus method {Automation.UiAutomation.ElementFromHandle(PInvoke.GetForegroundWindow()).CurrentClassName}");
 
                 return PInvoke.GetForegroundWindow() == topLevelWindowHandle;
             }

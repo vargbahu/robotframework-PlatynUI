@@ -11,10 +11,8 @@ from typing import Union
 def rm(*paths: Union["os.PathLike[str]", str]) -> None:
     for path in paths:
         if not os.path.exists(path):
-            print(f"Path {path!r} does not exist")
             continue
         try:
-            print(f"Remove path {path!r}")
             shutil.rmtree(path)
         except BaseException:
             try:
