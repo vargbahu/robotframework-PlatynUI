@@ -4,7 +4,6 @@
 
 import logging
 import os
-import platform
 import subprocess
 import warnings
 from pathlib import Path
@@ -33,7 +32,7 @@ def main() -> None:
         warnings.warn(f"Unsupported runtime: {get_runtime_info().kind}")
         raise RuntimeError(f"Unsupported runtime: {get_runtime_info().kind}")
 
-    if platform.platform() == "Windows":
+    if os.name == "nt":
         exe_name = "PlatynUI.Spy.exe"
     else:
         exe_name = "PlatynUI.Spy"
