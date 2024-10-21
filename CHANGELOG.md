@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.3.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.3.0..v0.3.1) - 2024-10-21
+
+### Bug Fixes
+
+- Update gitignore to allow that linux libraries are included in dist build ([3065630](https://github.com/imbus/robotframework-PlatynUI/commit/3065630832a057b362ab58b6ef7efc043ed1b661))
+
+
 ## [0.3.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.2.0..v0.3.0) - 2024-10-21
 
 ### Bug Fixes
