@@ -27,6 +27,7 @@ from scripts.rm import rm  # noqa: E402
 
 class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
     BASE_OUTPUT_DIR = Path("src/PlatynUI/ui/runtime")
+    BASE_PROVIDERS_DIR = Path("src/PlatynUI/ui/runtime/providers")
 
     def initialize(self, version: str, build_data: Dict[str, Any]) -> None:
         print("Build Dotnet Runtime")
@@ -34,6 +35,12 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
         subprocess.run(
             "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
             f"-o {self.BASE_OUTPUT_DIR / 'coreclr'} ./src/PlatynUI.Spy",
+            shell=True,
+            check=True,
+        )
+        subprocess.run(
+            "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
+            f"-o {self.BASE_PROVIDERS_DIR / 'avalonia'} ./src/PlatynUI.Provider.Avalonia",
             shell=True,
             check=True,
         )
