@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from functools import cached_property
 import contextlib
 import subprocess
 import sys
@@ -29,12 +30,24 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
     BASE_OUTPUT_DIR = Path("src/PlatynUI/ui/runtime")
     BASE_PROVIDERS_DIR = Path("src/PlatynUI/ui/runtime/providers")
 
+    @cached_property
+    def _dotnet_runtime_identifier(self) -> str:
+
+        from pythonnet import load
+
+        load("coreclr")
+
+        import clr  # noqa: F401
+        from System.Runtime.InteropServices import RuntimeInformation  # pyright: ignore[reportMissingModuleSource]
+
+        return str(RuntimeInformation.RuntimeIdentifier)
+
     def _run_shell(self, command: str) -> None:
         subprocess.run(
             command,
             shell=True,
             check=True,
-            stdout=None if self.app.verbosity else subprocess.DEVNULL,
+            # stdout=None if self.app.verbosity else subprocess.DEVNULL,
             # stderr=None if self.app.verbosity else subprocess.DEVNULL,
         )
 
@@ -42,11 +55,13 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
         self._run_shell("dotnet restore")
         self._run_shell(
             "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
-            f"-o {self.BASE_OUTPUT_DIR / 'coreclr'} ./src/PlatynUI.Spy"
+            f"-o {self.BASE_OUTPUT_DIR / 'coreclr'} "
+            f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Spy"
         )
         self._run_shell(
             "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
-            f"-o {self.BASE_PROVIDERS_DIR / 'avalonia'} ./src/PlatynUI.Provider.Avalonia",
+            f"-o {self.BASE_PROVIDERS_DIR / 'avalonia'} "
+            f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Provider.Avalonia",
         )
 
     def clean(self, versions: List[str]) -> None:

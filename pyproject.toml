@@ -50,6 +50,7 @@ path = "src/PlatynUI/__about__.py"
 dev-mode-dirs = ["src"]
 
 [tool.hatch.build.targets.wheel]
+dependencies = ["pythonnet>=3.0.0"]
 only-include = ["src/PlatynUI"]
 sources = ["src"]
 
@@ -58,7 +59,6 @@ exclude = ["src/PlatynUI/technology/uiautomation/runtime"]
 
 [tool.hatch.build.targets.wheel.hooks.custom]
 path = "scripts/dotnet_build_hook.py"
-
 
 [tool.hatch.envs.default]
 installer = "uv"
