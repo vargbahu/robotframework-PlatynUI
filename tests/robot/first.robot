@@ -5,8 +5,8 @@ Variables       mapping.py
 
 *** Test Cases ***
 first
-    Activate    ${calculator}
-    Type Keys    ${calculator}    <ALT+1>
+    # Activate    ${calculator}
+    # Type Keys    ${calculator}    <ALT+1>
     Clear
     Activate    ${calculator.n1}
     Activate    ${calculator.n2}

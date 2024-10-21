@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 

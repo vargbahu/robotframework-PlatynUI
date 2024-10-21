@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 
@@ -38,15 +38,15 @@ class HasEditor(StrategyBase):
     strategy_name = "org.platynui.strategies.HasEditor"
 
     @abstractmethod
-    def open_editor(self):
+    def open_editor(self) -> None:
         pass
 
     @abstractmethod
-    def cancel(self):
+    def cancel(self) -> None:
         pass
 
     @abstractmethod
-    def accept(self):
+    def accept(self) -> None:
         pass
 
 

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from abc import *
+from abc import abstractmethod
 
 from ...core import StrategyBase
 
@@ -27,5 +27,5 @@ class Selectable(HasSelected):
     strategy_name = "org.platynui.strategies.Selectable"
 
     @abstractmethod
-    def select(self):
+    def select(self) -> None:
         pass
