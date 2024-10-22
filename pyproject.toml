@@ -186,7 +186,7 @@ mark-parentheses = false
 
 [tool.black]
 line-length = 120
-target-version = ['py38']
+target-version = ['py39']
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -283,9 +283,27 @@ pre_bump_hooks = [
 
 [tool.cibuildwheel]
 build-verbosity = 1
-skip = [
-  "pp*",
-]
+skip = ["pp*"]
+archs = "x86_64"
+manylinux-x86_64-image = "manylinux_2_28"
 
+[tool.cibuildwheel.linux]
+before-all = """\
+if command -v yum 2>&1 > /dev/null
+then
+  yum -y install libicu wget
+fi
+
+if command -v apk 2>&1 > /dev/null
+then
+  apk add icu-libs wget
+fi
+
+wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+chmod +x ./dotnet-install.sh
+./dotnet-install.sh --version latest
+ln -s /root/.dotnet/dotnet /bin/dotnet
+"""
 [tool.cibuildwheel.environment]
 HATCH_BUILD_HOOKS_ENABLE = "1"
+HATCH_VERBOSE = "1"

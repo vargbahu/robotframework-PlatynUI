@@ -32,7 +32,6 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
 
     @cached_property
     def _dotnet_runtime_identifier(self) -> str:
-
         from pythonnet import load
 
         load("coreclr")
@@ -40,30 +39,40 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
         import clr  # noqa: F401
         from System.Runtime.InteropServices import RuntimeInformation  # pyright: ignore[reportMissingModuleSource]
 
-        return str(RuntimeInformation.RuntimeIdentifier)
+        result = str(RuntimeInformation.RuntimeIdentifier)
+        self.app.display_debug(f"Dotnet RuntimeIdentifier: {result}")
+        return result
 
     def _run_shell(self, command: str) -> None:
-        subprocess.run(
-            command,
-            shell=True,
-            check=True,
-            # stdout=None if self.app.verbosity else subprocess.DEVNULL,
-            # stderr=None if self.app.verbosity else subprocess.DEVNULL,
-        )
+        self.app.display_debug(f"Run command '{command}'")
+        try:
+            subprocess.run(command, check=True, shell=True, capture_output=self.app.verbosity == 0)
+        except subprocess.CalledProcessError as e:
+            if self.app.verbosity == 0:
+                if e.stdout:
+                    print(e.stdout.decode())
+                if e.stderr:
+                    print(e.stderr.decode(), file=sys.stderr)
+            raise
 
     def initialize(self, version: str, build_data: Dict[str, Any]) -> None:
-        self.clean([])
+        rm(self.BASE_OUTPUT_DIR)
+        rm(self.BASE_PROVIDERS_DIR)
+
         self._run_shell("dotnet restore")
+
         self._run_shell(
-            "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
+            "dotnet publish -c Release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
             f"-o {self.BASE_OUTPUT_DIR} "
             f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Spy"
         )
         self._run_shell(
-            "dotnet publish -c release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
+            "dotnet publish -c Release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
             f"-o {self.BASE_PROVIDERS_DIR / 'avalonia'} "
-            f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Provider.Avalonia",
+            f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Provider.Avalonia"
         )
+
+        self._run_shell("dotnet clean -c Release")
 
         build_data["infer_tag"] = True
         build_data["pure_python"] = False
