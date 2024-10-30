@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.ComponentModel.Composition;
+using PlatynUI.Extension.Win32.UiAutomation.Client;
+using PlatynUI.Extension.Win32.UiAutomation.Core;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
-using PlatynUI.Extension.Win32.UiAutomation.Core;
 
 [assembly: PlatynUiExtension(supportedPlatforms: [RuntimePlatform.Windows])]
 
@@ -20,8 +21,22 @@ class NodeProvider : INodeProvider
 
         foreach (var e in Automation.RootElement.EnumerateChildren(Automation.RawViewWalker, true))
         {
+            if (e == null)
+            {
+                continue;
+            }
             processIds.Add(e.CurrentProcessId);
-            yield return new ElementNode(parent, e);
+            if (e.TryGetCurrentPattern(out IUIAutomationWindowPattern? pattern))
+            {
+                if (pattern != null)
+                {
+                    yield return new WindowElementNode(parent, e);
+                }
+            }
+            else
+            {
+                yield return new ElementNode(parent, e);
+            }
         }
 
         foreach (var processId in processIds)

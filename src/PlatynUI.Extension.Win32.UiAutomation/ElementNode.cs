@@ -15,7 +15,7 @@ using INode = PlatynUI.Runtime.Core.INode;
 
 namespace PlatynUI.Extension.Win32.UiAutomation;
 
-public class ElementNode(INode? parent, IUIAutomationElement element) : INode, IAdapter, IElement
+public partial class ElementNode(INode? parent, IUIAutomationElement element) : INode, IAdapter, IElement
 {
     public INode? Parent { get; } = parent;
     public IUIAutomationElement Element { get; } = element;
@@ -96,7 +96,7 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
             new Automation.PropertyIdAndName(-3, "Technology"),
             new Automation.PropertyIdAndName(-4, "IsTopLevel"),
             new Automation.PropertyIdAndName(-5, "DefaultClickPosition"),
-            .. Automation.GetSupportedPropertyIdAndNames(Element)
+            .. Automation.GetSupportedPropertyIdAndNames(Element),
         ];
 
         result = props
@@ -237,5 +237,10 @@ public class ElementNode(INode? parent, IUIAutomationElement element) : INode, I
     public bool TryBringIntoView()
     {
         return true;
+    }
+
+    public virtual object? GetStrategy(string name, bool throwException = true)
+    {
+        return null;
     }
 }

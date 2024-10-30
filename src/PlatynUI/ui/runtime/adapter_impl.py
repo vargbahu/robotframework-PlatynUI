@@ -4,10 +4,12 @@
 
 # pyright: reportMissingModuleSource=false
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple, Type, cast, overload
 
 from PlatynUI.core import Adapter
+from PlatynUI.core.adapter import TStrategyBase
 from PlatynUI.core.adapterproxy import AdapterProxyFactory
+from PlatynUI.core.exceptions import NotAStrategyTypeError
 from PlatynUI.core.strategies import Properties
 from PlatynUI.core.types import Point, Rect
 from PlatynUI.ui.strategies import Element
@@ -193,3 +195,31 @@ class AdapterImpl(Adapter, ElementImpl):
     @property
     def children(self) -> List["Adapter"]:
         raise NotImplementedError("children")
+
+
+    @property
+    def supported_strategies(self) -> Set[str]:
+        result = super().supported_strategies
+        if self.valid:
+            result.union(set(self.adapter_interface.SupportedStrategies))
+
+        return result
+
+
+    @overload
+    def get_strategy(self, strategy_type: Type[TStrategyBase]) -> TStrategyBase: ...
+
+    @overload
+    def get_strategy(self, strategy_type: Type[TStrategyBase], raise_exception: bool) -> Optional[TStrategyBase]: ...
+
+    def get_strategy(self, strategy_type: Type[TStrategyBase], raise_exception: bool = True) -> Optional[TStrategyBase]:
+        if hasattr(strategy_type, "strategy_name"):
+            strategy_name = getattr(strategy_type, "strategy_name")
+
+            if strategy_name is not None and hasattr(self.adapter_interface, "GetStrategy"):
+                result = self.adapter_interface.GetStrategy(strategy_name, False)
+                if result is not None:
+                    self._strategy_cache[strategy_name] = result
+                    return cast(TStrategyBase, result)
+
+        return super().get_strategy(strategy_type, raise_exception)
