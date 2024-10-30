@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.4.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.3.1..v0.4.0) - 2024-10-30
+
+### Bug Fixes
+
+- Build platform specific packages ([99cf086](https://github.com/imbus/robotframework-PlatynUI/commit/99cf0868ed53201e57e25f91b22dc0fca113ec2e))
+- Add runtime identifer to PlatynUI.Spy to only build the runtimes for the specific platform ([ebcdbb1](https://github.com/imbus/robotframework-PlatynUI/commit/ebcdbb1c211635b50903f65b6dca8205e9772fbb))
+
+
+### Features
+
+- Build package platform specific ([ae8bb0a](https://github.com/imbus/robotframework-PlatynUI/commit/ae8bb0a33fd8cd667842f477556ee202c7983a88))
+- Implement rudimentary window patterns for UIAutomation ([ab5d5d2](https://github.com/imbus/robotframework-PlatynUI/commit/ab5d5d2d54841f45611fb74a4db128381fe1f6b1))
+
+
 ## [0.3.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.3.0..v0.3.1) - 2024-10-21
 
 ### Bug Fixes
