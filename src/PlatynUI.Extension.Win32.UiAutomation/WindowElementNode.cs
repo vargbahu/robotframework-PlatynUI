@@ -12,7 +12,6 @@ public class WindowElementNode(INode? parent, IUIAutomationElement element) : El
     readonly Patterns.WindowPattern? pattern = Patterns.GetWindowPattern(element);
     public override object? GetStrategy(string name, bool throwException = true)
     {
-        Console.WriteLine(name);
         switch (name)
         {
             case "org.platynui.strategies.HasCanMinimize":
@@ -24,7 +23,6 @@ public class WindowElementNode(INode? parent, IUIAutomationElement element) : El
                 return base.GetStrategy(name, throwException);
         }
     }
-
 
     public bool is_minimized => pattern?.IsMinimized ?? false;
     public bool is_maximized => pattern?.IsMaximized ?? false;

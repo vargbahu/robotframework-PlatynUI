@@ -131,7 +131,7 @@ def test_seventh() -> None:
     calc.n9.activate()
     calc.n0.activate()
 
-    # calc.n1.keyboard.type_keys("1234")
+    calc.n1.keyboard.type_keys("1234")
 
 
 if __name__ == "__main__":

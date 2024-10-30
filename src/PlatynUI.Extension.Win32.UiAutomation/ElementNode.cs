@@ -241,6 +241,26 @@ public partial class ElementNode(INode? parent, IUIAutomationElement element) : 
 
     public virtual object? GetStrategy(string name, bool throwException = true)
     {
-        return null;
+        switch (name)
+        {
+            case "org.platynui.strategies.Control":
+                return this;
+            default:
+                return null;
+        }
+    }
+
+    public bool has_focus => Element.CurrentHasKeyboardFocus != 0;
+
+    public bool try_ensure_focused()
+    {
+        if (has_focus)
+        {
+            return true;
+        }
+
+        Element.SetFocus();
+
+        return has_focus;
     }
 }
