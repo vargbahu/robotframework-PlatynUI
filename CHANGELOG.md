@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.4.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.4.0..v0.4.1) - 2024-10-30
+
+### Bug Fixes
+
+- Implement rudimentary control strategy for UIAutomation ([b6f7d50](https://github.com/imbus/robotframework-PlatynUI/commit/b6f7d5015890e217cb35ff8427b3cad132126bdd))
+
+
 ## [0.4.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.3.1..v0.4.0) - 2024-10-30
 
 ### Bug Fixes
