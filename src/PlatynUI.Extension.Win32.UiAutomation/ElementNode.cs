@@ -74,7 +74,7 @@ public partial class ElementNode(INode? parent, IUIAutomationElement element) : 
 
     public string ClassName => Element.CurrentClassName;
 
-    public string[] SupportedRoles => [Role];
+    public string[] SupportedRoles => [Role, "Control", "Element"]; // TODO: use UIAutomation to get the roles
 
     public string Type => "element"; // TODO: use UIAutomation to get the type
 

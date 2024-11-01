@@ -7,6 +7,7 @@ from .buttons import AbstractButton, Button, CheckBox, Link, RadioButton
 from .combobox import ComboBox
 from .container import Container
 from .control import Control, CustomControl
+from .data_item import DataItem
 from .desktop import Desktop
 from .desktopbase import DesktopBase
 from .dialog import Dialog
@@ -44,6 +45,7 @@ __all__ = [
     "RadioButton",
     "Element",
     "Container",
+    "DataItem",
     "DesktopBase",
     "Desktop",
     "Dialog",

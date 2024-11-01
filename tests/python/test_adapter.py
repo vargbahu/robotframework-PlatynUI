@@ -134,11 +134,15 @@ def test_seventh() -> None:
     calc.n1.keyboard.type_keys("1234")
 
 
+def test_eight() -> None:
+    Window(Locator(path='Window[contains(@Name, "Rechner")]')).exists(5, raise_exception=True)
+
 if __name__ == "__main__":
-    test_first()
-    test_second()
-    test_third()
-    test_fourth()
+    # test_first()
+    # test_second()
+    # test_third()
+    # test_fourth()
     #test_fifth()
     # test_sixth()
-    test_seventh()
+    # test_seventh()
+    test_eight()
