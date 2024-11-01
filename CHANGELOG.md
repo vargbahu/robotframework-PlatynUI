@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.5.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.4.1..v0.5.0) - 2024-11-01
+
+### Features
+
+- Support unknown controls for UIAutomation ([ae7095e](https://github.com/imbus/robotframework-PlatynUI/commit/ae7095ec7f60a7085e3b025a9310fce223859d70))
+
+
 ## [0.4.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.4.0..v0.4.1) - 2024-10-30
 
 ### Bug Fixes
