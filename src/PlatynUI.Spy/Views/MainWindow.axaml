@@ -75,17 +75,17 @@
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
                                 Command="{Binding ClearSearch}"
-                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                IsVisible="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBox}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                             <Button Content="&#xE721;"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
                                 Command="{Binding SearchAsync}"
-                                IsVisible="{Binding !InSearch}"/>
+                                IsVisible="{Binding !InSearch}" />
                             <Button Content="&#xE711;"
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 Theme="{StaticResource TransparentButton}"
                                 Command="{Binding CancelSearch}"
-                                IsVisible="{Binding InSearch}"/>
+                                IsVisible="{Binding InSearch}" />
                         </StackPanel>
                     </TextBox.InnerRightContent>
                     <TextBox.Styles>
@@ -182,12 +182,27 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"
                                     x:DataType="vm:TreeNodeAttribute"
-                                    CanUserSort="true" ClipboardContentBinding="{Binding Name}" CanUserResize="True"
+                                    CanUserSort="true" ClipboardContentBinding="{Binding Name}"
+                                    CanUserResize="True"
                                 />
-                                <DataGridTemplateColumn Header="Value" Width="*" CanUserResize="True">
+                                <DataGridTemplateColumn Header="Value" Width="*"
+                                    ClipboardContentBinding="{Binding Value}"
+                                    x:DataType="vm:TreeNodeAttribute"
+                                    CanUserResize="True">
                                     <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Value}"
+                                        <DataTemplate DataType="">
+                                            <TextBlock
+                                                Text="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
+                                                Background="Transparent"
+                                                ToolTip.Tip="{Binding Value}"
+                                                VerticalAlignment="Center"
+                                            />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate DataType="">
+                                            <TextBox
+                                                Text="{Binding ., Converter={StaticResource ValueToString}, ConverterParameter=Value}"
                                                 IsReadOnly="True"
                                                 BorderThickness="0"
                                                 Background="Transparent"
@@ -195,7 +210,7 @@
                                                 VerticalAlignment="Center"
                                             />
                                         </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
                             <DataGrid.Styles>
