@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.6.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.5.0..v0.6.0) - 2024-12-13
+
+### Bug Fixes
+
+- **spy:** Enlargement of the search bar ([4bf2280](https://github.com/imbus/robotframework-PlatynUI/commit/4bf2280354522a215d818cb996b2dbe3d4114151))
+
+
+### Features
+
+- Copy values from the properties view of spy to the clipboard ([287ffa1](https://github.com/imbus/robotframework-PlatynUI/commit/287ffa1df921c0eee836f7dfba79dec523864c2b))
+- Changed the way how keywords are implemented ([e13f9ef](https://github.com/imbus/robotframework-PlatynUI/commit/e13f9ef38986d2c4306534552ea797b76ab823e8))
+
+
 ## [0.5.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.4.1..v0.5.0) - 2024-11-01
 
 ### Features
