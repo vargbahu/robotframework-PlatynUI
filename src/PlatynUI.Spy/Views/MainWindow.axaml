@@ -67,7 +67,7 @@
             <Border Grid.Column="2" Padding="6">
                 <TextBox Name="SearchBox"
                     HorizontalAlignment="Stretch"
-                    Watermark="Search..."
+                    Watermark="Search via XPath..."
                     Text="{Binding SearchText, Mode=TwoWay}">
                     <TextBox.InnerRightContent>
                         <StackPanel Orientation="Horizontal">

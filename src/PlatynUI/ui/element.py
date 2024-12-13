@@ -20,8 +20,34 @@ from . import strategies
 __all__ = ["Element"]
 
 
+class _ElementMouseProxy(MouseProxy):
+    def __init__(self, element: "Element", mouse_device: MouseDevice):
+        super().__init__(mouse_device)
+        self._element = element
+
+    @property
+    def base_point(self) -> Point:
+        return self._element.bounding_rectangle.top_left
+
+    @property
+    def base_rect(self) -> Rect:
+        return self._element.bounding_rectangle
+
+    @property
+    def default_click_position(self) -> Point:
+        return self._element.default_click_position
+
+    def before_action(self, action: MouseProxy.Action) -> None:
+        self._element.ensure_that(self._element._toplevel_parent_is_active, self._element._element_is_in_view)
+        self.mouse_device.add_context(self._element)
+
+    def after_action(self, action: MouseProxy.Action) -> None:
+        self.mouse_device.remove_context(self._element)
+        self._element.ensure_that(self._element._application_is_ready, raise_exception=False)
+
+
 @context
-class Element(ContextBase):
+class Element(ContextBase, strategies.Element, strategies.HasMouse, strategies.HasKeyboard):
     default_prefix = "element"
 
     def invalidate(self) -> None:
@@ -167,35 +193,10 @@ class Element(ContextBase):
             if self.toplevel_parent_is_active and self.is_in_view:
                 cast(UiTechnology, self.adapter.technology).display_device.highlight_rect(rect, time)
 
-    class _ElementMouseProxy(MouseProxy):
-        def __init__(self, element: "Element", mouse_device: MouseDevice):
-            super().__init__(mouse_device)
-            self._element = element
-
-        @property
-        def base_point(self) -> Point:
-            return self._element.bounding_rectangle.top_left
-
-        @property
-        def base_rect(self) -> Rect:
-            return self._element.bounding_rectangle
-
-        @property
-        def default_click_position(self) -> Point:
-            return self._element.default_click_position
-
-        def before_action(self, action: MouseProxy.Action) -> None:
-            self._element.ensure_that(self._element._toplevel_parent_is_active, self._element._element_is_in_view)
-            self.mouse_device.add_context(self._element)
-
-        def after_action(self, action: MouseProxy.Action) -> None:
-            self.mouse_device.remove_context(self._element)
-            self._element.ensure_that(self._element._application_is_ready, raise_exception=False)
-
     _mouse_proxy: Optional[MouseProxy] = None
 
     def _create_mouse_proxy(self, mouse_device: MouseDevice) -> MouseProxy:
-        return self._ElementMouseProxy(self, mouse_device)
+        return _ElementMouseProxy(self, mouse_device)
 
     @property
     def mouse(self) -> MouseProxy:

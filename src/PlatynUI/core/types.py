@@ -4,7 +4,7 @@
 
 from typing import Any, Callable, Iterator, Optional
 
-__all__ = ["Point", "VirtualPoint", "Rect", "Size"]
+__all__ = ["Point", "Rect", "Size", "VirtualPoint"]
 
 
 class Point:

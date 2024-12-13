@@ -52,7 +52,7 @@ class Element(StrategyBase):
         raise NotImplementedError
 
     def try_ensure_application_is_ready(self) -> bool:
-        return True
+        raise NotImplementedError
 
     def try_ensure_toplevel_parent_is_active(self) -> bool:
         raise NotImplementedError

@@ -2,24 +2,29 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from abc import abstractmethod
+
 from ..core import context
 from . import strategies
 from .control import Control
 from .togglestate import ToggleState
 
-__all__ = ["AbstractButton", "Button", "Link", "ToggleState", "CheckBox", "RadioButton"]
+__all__ = ["AbstractButton", "Button", "CheckBox", "Link", "RadioButton", "ToggleState"]
 
 
-class AbstractButton(Control):
+class AbstractButton(Control, strategies.Text, strategies.Activatable):
     @property
     def text(self) -> str:
         self.ensure_that(self._application_is_ready)
 
         return self.adapter.get_strategy(strategies.Text).text
 
+    @abstractmethod
+    def activate(self) -> None: ...
+
 
 @context
-class Button(AbstractButton, strategies.Activatable):
+class Button(AbstractButton):
     def activate(self) -> None:
         self.ensure_that(self._toplevel_parent_is_active, self._element_is_in_view, self._element_is_enabled)
 
@@ -34,7 +39,7 @@ class Link(Button):
 
 
 @context
-class CheckBox(AbstractButton):
+class CheckBox(AbstractButton, strategies.HasToggleState, strategies.Toggleable):
     @property
     def state(self) -> ToggleState:
         self.ensure_that(self._application_is_ready)
@@ -82,5 +87,5 @@ class CheckBox(AbstractButton):
 
 
 @context
-class RadioButton(AbstractButton):
+class RadioButton(Button):
     pass

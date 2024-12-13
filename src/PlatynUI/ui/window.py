@@ -16,6 +16,17 @@ __all__ = ["Window"]
 @context
 class Window(Control):
 
+    @property
+    def has_focus(self) -> bool:
+        return self.is_active
+
+    @predicate("control {0} has focus")
+    def _control_has_focus(self) -> bool:
+        return self._window_is_active()
+
+    def focus(self) -> bool:
+        return self.activate()
+
     @predicate("parent window of element {0} is active")
     def _toplevel_parent_is_active(self) -> bool:
         if not self.is_active:

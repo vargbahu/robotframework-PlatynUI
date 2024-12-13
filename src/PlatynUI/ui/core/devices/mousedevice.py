@@ -12,7 +12,7 @@ from .basemousedevice import BaseMouseDevice
 from .inputdevice import InputDevice
 from .mousebutton import MouseButton
 
-__all__ = ["MouseDevice", "DefaultMouseDevice"]
+__all__ = ["DefaultMouseDevice", "MouseDevice"]
 
 
 class MouseDevice(InputDevice):

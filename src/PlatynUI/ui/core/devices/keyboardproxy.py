@@ -12,7 +12,7 @@ from ....core import Adapter
 from ...core.ui_technology import UiTechnology
 from .keyboarddevice import KeyboardDevice
 
-__all__ = ["KeyboardProxy", "AdapterKeyboardProxy"]
+__all__ = ["AdapterKeyboardProxy", "KeyboardProxy"]
 
 
 class KeyboardProxy(metaclass=ABCMeta):

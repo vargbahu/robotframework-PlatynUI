@@ -6,6 +6,7 @@ from .activatable import *
 from .application import *
 from .closeable import *
 from .control import *
+from .devices import *
 from .editable import *
 from .element import *
 from .expandable import *

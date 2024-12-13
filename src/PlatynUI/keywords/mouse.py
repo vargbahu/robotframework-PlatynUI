@@ -4,10 +4,15 @@
 
 from robotlibcore import keyword
 
-from ..ui import Element
+from ..ui.strategies import HasMouse
+from .types import Element
 
 
 class Mouse:
     @keyword
-    def mouse_click(self, locator: Element, text: str) -> None:
-        raise NotImplementedError
+    def click(self, element: Element[HasMouse]) -> None:
+        element.context.mouse.click()
+
+    @keyword
+    def double_click(self, element: Element[HasMouse]) -> None:
+        element.context.mouse.double_click()

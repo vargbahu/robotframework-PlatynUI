@@ -6,4 +6,10 @@ Variables       mapping.py
 *** Test Cases ***
 first
     Activate    Window[@AutomationId='Shell' and @ProcessName='WpfTestApp']//Button[@AutomationId='DoSomethingOther']
+    Activate    Window[@AutomationId='Shell' and @ProcessName='WpfTestApp']//Window[@ClassName='#32770']//Button[@Name='OK']
     Click    Window[@AutomationId='Shell' and @ProcessName='WpfTestApp']//Button[@AutomationId='DoSomethingOther']
+
+
+second
+    Activate    ${Shell}
+    Activate    ${Shell.DoSomethingOther}

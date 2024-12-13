@@ -56,11 +56,10 @@ public partial class ElementNode(INode? parent, IUIAutomationElement element) : 
     {
         get
         {
-            if (Element.GetClickablePoint(out var point) != 0)
-            {
-                return point.ToPoint();
-            }
-
+            // if (Element.GetClickablePoint(out var point) != 0)
+            // {   Console.WriteLine($"Element.GetClickablePoint {point.ToPoint()}");
+            //     return point.ToPoint();
+            // }
             var r = BoundingRectangle;
             return new Point(r.X + r.Width / 2, r.Y + r.Height / 2);
         }

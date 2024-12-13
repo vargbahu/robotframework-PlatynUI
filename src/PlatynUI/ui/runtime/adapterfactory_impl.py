@@ -16,8 +16,6 @@ from PlatynUI.core import (
 from PlatynUI.core.exceptions import AdapterNotFoundError
 
 from ..locator import Locator
-
-# from .impls import *  # noqa: F403
 from .adapter_impl import AdapterImpl
 from .dotnet_interface import DotNetInterface
 

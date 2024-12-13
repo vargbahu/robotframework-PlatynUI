@@ -13,7 +13,7 @@ from ..ui_technology import UiTechnology
 from .mousebutton import MouseButton
 from .mousedevice import MouseDevice
 
-__all__ = ["MouseProxy", "MouseButton", "AdapterMouseProxy"]
+__all__ = ["AdapterMouseProxy", "MouseButton", "MouseProxy"]
 
 
 class MouseProxy(metaclass=ABCMeta):

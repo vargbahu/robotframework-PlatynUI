@@ -5,7 +5,7 @@
 import functools
 import inspect
 from abc import ABCMeta
-from typing import Any, Callable, Optional, TypeVar, Union, overload
+from typing import Any, Callable, Optional, Type, TypeVar, Union, overload
 
 __all__ = ["Decorator"]
 
@@ -83,7 +83,7 @@ class Decorator(metaclass=ABCMeta):
     @staticmethod
     def is_wrapped_arg(*args: Any, **kwargs: Any) -> bool:
         if len(args) == 1 and len(kwargs) == 0:
-            if inspect.isfunction(args[0]) or isinstance(args[0], type) or isinstance(args[0], FuncDecorator):
+            if inspect.isfunction(args[0]) or isinstance(args[0], type):
                 return True
 
         return False
@@ -133,7 +133,7 @@ class Decorator(metaclass=ABCMeta):
 
         return ret
 
-    def decorate_func(self, func: TCallable, *decorator_args: Any, **decorator_kwargs: Any)-> TCallable:
+    def decorate_func(self, func: TCallable, *decorator_args: Any, **decorator_kwargs: Any) -> TCallable:
         """
         override this in a child class with your own logic, it must return a
         function that calls self.func
@@ -145,8 +145,8 @@ class Decorator(metaclass=ABCMeta):
 
         raise RuntimeError("decorator {} does not support function decoration".format(self.__class__.__name__))
 
-    def decorate_class(self, cls, *decorator_args, **decorator_kwargs):
+    def decorate_class(self, cls, *decorator_args: Any, **decorator_kwargs: Any) -> Type[Any]:
         raise RuntimeError("decorator {} does not support class decoration".format(self.__class__.__name__))
 
-    def decorate_instance(self, instance, *decorator_args, **decorator_kwargs):
+    def decorate_instance(self, instance: Any, *decorator_args: Any, **decorator_kwargs: Any) -> None:
         raise RuntimeError("decorator {} does not support instance decoration".format(self.__class__.__name__))
