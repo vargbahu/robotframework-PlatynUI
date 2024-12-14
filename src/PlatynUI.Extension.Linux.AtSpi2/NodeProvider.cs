@@ -115,7 +115,7 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
         var children = Element.GetChildrenAsync().GetAwaiter().GetResult();
         foreach (var child in children)
         {
-            var acc = new OrgA11yAtspiAccessible(connection, child.Item1, child.Item2);
+            var acc = new OrgA11yAtspiAccessibleProxy(connection, child.Item1, child.Item2);
             var interfaces = acc.GetInterfacesAsync().GetAwaiter().GetResult();
 
             if (interfaces.Contains("org.a11y.atspi.Component"))
@@ -223,7 +223,8 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
 
     public Connection Connection => connection;
     public ElementReference ElementReference { get; } = elementReference;
-    public OrgA11yAtspiAccessible Element { get; } = new(connection, elementReference.Service, elementReference.Path);
+    public OrgA11yAtspiAccessibleProxy Element { get; } =
+        new(connection, elementReference.Service, elementReference.Path);
 
     public string Id => "";
 
@@ -273,7 +274,7 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
 class ApplicationAdapter(Connection connection, INode? parent, ElementReference elementReference)
     : Adapter(connection, parent, elementReference)
 {
-    OrgA11yAtspiApplication Application { get; } = new(connection, elementReference.Service, elementReference.Path);
+    OrgA11yAtspiApplicationProxy Application { get; } = new(connection, elementReference.Service, elementReference.Path);
 
     public override string NamespaceURI => Namespaces.App;
 
@@ -294,7 +295,7 @@ class ComponentAdapter(Connection connection, INode? parent, ElementReference el
     : Adapter(connection, parent, elementReference),
         IElement
 {
-    OrgA11yAtspiComponent Component { get; } = new(connection, elementReference.Service, elementReference.Path);
+    OrgA11yAtspiComponentProxy Component { get; } = new(connection, elementReference.Service, elementReference.Path);
 
     public bool IsEnabled => GetState().HasFlag(AtspiState.ATSPI_STATE_ENABLED);
 
@@ -375,7 +376,7 @@ class NodeProvider : INodeProvider
 
     private static Connection CreateConnection()
     {
-        var bus = new OrgA11yBus(Connection.Session, "org.a11y.Bus", "/org/a11y/bus");
+        var bus = new OrgA11yBusProxy(Connection.Session, "org.a11y.Bus", "/org/a11y/bus");
         var address = bus.GetAddressAsync().GetAwaiter().GetResult();
 
         return new Connection(new ClientConnectionOptions(address) { AutoConnect = true });

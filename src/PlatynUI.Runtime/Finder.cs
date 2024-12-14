@@ -18,7 +18,9 @@ public static class Finder
         parent ??= Desktop.GetInstance();
 
         if (refresh)
+        {
             parent.Invalidate();
+        }
 
         var navigator = new XPathNavigator(parent, findVirtual, xsltContext.NameTable);
         var expression = XPathExpression.Compile(xpath, xsltContext);
