@@ -60,7 +60,7 @@ public class AutomationElementNode(
         other switch
         {
             AutomationElementNode otherNode => Automation.CompareElements(Element, otherNode.Element),
-            _ => false
+            _ => false,
         };
 
     IEnumerable<AutomationElementAttribute>? _properties = null;
@@ -73,7 +73,7 @@ public class AutomationElementNode(
             [
                 new Automation.PropertyIdAndName(-1, "Role"),
                 new Automation.PropertyIdAndName(-2, "ProcessName"),
-                .. Automation.GetSupportedPropertyIdAndNames(Element)
+                .. Automation.GetSupportedPropertyIdAndNames(Element),
             ];
 
             _properties = props.Select(x => new AutomationElementAttribute(x.Id, x.Name, GetPropertyValue)).ToList();

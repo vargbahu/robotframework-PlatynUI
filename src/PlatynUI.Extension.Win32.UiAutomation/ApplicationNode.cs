@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
-using PlatynUI.Runtime.Core;
 using PlatynUI.Extension.Win32.UiAutomation.Core;
+using PlatynUI.Runtime.Core;
 
 namespace PlatynUI.Extension.Win32.UiAutomation;
 
@@ -72,7 +72,7 @@ public class ApplicationNode(Runtime.Core.INode? parent, int processId) : Runtim
                 "FileVersionInfo.SpecialBuild",
                 process.MainModule?.FileVersionInfo.SpecialBuild
             ),
-            new Runtime.Core.Attribute("FileVersionInfo.IsDebug", process.MainModule?.FileVersionInfo.IsDebug)
+            new Runtime.Core.Attribute("FileVersionInfo.IsDebug", process.MainModule?.FileVersionInfo.IsDebug),
         }
             .OrderBy(x => x.Name)
             .ToDictionary(a => a.Name);

@@ -28,7 +28,7 @@ public struct Point(double x, double y)
         return obj switch
         {
             Point p => this == p,
-            _ => false
+            _ => false,
         };
     }
 
@@ -64,7 +64,7 @@ public struct Size(double width, double height)
         return obj switch
         {
             Size p => this == p,
-            _ => false
+            _ => false,
         };
     }
 

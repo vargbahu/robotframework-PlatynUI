@@ -20,7 +20,7 @@ public enum RuntimePlatform
     MacOS,
     Android,
     IOS,
-    Unknown
+    Unknown,
 }
 
 public static class PlatformHelper
@@ -136,7 +136,7 @@ static class PlatynUiExtensions
                 string[] files =
                 [
                     .. Directory.GetFiles(currentDirectory, "PlatynUI.Platform.*.dll"),
-                    .. Directory.GetFiles(currentDirectory, "PlatynUI.Extension.*.dll")
+                    .. Directory.GetFiles(currentDirectory, "PlatynUI.Extension.*.dll"),
                 ];
 
                 foreach (var dll in files)

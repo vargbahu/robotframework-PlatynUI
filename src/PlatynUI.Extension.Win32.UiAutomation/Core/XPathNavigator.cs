@@ -299,8 +299,9 @@ internal class XPathNavigator : System.Xml.XPath.XPathNavigator
     public override bool IsSamePosition(System.Xml.XPath.XPathNavigator other) =>
         other switch
         {
-            XPathNavigator o when o._current is INode current && _current is INode current1
-                => current.IsSamePosition(current1),
+            XPathNavigator o when o._current is INode current && _current is INode current1 => current.IsSamePosition(
+                current1
+            ),
             XPathNavigator o => _current == o._current,
             _ => false,
         };

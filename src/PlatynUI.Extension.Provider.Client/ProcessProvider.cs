@@ -180,7 +180,7 @@ public class ProcessProvider(Process process, string pipeName, INode? parent) : 
         {
             JsonRpc = new JsonRpc(Stream)
             {
-                TraceSource = new TraceSource("PlatynUI.Extension.Provider.Client", SourceLevels.All)
+                TraceSource = new TraceSource("PlatynUI.Extension.Provider.Client", SourceLevels.All),
             };
             _applicationInfo = new ApplicationInfoProxy(JsonRpc.Attach<IApplicationInfoAsync>());
             _nodeInfo = new NodeInfoProxy(JsonRpc.Attach<INodeInfoAsync>());

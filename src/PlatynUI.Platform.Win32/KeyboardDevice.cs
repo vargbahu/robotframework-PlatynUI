@@ -416,8 +416,8 @@ public class KeyboardDevice() : IKeyboardDevice
                             dwFlags =
                                 (it.Extended ? KEYBD_EVENT_FLAGS.KEYEVENTF_EXTENDEDKEY : 0)
                                 | (pressed ? 0 : KEYBD_EVENT_FLAGS.KEYEVENTF_KEYUP),
-                        }
-                    }
+                        },
+                    },
                 };
 
                 PInvoke.SendInput(1, &inputs, Marshal.SizeOf<INPUT>());
@@ -449,8 +449,8 @@ public class KeyboardDevice() : IKeyboardDevice
                                 dwFlags =
                                     KEYBD_EVENT_FLAGS.KEYEVENTF_UNICODE
                                     | (pressed ? 0 : KEYBD_EVENT_FLAGS.KEYEVENTF_KEYUP),
-                            }
-                        }
+                            },
+                        },
                     }
                 );
                 var inpArray = inputs.ToArray();

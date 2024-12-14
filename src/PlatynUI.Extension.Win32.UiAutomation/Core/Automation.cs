@@ -5,8 +5,8 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using PlatynUI.Runtime;
 using PlatynUI.Extension.Win32.UiAutomation.Client;
+using PlatynUI.Runtime;
 
 namespace PlatynUI.Extension.Win32.UiAutomation.Core;
 
@@ -75,49 +75,42 @@ public class Automation
         return attr.Value;
     }
 
-    private static readonly Dictionary<string, int> KnownPatternIds =
-        new()
-        {
-            { GetTypeGuid(typeof(IUIAutomationInvokePattern)), UIA_PatternIds.UIA_InvokePatternId },
-            { GetTypeGuid(typeof(IUIAutomationSelectionPattern)), UIA_PatternIds.UIA_SelectionPatternId },
-            { GetTypeGuid(typeof(IUIAutomationValuePattern)), UIA_PatternIds.UIA_ValuePatternId },
-            { GetTypeGuid(typeof(IUIAutomationRangeValuePattern)), UIA_PatternIds.UIA_RangeValuePatternId },
-            { GetTypeGuid(typeof(IUIAutomationScrollPattern)), UIA_PatternIds.UIA_ScrollPatternId },
-            { GetTypeGuid(typeof(IUIAutomationExpandCollapsePattern)), UIA_PatternIds.UIA_ExpandCollapsePatternId },
-            { GetTypeGuid(typeof(IUIAutomationGridPattern)), UIA_PatternIds.UIA_GridPatternId },
-            { GetTypeGuid(typeof(IUIAutomationGridItemPattern)), UIA_PatternIds.UIA_GridItemPatternId },
-            { GetTypeGuid(typeof(IUIAutomationMultipleViewPattern)), UIA_PatternIds.UIA_MultipleViewPatternId },
-            { GetTypeGuid(typeof(IUIAutomationWindowPattern)), UIA_PatternIds.UIA_WindowPatternId },
-            { GetTypeGuid(typeof(IUIAutomationSelectionItemPattern)), UIA_PatternIds.UIA_SelectionItemPatternId },
-            { GetTypeGuid(typeof(IUIAutomationDockPattern)), UIA_PatternIds.UIA_DockPatternId },
-            { GetTypeGuid(typeof(IUIAutomationTablePattern)), UIA_PatternIds.UIA_TablePatternId },
-            { GetTypeGuid(typeof(IUIAutomationTableItemPattern)), UIA_PatternIds.UIA_TableItemPatternId },
-            { GetTypeGuid(typeof(IUIAutomationTextPattern)), UIA_PatternIds.UIA_TextPatternId },
-            { GetTypeGuid(typeof(IUIAutomationTogglePattern)), UIA_PatternIds.UIA_TogglePatternId },
-            { GetTypeGuid(typeof(IUIAutomationTransformPattern)), UIA_PatternIds.UIA_TransformPatternId },
-            { GetTypeGuid(typeof(IUIAutomationScrollItemPattern)), UIA_PatternIds.UIA_ScrollItemPatternId },
-            {
-                GetTypeGuid(typeof(IUIAutomationLegacyIAccessiblePattern)),
-                UIA_PatternIds.UIA_LegacyIAccessiblePatternId
-            },
-            { GetTypeGuid(typeof(IUIAutomationItemContainerPattern)), UIA_PatternIds.UIA_ItemContainerPatternId },
-            { GetTypeGuid(typeof(IUIAutomationVirtualizedItemPattern)), UIA_PatternIds.UIA_VirtualizedItemPatternId },
-            {
-                GetTypeGuid(typeof(IUIAutomationSynchronizedInputPattern)),
-                UIA_PatternIds.UIA_SynchronizedInputPatternId
-            },
-            { GetTypeGuid(typeof(IUIAutomationObjectModelPattern)), UIA_PatternIds.UIA_ObjectModelPatternId },
-            { GetTypeGuid(typeof(IUIAutomationAnnotationPattern)), UIA_PatternIds.UIA_AnnotationPatternId },
-            { GetTypeGuid(typeof(IUIAutomationTextPattern2)), UIA_PatternIds.UIA_TextPattern2Id },
-            { GetTypeGuid(typeof(IUIAutomationStylesPattern)), UIA_PatternIds.UIA_StylesPatternId },
-            { GetTypeGuid(typeof(IUIAutomationSpreadsheetPattern)), UIA_PatternIds.UIA_SpreadsheetPatternId },
-            { GetTypeGuid(typeof(IUIAutomationSpreadsheetItemPattern)), UIA_PatternIds.UIA_SpreadsheetItemPatternId },
-            { GetTypeGuid(typeof(IUIAutomationTransformPattern2)), UIA_PatternIds.UIA_TransformPattern2Id },
-            { GetTypeGuid(typeof(IUIAutomationTextChildPattern)), UIA_PatternIds.UIA_TextChildPatternId },
-            { GetTypeGuid(typeof(IUIAutomationDragPattern)), UIA_PatternIds.UIA_DragPatternId },
-            { GetTypeGuid(typeof(IUIAutomationDropTargetPattern)), UIA_PatternIds.UIA_DropTargetPatternId },
-            { GetTypeGuid(typeof(IUIAutomationTextEditPattern)), UIA_PatternIds.UIA_TextEditPatternId }
-        };
+    private static readonly Dictionary<string, int> KnownPatternIds = new()
+    {
+        { GetTypeGuid(typeof(IUIAutomationInvokePattern)), UIA_PatternIds.UIA_InvokePatternId },
+        { GetTypeGuid(typeof(IUIAutomationSelectionPattern)), UIA_PatternIds.UIA_SelectionPatternId },
+        { GetTypeGuid(typeof(IUIAutomationValuePattern)), UIA_PatternIds.UIA_ValuePatternId },
+        { GetTypeGuid(typeof(IUIAutomationRangeValuePattern)), UIA_PatternIds.UIA_RangeValuePatternId },
+        { GetTypeGuid(typeof(IUIAutomationScrollPattern)), UIA_PatternIds.UIA_ScrollPatternId },
+        { GetTypeGuid(typeof(IUIAutomationExpandCollapsePattern)), UIA_PatternIds.UIA_ExpandCollapsePatternId },
+        { GetTypeGuid(typeof(IUIAutomationGridPattern)), UIA_PatternIds.UIA_GridPatternId },
+        { GetTypeGuid(typeof(IUIAutomationGridItemPattern)), UIA_PatternIds.UIA_GridItemPatternId },
+        { GetTypeGuid(typeof(IUIAutomationMultipleViewPattern)), UIA_PatternIds.UIA_MultipleViewPatternId },
+        { GetTypeGuid(typeof(IUIAutomationWindowPattern)), UIA_PatternIds.UIA_WindowPatternId },
+        { GetTypeGuid(typeof(IUIAutomationSelectionItemPattern)), UIA_PatternIds.UIA_SelectionItemPatternId },
+        { GetTypeGuid(typeof(IUIAutomationDockPattern)), UIA_PatternIds.UIA_DockPatternId },
+        { GetTypeGuid(typeof(IUIAutomationTablePattern)), UIA_PatternIds.UIA_TablePatternId },
+        { GetTypeGuid(typeof(IUIAutomationTableItemPattern)), UIA_PatternIds.UIA_TableItemPatternId },
+        { GetTypeGuid(typeof(IUIAutomationTextPattern)), UIA_PatternIds.UIA_TextPatternId },
+        { GetTypeGuid(typeof(IUIAutomationTogglePattern)), UIA_PatternIds.UIA_TogglePatternId },
+        { GetTypeGuid(typeof(IUIAutomationTransformPattern)), UIA_PatternIds.UIA_TransformPatternId },
+        { GetTypeGuid(typeof(IUIAutomationScrollItemPattern)), UIA_PatternIds.UIA_ScrollItemPatternId },
+        { GetTypeGuid(typeof(IUIAutomationLegacyIAccessiblePattern)), UIA_PatternIds.UIA_LegacyIAccessiblePatternId },
+        { GetTypeGuid(typeof(IUIAutomationItemContainerPattern)), UIA_PatternIds.UIA_ItemContainerPatternId },
+        { GetTypeGuid(typeof(IUIAutomationVirtualizedItemPattern)), UIA_PatternIds.UIA_VirtualizedItemPatternId },
+        { GetTypeGuid(typeof(IUIAutomationSynchronizedInputPattern)), UIA_PatternIds.UIA_SynchronizedInputPatternId },
+        { GetTypeGuid(typeof(IUIAutomationObjectModelPattern)), UIA_PatternIds.UIA_ObjectModelPatternId },
+        { GetTypeGuid(typeof(IUIAutomationAnnotationPattern)), UIA_PatternIds.UIA_AnnotationPatternId },
+        { GetTypeGuid(typeof(IUIAutomationTextPattern2)), UIA_PatternIds.UIA_TextPattern2Id },
+        { GetTypeGuid(typeof(IUIAutomationStylesPattern)), UIA_PatternIds.UIA_StylesPatternId },
+        { GetTypeGuid(typeof(IUIAutomationSpreadsheetPattern)), UIA_PatternIds.UIA_SpreadsheetPatternId },
+        { GetTypeGuid(typeof(IUIAutomationSpreadsheetItemPattern)), UIA_PatternIds.UIA_SpreadsheetItemPatternId },
+        { GetTypeGuid(typeof(IUIAutomationTransformPattern2)), UIA_PatternIds.UIA_TransformPattern2Id },
+        { GetTypeGuid(typeof(IUIAutomationTextChildPattern)), UIA_PatternIds.UIA_TextChildPatternId },
+        { GetTypeGuid(typeof(IUIAutomationDragPattern)), UIA_PatternIds.UIA_DragPatternId },
+        { GetTypeGuid(typeof(IUIAutomationDropTargetPattern)), UIA_PatternIds.UIA_DropTargetPatternId },
+        { GetTypeGuid(typeof(IUIAutomationTextEditPattern)), UIA_PatternIds.UIA_TextEditPatternId },
+    };
 
     public static bool TryGetCurrentPattern<T>(IUIAutomationElement element, out T? pattern)
         where T : class
@@ -216,51 +209,50 @@ public class Automation
         return names;
     }
 
-    private static readonly Dictionary<int, string> KnownControlTypes =
-        new()
-        {
-            { UIA_ControlTypeIds.UIA_ButtonControlTypeId, "Button" },
-            { UIA_ControlTypeIds.UIA_CalendarControlTypeId, "Calendar" },
-            { UIA_ControlTypeIds.UIA_CheckBoxControlTypeId, "CheckBox" },
-            { UIA_ControlTypeIds.UIA_ComboBoxControlTypeId, "ComboBox" },
-            { UIA_ControlTypeIds.UIA_EditControlTypeId, "Edit" },
-            { UIA_ControlTypeIds.UIA_HyperlinkControlTypeId, "Hyperlink" },
-            { UIA_ControlTypeIds.UIA_ImageControlTypeId, "Image" },
-            { UIA_ControlTypeIds.UIA_ListItemControlTypeId, "ListItem" },
-            { UIA_ControlTypeIds.UIA_ListControlTypeId, "List" },
-            { UIA_ControlTypeIds.UIA_MenuControlTypeId, "Menu" },
-            { UIA_ControlTypeIds.UIA_MenuBarControlTypeId, "MenuBar" },
-            { UIA_ControlTypeIds.UIA_MenuItemControlTypeId, "MenuItem" },
-            { UIA_ControlTypeIds.UIA_ProgressBarControlTypeId, "ProgressBar" },
-            { UIA_ControlTypeIds.UIA_RadioButtonControlTypeId, "RadioButton" },
-            { UIA_ControlTypeIds.UIA_ScrollBarControlTypeId, "ScrollBar" },
-            { UIA_ControlTypeIds.UIA_SliderControlTypeId, "Slider" },
-            { UIA_ControlTypeIds.UIA_SpinnerControlTypeId, "Spinner" },
-            { UIA_ControlTypeIds.UIA_StatusBarControlTypeId, "StatusBar" },
-            { UIA_ControlTypeIds.UIA_TabControlTypeId, "Tab" },
-            { UIA_ControlTypeIds.UIA_TabItemControlTypeId, "TabItem" },
-            { UIA_ControlTypeIds.UIA_TextControlTypeId, "Text" },
-            { UIA_ControlTypeIds.UIA_ToolBarControlTypeId, "ToolBar" },
-            { UIA_ControlTypeIds.UIA_ToolTipControlTypeId, "ToolTip" },
-            { UIA_ControlTypeIds.UIA_TreeControlTypeId, "Tree" },
-            { UIA_ControlTypeIds.UIA_TreeItemControlTypeId, "TreeItem" },
-            { UIA_ControlTypeIds.UIA_CustomControlTypeId, "Custom" },
-            { UIA_ControlTypeIds.UIA_GroupControlTypeId, "Group" },
-            { UIA_ControlTypeIds.UIA_ThumbControlTypeId, "Thumb" },
-            { UIA_ControlTypeIds.UIA_DataGridControlTypeId, "DataGrid" },
-            { UIA_ControlTypeIds.UIA_DataItemControlTypeId, "DataItem" },
-            { UIA_ControlTypeIds.UIA_DocumentControlTypeId, "Document" },
-            { UIA_ControlTypeIds.UIA_SplitButtonControlTypeId, "SplitButton" },
-            { UIA_ControlTypeIds.UIA_WindowControlTypeId, "Window" },
-            { UIA_ControlTypeIds.UIA_PaneControlTypeId, "Pane" },
-            { UIA_ControlTypeIds.UIA_HeaderControlTypeId, "Header" },
-            { UIA_ControlTypeIds.UIA_HeaderItemControlTypeId, "HeaderItem" },
-            { UIA_ControlTypeIds.UIA_TableControlTypeId, "Table" },
-            { UIA_ControlTypeIds.UIA_TitleBarControlTypeId, "TitleBar" },
-            { UIA_ControlTypeIds.UIA_SeparatorControlTypeId, "Separator" },
-            { UIA_ControlTypeIds.UIA_SemanticZoomControlTypeId, "SemanticZoom" },
-            { UIA_ControlTypeIds.UIA_AppBarControlTypeId, "AppBar" }
-        };
+    private static readonly Dictionary<int, string> KnownControlTypes = new()
+    {
+        { UIA_ControlTypeIds.UIA_ButtonControlTypeId, "Button" },
+        { UIA_ControlTypeIds.UIA_CalendarControlTypeId, "Calendar" },
+        { UIA_ControlTypeIds.UIA_CheckBoxControlTypeId, "CheckBox" },
+        { UIA_ControlTypeIds.UIA_ComboBoxControlTypeId, "ComboBox" },
+        { UIA_ControlTypeIds.UIA_EditControlTypeId, "Edit" },
+        { UIA_ControlTypeIds.UIA_HyperlinkControlTypeId, "Hyperlink" },
+        { UIA_ControlTypeIds.UIA_ImageControlTypeId, "Image" },
+        { UIA_ControlTypeIds.UIA_ListItemControlTypeId, "ListItem" },
+        { UIA_ControlTypeIds.UIA_ListControlTypeId, "List" },
+        { UIA_ControlTypeIds.UIA_MenuControlTypeId, "Menu" },
+        { UIA_ControlTypeIds.UIA_MenuBarControlTypeId, "MenuBar" },
+        { UIA_ControlTypeIds.UIA_MenuItemControlTypeId, "MenuItem" },
+        { UIA_ControlTypeIds.UIA_ProgressBarControlTypeId, "ProgressBar" },
+        { UIA_ControlTypeIds.UIA_RadioButtonControlTypeId, "RadioButton" },
+        { UIA_ControlTypeIds.UIA_ScrollBarControlTypeId, "ScrollBar" },
+        { UIA_ControlTypeIds.UIA_SliderControlTypeId, "Slider" },
+        { UIA_ControlTypeIds.UIA_SpinnerControlTypeId, "Spinner" },
+        { UIA_ControlTypeIds.UIA_StatusBarControlTypeId, "StatusBar" },
+        { UIA_ControlTypeIds.UIA_TabControlTypeId, "Tab" },
+        { UIA_ControlTypeIds.UIA_TabItemControlTypeId, "TabItem" },
+        { UIA_ControlTypeIds.UIA_TextControlTypeId, "Text" },
+        { UIA_ControlTypeIds.UIA_ToolBarControlTypeId, "ToolBar" },
+        { UIA_ControlTypeIds.UIA_ToolTipControlTypeId, "ToolTip" },
+        { UIA_ControlTypeIds.UIA_TreeControlTypeId, "Tree" },
+        { UIA_ControlTypeIds.UIA_TreeItemControlTypeId, "TreeItem" },
+        { UIA_ControlTypeIds.UIA_CustomControlTypeId, "Custom" },
+        { UIA_ControlTypeIds.UIA_GroupControlTypeId, "Group" },
+        { UIA_ControlTypeIds.UIA_ThumbControlTypeId, "Thumb" },
+        { UIA_ControlTypeIds.UIA_DataGridControlTypeId, "DataGrid" },
+        { UIA_ControlTypeIds.UIA_DataItemControlTypeId, "DataItem" },
+        { UIA_ControlTypeIds.UIA_DocumentControlTypeId, "Document" },
+        { UIA_ControlTypeIds.UIA_SplitButtonControlTypeId, "SplitButton" },
+        { UIA_ControlTypeIds.UIA_WindowControlTypeId, "Window" },
+        { UIA_ControlTypeIds.UIA_PaneControlTypeId, "Pane" },
+        { UIA_ControlTypeIds.UIA_HeaderControlTypeId, "Header" },
+        { UIA_ControlTypeIds.UIA_HeaderItemControlTypeId, "HeaderItem" },
+        { UIA_ControlTypeIds.UIA_TableControlTypeId, "Table" },
+        { UIA_ControlTypeIds.UIA_TitleBarControlTypeId, "TitleBar" },
+        { UIA_ControlTypeIds.UIA_SeparatorControlTypeId, "Separator" },
+        { UIA_ControlTypeIds.UIA_SemanticZoomControlTypeId, "SemanticZoom" },
+        { UIA_ControlTypeIds.UIA_AppBarControlTypeId, "AppBar" },
+    };
 
     public static string ControlTypeNameFromId(int id)
     {

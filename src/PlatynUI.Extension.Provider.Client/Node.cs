@@ -102,7 +102,7 @@ public class Node(INode? parent, ElementReference reference, ProcessProvider pro
         return other switch
         {
             Node node => Reference == node.Reference,
-            _ => false
+            _ => false,
         };
     }
 

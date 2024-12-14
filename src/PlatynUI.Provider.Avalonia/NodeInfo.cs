@@ -1,9 +1,7 @@
 using System.Runtime.CompilerServices;
-
 using PlatynUI.Provider.Core;
 
 namespace PlatynUI.Provider.Avalonia;
-
 
 public class NodeInfo : INodeInfoAsync
 {

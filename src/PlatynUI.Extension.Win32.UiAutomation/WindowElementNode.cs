@@ -10,6 +10,7 @@ namespace PlatynUI.Extension.Win32.UiAutomation;
 public class WindowElementNode(INode? parent, IUIAutomationElement element) : ElementNode(parent, element)
 {
     readonly Patterns.WindowPattern? pattern = Patterns.GetWindowPattern(element);
+
     public override object? GetStrategy(string name, bool throwException = true)
     {
         switch (name)
@@ -28,8 +29,9 @@ public class WindowElementNode(INode? parent, IUIAutomationElement element) : El
     public bool is_maximized => pattern?.IsMaximized ?? false;
 
     public bool is_active => pattern?.IsActive ?? false;
-    public void activate() {
+
+    public void activate()
+    {
         pattern?.Activate();
     }
-
 }

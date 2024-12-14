@@ -71,7 +71,7 @@ public class Highlighter : IDisposable
             })
             {
                 IsBackground = true,
-                Name = "HighlighterThread"
+                Name = "HighlighterThread",
             };
 
             _thread.Start();

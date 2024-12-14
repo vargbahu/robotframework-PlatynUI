@@ -14,7 +14,7 @@ public enum DataEnum
 {
     Visible,
     NotVisible,
-    Hidden
+    Hidden,
 }
 
 [Export(typeof(TabPageBase))]
@@ -44,7 +44,7 @@ public class DataGridsPageViewModel : TabPageBase
         new DataItem("Petyr", "Baelish", new DateTime(1970, 4, 3), DataEnum.Visible),
         new DataItem("Brienne", "of Tarth", new DateTime(1970, 4, 3), DataEnum.Visible),
         new DataItem("Sandor", "Clegane", new DateTime(1970, 4, 3), DataEnum.Visible),
-        new DataItem("Alfred", "Maier", new DateTime(1970, 4, 3), DataEnum.Visible)
+        new DataItem("Alfred", "Maier", new DateTime(1970, 4, 3), DataEnum.Visible),
     ];
 
     private ObservableCollection<DataItem> _xceedDataItems =
@@ -71,7 +71,7 @@ public class DataGridsPageViewModel : TabPageBase
         new DataItem("Petyr", "Baelish", new DateTime(1970, 4, 3), DataEnum.Visible),
         new DataItem("Brienne", "of Tarth", new DateTime(1970, 4, 3), DataEnum.Visible),
         new DataItem("Sandor", "Clegane", new DateTime(1970, 4, 3), DataEnum.Visible),
-        new DataItem("Alfred", "Maier", new DateTime(1970, 4, 3), DataEnum.Visible)
+        new DataItem("Alfred", "Maier", new DateTime(1970, 4, 3), DataEnum.Visible),
     ];
 
     private DataGridsPageViewModel()

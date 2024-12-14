@@ -67,7 +67,9 @@ internal enum SIATTRIBFLAGS
     SIATTRIBFLAGS_AND = 0x00000001, // if multiple items and the attributes together.
     SIATTRIBFLAGS_OR = 0x00000002, // if multiple items or the attributes together.
 
-    SIATTRIBFLAGS_APPCOMPAT = 0x00000003 // Call GetAttributes directly on the ShellFolder for multiple attributes
+    SIATTRIBFLAGS_APPCOMPAT =
+        0x00000003 // Call GetAttributes directly on the ShellFolder for multiple attributes
+    ,
 }
 
 [ComImport]
@@ -313,7 +315,9 @@ internal enum SIGDN : uint
     SIGDN_FILESYSPATH = 0x80058000, // SHGDN_FORPARSING
     SIGDN_URL = 0x80068000, // SHGDN_FORPARSING
     SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001, // SHGDN_INFOLDER | SHGDN_FORPARSING | SHGDN_FORADDRESSBAR
-    SIGDN_PARENTRELATIVE = 0x80080001 // SHGDN_INFOLDER
+    SIGDN_PARENTRELATIVE =
+        0x80080001 // SHGDN_INFOLDER
+    ,
 }
 
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
@@ -348,19 +352,19 @@ internal enum FOS : uint
     FOS_NODEREFERENCELINKS = 0x00100000,
     FOS_DONTADDTORECENT = 0x02000000,
     FOS_FORCESHOWHIDDEN = 0x10000000,
-    FOS_DEFAULTNOMINIMODE = 0x20000000
+    FOS_DEFAULTNOMINIMODE = 0x20000000,
 }
 
 internal enum FDE_SHAREVIOLATION_RESPONSE
 {
     FDESVR_DEFAULT = 0x00000000,
     FDESVR_ACCEPT = 0x00000001,
-    FDESVR_REFUSE = 0x00000002
+    FDESVR_REFUSE = 0x00000002,
 }
 
 internal enum FDE_OVERWRITE_RESPONSE
 {
     FDEOR_DEFAULT = 0x00000000,
     FDEOR_ACCEPT = 0x00000001,
-    FDEOR_REFUSE = 0x00000002
+    FDEOR_REFUSE = 0x00000002,
 }

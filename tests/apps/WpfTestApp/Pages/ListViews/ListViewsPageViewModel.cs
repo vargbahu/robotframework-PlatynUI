@@ -109,7 +109,7 @@ public class ListViewsPageViewModel : TabPageBase
             new SimpleItem("Jeor", "Mormont"),
             new SimpleItem("Margaery", "Baratheon"),
             new SimpleItem("Tywin", "Lennister"),
-            new SimpleItem("Talisa", "Stark")
+            new SimpleItem("Talisa", "Stark"),
         };
 
     public SimpleItem SelectedSimpleItem
@@ -154,7 +154,7 @@ public class ListViewsPageViewModel : TabPageBase
             new ComplexItem("Jeor", "Mormont", 45),
             new ComplexItem("Margaery", "Baratheon", 45),
             new ComplexItem("Tywin", "Lennister", 35),
-            new ComplexItem("Talisa", "Stark", 45)
+            new ComplexItem("Talisa", "Stark", 45),
         };
 
     public ComplexItem SelectedComplexItem

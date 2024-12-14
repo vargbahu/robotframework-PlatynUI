@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.Threading;
-
 using PlatynUI.Provider.Server;
 
 namespace PlatynUI.Provider.Avalonia;

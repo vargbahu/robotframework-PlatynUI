@@ -120,9 +120,9 @@ public class MouseDevice() : IMouseDevice
                     mouseData = mouseData,
                     dwFlags = dwFlags,
                     time = 0,
-                    dwExtraInfo = (nuint)PInvoke.GetMessageExtraInfo().Value
-                }
-            }
+                    dwExtraInfo = (nuint)PInvoke.GetMessageExtraInfo().Value,
+                },
+            },
         };
 
         PInvoke.SendInput(1, &inputs, Marshal.SizeOf<INPUT>());

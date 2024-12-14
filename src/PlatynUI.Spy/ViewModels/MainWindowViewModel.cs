@@ -83,7 +83,8 @@ public class MainWindowViewModel : ViewModelBase, INotifyDataErrorInfo
         return SelectedNode != null;
     }
 
-    public TreeNode[] Root { get; } = [new TreeNode(null, Desktop.GetInstance()) { IsExpanded = true, IsSelected = true }];
+    public TreeNode[] Root { get; } =
+        [new TreeNode(null, Desktop.GetInstance()) { IsExpanded = true, IsSelected = true }];
 
     private TreeNode? _selectedNode;
     public TreeNode? SelectedNode

@@ -105,7 +105,7 @@ internal class Line : IDisposable
                     {
                         Connection.Ewmh._NET_WM_WINDOW_TYPE_TOOLTIP,
                         Connection.Atoms._KDE_NET_WM_WINDOW_TYPE_OVERRIDE,
-                        Connection.Ewmh._NET_WM_WINDOW_TYPE_NORMAL
+                        Connection.Ewmh._NET_WM_WINDOW_TYPE_NORMAL,
                     }
                 )
                     xcb_change_property(
@@ -139,13 +139,12 @@ internal class Line : IDisposable
                     );
             }
 
-            MotifHints motifHints =
-                new()
-                {
-                    Flags = MotifHints.MWM_HINTS_DECORATIONS,
-                    Decorations = 0,
-                    Functions = 0
-                };
+            MotifHints motifHints = new()
+            {
+                Flags = MotifHints.MWM_HINTS_DECORATIONS,
+                Decorations = 0,
+                Functions = 0,
+            };
 
             if (Connection.Atoms._MOTIF_WM_HINTS != 0)
             {
@@ -215,7 +214,7 @@ internal class Line : IDisposable
                         (uint)_position.X,
                         (uint)_position.Y,
                         (uint)_position.Width,
-                        (uint)_position.Height
+                        (uint)_position.Height,
                     }
                 )
                 {

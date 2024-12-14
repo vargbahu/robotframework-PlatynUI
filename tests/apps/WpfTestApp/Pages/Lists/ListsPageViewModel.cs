@@ -31,7 +31,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private ObservableCollection<string> _readonlyComboBoxItems =
@@ -54,7 +54,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private string _selectedMultiSelectableListBoxItem;
@@ -88,7 +88,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private ObservableCollection<string> _simpleEditableComboBoxItems =
@@ -111,7 +111,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private ObservableCollection<string> _simpleListBoxItems =
@@ -134,7 +134,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private ObservableCollection<string> _simpleVirtualizedListBoxItems =
@@ -157,7 +157,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private ObservableCollection<string> _virtualizedMultiSelectableListBoxItems =
@@ -180,7 +180,7 @@ public class ListsPageViewModel : TabPageBase
         "September",
         "October",
         "November",
-        "December"
+        "December",
     ];
 
     private ListsPageViewModel()

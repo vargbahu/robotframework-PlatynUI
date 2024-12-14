@@ -17,7 +17,7 @@ public enum MouseButton : int
     Middle = 2,
 
     X1 = 3,
-    X2
+    X2,
 }
 
 public interface IMouseDevice

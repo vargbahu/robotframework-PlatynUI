@@ -46,8 +46,7 @@ namespace PlatynUI.Spy.Converters
                     or ulong
                     or float
                     or double
-                    or decimal
-                        => ToLiteral(value),
+                    or decimal => ToLiteral(value),
                     DateTime dt => dt.ToString("G"),
                     DateTimeOffset dto => dto.ToString("G"),
                     TimeSpan ts => ts.ToString(),
