@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Union
+from datetime import timedelta
+from typing import Optional
 
 from robotlibcore import keyword
 
-from ..ui import Element, Locator
-from .types import TimeSpan
+from .types import ElementDescriptor
 
 __all__ = ["Wait"]
 
@@ -15,8 +15,8 @@ __all__ = ["Wait"]
 class Wait:
     @keyword
     def ensure_exists(
-        self, locator: Locator, timeout: Union[TimeSpan, float, None] = None, raise_exception: bool = True
+        self, descriptor: ElementDescriptor, timeout: Optional[timedelta] = None, raise_exception: bool = True
     ) -> bool:
-        return Element(locator).exists(
-            timeout=timeout.seconds if isinstance(timeout, TimeSpan) else timeout, raise_exception=raise_exception
+        return descriptor(False).exists(
+            timeout=None if timeout is None else timeout.total_seconds(), raise_exception=raise_exception
         )

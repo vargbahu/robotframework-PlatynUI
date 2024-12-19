@@ -7,7 +7,17 @@ from .application import Application
 from .keyboard import Keyboard
 from .mouse import Mouse
 from .text import Text
-from .types import Element, TimeSpan
+from .types import ElementDescriptor, RootElementDescriptor
 from .wait import Wait
 
-__all__ = ["ActivatableKeywords", "Application", "Element", "Keyboard", "Mouse", "Text", "TimeSpan", "Wait"]
+__all__ = [
+    "ActivatableKeywords",
+    "Application",
+    "ElementDescriptor",
+    "Keyboard",
+    "Mouse",
+    "RootElementDescriptor",
+    "Text",
+    "TimeSpan",
+    "Wait",
+]

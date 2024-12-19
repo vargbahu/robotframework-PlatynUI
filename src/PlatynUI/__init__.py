@@ -7,17 +7,21 @@ from typing import Any, List, Optional, Tuple, Union
 
 from assertionengine import AssertionOperator, verify_assertion
 from robot.api.deco import library
-from robot.utils import timestr_to_secs
 from robotlibcore import DynamicCore, keyword
 
 from .__about__ import __version__
-from .keywords import ActivatableKeywords, Application, Element, Keyboard, Mouse, Text, TimeSpan, Wait
+from .keywords import (
+    ActivatableKeywords,
+    Application,
+    ElementDescriptor,
+    Keyboard,
+    Mouse,
+    RootElementDescriptor,
+    Text,
+    Wait,
+)
 from .keywords.assertable import PLATYNUI_ASSERTABLE_FIELD
 from .ui import Locator, strategies
-
-
-def convert_timespan(value) -> TimeSpan:  # type: ignore
-    return TimeSpan(timestr_to_secs(value))
 
 
 def convert_locator(value) -> Locator:  # type: ignore
@@ -91,11 +95,12 @@ def _add_assertion_parameters(sig: inspect.Signature) -> inspect.Signature:
     scope="GLOBAL",
     version=__version__,
     converters={
-        Element: Element.convert,
-        strategies.Activatable: Element[strategies.Activatable].convert,
-        strategies.Deactivatable: Element[strategies.Deactivatable].convert,
-        strategies.HasIsActive: Element[strategies.HasIsActive].convert,
-        TimeSpan: convert_timespan,
+        RootElementDescriptor: RootElementDescriptor.convert,
+        ElementDescriptor: ElementDescriptor.convert,
+        strategies.Activatable: ElementDescriptor[strategies.Activatable].convert,
+        strategies.Deactivatable: ElementDescriptor[strategies.Deactivatable].convert,
+        strategies.HasIsActive: ElementDescriptor[strategies.HasIsActive].convert,
+
         Locator: convert_locator,
     },
 )
@@ -166,6 +171,6 @@ class PlatynUI(DynamicCore):
         return self.keywords[name](*args, **(kwargs or {}))
 
     @keyword
-    def set_root_element(self, element: Element) -> None:
+    def set_root_element(self, element: RootElementDescriptor) -> None:
         """Sets the context to the given locator."""
-        Element.set_root_element(element)
+        ElementDescriptor.set_root_element(element)

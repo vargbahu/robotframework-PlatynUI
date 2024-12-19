@@ -9,20 +9,20 @@ ${SEARCH_BUTTON}    ${ROOT_PATH}//Button[@AutomationId="SearchButton"]
 
 
 *** Test Cases ***
-# first
-#    Ensure Exists    /Pane[ends-with(@Name, 'Word - \\\\Remote') and @ClassName='Transparent Windows Client']    30s
-
+zero
+    # Ensure Exists    /Pane[ends-with(@Name, 'Word - \\\\Remote') and @ClassName='Transparent Windows Client']    30s
+    Log    ${ROOT_PATH}
 #    Type Keys    /Pane[ends-with(@Name, 'Word - \\\\Remote') and @ClassName='Transparent Windows Client']    <Alt+F4>
 #    Type Keys
 #    ...    /Pane[ends-with(@Name, 'Word - \\\\Remote') and @ClassName='Transparent Windows Client']
 #    ...    <Escape>
 
 first
-    #Ensure Exists    Window[@Name='Rechner']    30s
+    Ensure Exists    Window[@Name='Rechner']    30s
 
     # Type Keys    Window[@Name='Rechner']    <Alt+F4>
 
-    Is Active    Window[@Name='Rechner']    should be     true
+    # Is Active    Window[@Name='Rechner']    should be    true
 
     Activate    Window[@Name='Rechner']//Button[@AutomationId="num1Button"]
 
@@ -51,6 +51,8 @@ second
         Log    AdapterNotFoundError
     END
 
+    do something
+
     Activate    .//Button[@AutomationId="num1Button"]
 
     ${isactive}    Is Active    .
@@ -65,3 +67,19 @@ second
     Activate    .//Button[@AutomationId="num8Button"]
     Activate    .//Button[@AutomationId="num9Button"]
     Activate    .//Button[@AutomationId="num0Button"]
+
+third
+    Set Root Element    Window[@AutomationId='Shell' and @ProcessName='WpfTestApp']
+
+    Activate    .//Button[@AutomationId='DoSomething']
+
+    Activate    ./Window//Button
+
+
+*** Keywords ***
+do something
+    Log Variables
+    Set Root Element    Window[@AutomationId='Shell' and @ProcessName='WpfTestApp']
+
+    Activate    .//Button[@AutomationId='DoSomething']
+    Activate    ./Window//Button

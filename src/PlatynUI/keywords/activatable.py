@@ -3,27 +3,26 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from typing import Any
 
 from robotlibcore import keyword
 
 from ..ui.strategies import Activatable, Deactivatable, HasIsActive
 from .assertable import assertable
-from .types import Element
+from .types import ElementDescriptor
 
 __all__ = ["ActivatableKeywords"]
 
 
 class ActivatableKeywords:
     @keyword
-    def activate(self, element: Element[Activatable]) -> None:
-        element.context.activate()
+    def activate(self, descriptor: ElementDescriptor[Activatable]) -> None:
+        descriptor().activate()
 
     @keyword
-    def deactivate(self, element: Element[Deactivatable]) -> None:
-        element.context.deactivate()
+    def deactivate(self, descriptor: ElementDescriptor[Deactivatable]) -> None:
+        descriptor().deactivate()
 
     @keyword
     @assertable
-    def is_active(self, element: Element[HasIsActive]) -> bool:
-        return element.context.is_active
+    def is_active(self, descriptor: ElementDescriptor[HasIsActive]) -> bool:
+        return descriptor().is_active

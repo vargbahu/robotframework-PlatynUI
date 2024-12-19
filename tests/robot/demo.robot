@@ -29,3 +29,8 @@ zweiter
 
 vierter
     Activate    Window[@AutomationId='Shell' and @ProcessName='WpfTestApp']//Button[@AutomationId='DoSomething']
+
+fünfter
+    Set Root Element    ${calculator}
+    Activate    .//Button[@AutomationId='num1Button']
+    Activate    .//Button[@AutomationId='num2Button']

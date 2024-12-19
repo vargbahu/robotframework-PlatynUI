@@ -5,14 +5,14 @@
 from robotlibcore import keyword
 
 from ..ui.strategies import HasMouse
-from .types import Element
+from .types import ElementDescriptor
 
 
 class Mouse:
     @keyword
-    def click(self, element: Element[HasMouse]) -> None:
-        element.context.mouse.click()
+    def click(self, descriptor: ElementDescriptor[HasMouse]) -> None:
+        descriptor().mouse.click()
 
     @keyword
-    def double_click(self, element: Element[HasMouse]) -> None:
-        element.context.mouse.double_click()
+    def double_click(self, descriptor: ElementDescriptor[HasMouse]) -> None:
+        descriptor().mouse.double_click()

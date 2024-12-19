@@ -7,18 +7,18 @@ from typing import Optional
 from robotlibcore import keyword
 
 from ..ui.strategies import HasKeyboard
-from .types import Element
+from .types import ElementDescriptor
 
 
 class Keyboard:
     @keyword
-    def type_keys(self, element: Element[HasKeyboard], *keys: str, delay: Optional[float] = None) -> None:
-        element.context.keyboard.type_keys(*keys, delay=delay)
+    def type_keys(self, descriptor: ElementDescriptor[HasKeyboard], *keys: str, delay: Optional[float] = None) -> None:
+        descriptor().keyboard.type_keys(*keys, delay=delay)
 
     @keyword
-    def press_keys(self, element: Element[HasKeyboard], *keys: str, delay: Optional[float] = None) -> None:
-        element.context.keyboard.press_keys(*keys, delay=delay)
+    def press_keys(self, descriptor: ElementDescriptor[HasKeyboard], *keys: str, delay: Optional[float] = None) -> None:
+        descriptor().keyboard.press_keys(*keys, delay=delay)
 
     @keyword
-    def release_keys(self, element: Element[HasKeyboard], *keys: str, delay: Optional[float] = None) -> None:
-        element.context.keyboard.release_keys(*keys, delay=delay)
+    def release_keys(self, descriptor: ElementDescriptor[HasKeyboard], *keys: str, delay: Optional[float] = None) -> None:
+        descriptor().keyboard.release_keys(*keys, delay=delay)

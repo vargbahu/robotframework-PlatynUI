@@ -133,7 +133,7 @@ class Ensure:
 
             if not result and raise_exception:
                 raise CannotEnsureError(
-                    "cannot ensure that %s%s"
+                    "Cannot ensure that %s%s"
                     % (
                         (
                             "%s" % last_predicate.message.format(full_repr(context))

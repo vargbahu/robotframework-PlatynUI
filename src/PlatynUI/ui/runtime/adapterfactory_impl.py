@@ -77,9 +77,13 @@ class AdapterFactoryImpl(AdapterFactory):
                 last_xpath, last_result = parent_adapter.last_children_search_data or (None, None)
                 if last_xpath == path and not last_result:
                     result = last_result
-                    refresh = False
+                    refresh = True
 
             result = DotNetInterface.finder().FindSingleNode(cast("INode", parent_impl), path, False, refresh)
+
+            if isinstance(parent_adapter, AdapterImpl):
+                parent_adapter.last_children_search_data = (path, result is not None)
+
             if result is None and raise_error:
                 raise AdapterNotFoundError(
                     f"Element for '{path}' not found"
