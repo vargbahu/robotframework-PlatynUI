@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.7.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.6.0..v0.7.0) - 2024-12-19
+
+### Features
+
+- Introduce ElementDescriptor ([b5f431b](https://github.com/imbus/robotframework-PlatynUI/commit/b5f431bcf5f041f3f0be207d5da4a18e8679fb92))
+
+
 ## [0.6.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.5.0..v0.6.0) - 2024-12-13
 
 ### Bug Fixes
