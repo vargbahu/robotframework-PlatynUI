@@ -10,7 +10,7 @@ __all__ = ["Edit"]
 
 
 @context
-class Edit(Text):
+class Edit(Text, strategies.Text, strategies.EditableText):
 
     @property
     def text(self) -> str:

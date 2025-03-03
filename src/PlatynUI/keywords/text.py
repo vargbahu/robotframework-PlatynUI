@@ -4,8 +4,17 @@
 
 from robotlibcore import keyword
 
+from ..ui.strategies import EditableText, Text
+from .assertable import assertable
+from .types import ElementDescriptor
 
-class Text:
+
+class TextKeywords:
     @keyword
-    def set_text(self, locator: str, text: str) -> None:
-        locator.set_text(text)
+    def set_text(self, descriptor: ElementDescriptor[EditableText], text: str) -> None:
+        descriptor().set_text(text)
+
+    @keyword
+    @assertable
+    def get_text(self, descriptor: ElementDescriptor[Text]) -> str:
+        return descriptor().text

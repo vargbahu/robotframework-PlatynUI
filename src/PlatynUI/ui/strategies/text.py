@@ -6,7 +6,7 @@ from abc import abstractmethod
 
 from ...core import StrategyBase
 
-__all__ = ["Text", "EditableText", "Clearable", "HasEditor", "HasMultiLine"]
+__all__ = ["Clearable", "EditableText", "HasEditor", "HasMultiLine", "Text"]
 
 
 class Text(StrategyBase):
