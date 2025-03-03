@@ -17,7 +17,7 @@ from .keywords import (
     Keyboard,
     Mouse,
     RootElementDescriptor,
-    Text,
+    TextKeywords,
     Wait,
 )
 from .keywords.assertable import PLATYNUI_ASSERTABLE_FIELD
@@ -100,13 +100,12 @@ def _add_assertion_parameters(sig: inspect.Signature) -> inspect.Signature:
         strategies.Activatable: ElementDescriptor[strategies.Activatable].convert,
         strategies.Deactivatable: ElementDescriptor[strategies.Deactivatable].convert,
         strategies.HasIsActive: ElementDescriptor[strategies.HasIsActive].convert,
-
         Locator: convert_locator,
     },
 )
 class PlatynUI(DynamicCore):
     def __init__(self) -> None:
-        super().__init__([Application(), ActivatableKeywords(), Text(), Keyboard(), Mouse(), Wait()])
+        super().__init__([Application(), ActivatableKeywords(), TextKeywords(), Keyboard(), Mouse(), Wait()])
 
     def get_keyword_arguments(self, name: str) -> Any:
         result: List[Union[str, Tuple[str], Tuple[str, Any]]] = super().get_keyword_arguments(name)

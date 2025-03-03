@@ -51,8 +51,6 @@ class DotNetInterface:
 
         if rt_kind == "CoreCLR":
             kind = "coreclr"
-        elif rt_kind == ".NET Framework":
-            kind = "netfx"
         else:
             logger.error(f"Unsupported runtime for PlatynUI: {get_runtime_info().kind}")  # noqa: G004
             raise RuntimeError(f"Unsupported runtime for PlatynUI: {get_runtime_info().kind}")

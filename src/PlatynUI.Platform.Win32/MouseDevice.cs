@@ -83,8 +83,8 @@ public class MouseDevice() : IMouseDevice
         var flags = button switch
         {
             0 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_LEFTDOWN,
-            1 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_RIGHTDOWN,
-            2 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_MIDDLEDOWN,
+            1 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_MIDDLEDOWN,
+            2 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_RIGHTDOWN,
             3 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_XDOWN,
             _ => throw new NotSupportedException(),
         };
@@ -98,8 +98,8 @@ public class MouseDevice() : IMouseDevice
         var flags = button switch
         {
             0 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_LEFTUP,
-            1 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_RIGHTUP,
-            2 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_MIDDLEUP,
+            1 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_MIDDLEUP,
+            2 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_RIGHTUP,
             3 => MOUSE_EVENT_FLAGS.MOUSEEVENTF_XUP,
             _ => throw new NotSupportedException(),
         };

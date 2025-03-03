@@ -20,7 +20,7 @@
     </Design.DataContext>
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Text="Hello, World!" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Text="Hello, World!" HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.AutomationId="Hallo World"/>
         <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <Button Content="Click me!" Command="{Binding ClickCommand}" HorizontalAlignment="Center"
             VerticalAlignment="Center" />

@@ -40,6 +40,13 @@ first
     # Type Keys    ${calculator}    <ENTER>
     # Type Keys    .    <ALT+F4>
 
+    #Set Text    ${calculator}    12345
+    # ${text}    Get Text    ${calculator.n1}
+    # Get Text   ${calculator.n1}   ==  ein text123445
+
+    Click    ${calculator.n1}    button=right
+    Click    ${calculator.results}    button=right
+    Click    ${calculator.calculator_results}    button=right
 
 
 *** Keywords ***

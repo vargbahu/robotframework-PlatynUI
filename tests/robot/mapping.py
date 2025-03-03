@@ -72,6 +72,10 @@ class CalculatorWindow(Window):
     @locator(AutomationId="NormalOutput")
     def results(self) -> Text: ...
 
+    @property
+    @locator(AutomationId="CalculatorResults")
+    def calculator_results(self) -> Text: ...
+
 
 calculator = CalculatorWindow()
 
