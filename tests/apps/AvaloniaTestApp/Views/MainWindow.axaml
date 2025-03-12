@@ -19,7 +19,8 @@
         App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
-         <TextBlock Text="Hello, World!" HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.AutomationId="Hallo World"/>
+    <StackPanel>
+        <TextBlock Text="Hello, World!" HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.AutomationId="Hallo World"/>
         <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <Button Content="Click me!" Command="{Binding ClickCommand}" HorizontalAlignment="Center"
             VerticalAlignment="Center" />
