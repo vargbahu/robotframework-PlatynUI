@@ -1,0 +1,13 @@
+<Project>
+  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+  <PropertyGroup>
+    <Version>0.7.0</Version>
+    <Authors>Daniel Biehl &lt;daniel.biehl@imbus.de&gt;</Authors>
+    <Product>PlatynUI</Product>
+
+    <Company>imbus</Company>
+    <Copyright>2024 Daniel Biehl &lt;daniel.biehl@imbus.de&gt;</Copyright>
+
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+  </PropertyGroup>
+</Project>

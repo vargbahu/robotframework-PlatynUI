@@ -5,6 +5,7 @@
 ### DotnetCore ###
 
 # .NET Core build folders
+artifacts/
 bin/
 obj/
 *.csproj.user
@@ -145,3 +146,6 @@ wheelhouse/
 ## MacOS
 .DS_Store
 
+# Swift Package Manager
+.build/
+Package.resolved

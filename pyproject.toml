@@ -30,8 +30,7 @@ classifiers = [
 dependencies = [
   "typing-extensions",
   "robotframework-pythonlibcore>=4.4.0",
-  "robotframework-assertion-engine>=3.0.0",
-  "pythonnet>=3.0.0",
+  "robotframework-assertion-engine>=3.0.0"
 ]
 
 [project.urls]
@@ -55,6 +54,7 @@ sources = ["src"]
 
 [tool.hatch.build.targets.sdist]
 exclude = ["src/PlatynUI/technology/uiautomation/runtime"]
+
 
 [tool.hatch.build.targets.wheel.hooks.custom]
 path = "scripts/dotnet_build_hook.py"
@@ -161,7 +161,7 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py38"
+target-version = "py310"
 extend-exclude = ["typings"]
 
 [tool.ruff.lint]
@@ -216,6 +216,7 @@ select = [
 
 
 [tool.ruff.lint.per-file-ignores]
+
 "__init__.py" = ["F401", "F403"]
 "src/PlatynUI/technology/uiautomation/core/loader.py" = [
   "G004",
