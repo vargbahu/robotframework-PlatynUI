@@ -15,30 +15,13 @@ if LOGLEVEL:
 
 
 def main() -> None:
-    from pythonnet import load
-
-    load("coreclr")
-    import clr  # noqa: F401
-    from pythonnet import get_runtime_info
-
-    rt_kind = get_runtime_info().kind
-    logger.debug(f"Runtime kind: {rt_kind}")  # noqa: G004
-
-    if rt_kind == "CoreCLR":
-        kind = "coreclr"
-    elif rt_kind == ".NET Framework":
-        kind = "netfx"
-    else:
-        warnings.warn(f"Unsupported runtime: {get_runtime_info().kind}")
-        raise RuntimeError(f"Unsupported runtime: {get_runtime_info().kind}")
-
     if os.name == "nt":
         exe_name = "PlatynUI.Spy.exe"
     else:
         exe_name = "PlatynUI.Spy"
 
     debug_path = Path(__file__).parent / f"../../PlatynUI.Spy/bin/Debug/net8.0/{exe_name}"
-    runtime_path = Path(__file__).parent.parent / f"ui/runtime/{kind}/{exe_name}"
+    runtime_path = Path(__file__).parent.parent / f"ui/runtime/coreclr/{exe_name}"
 
     if debug_path.exists():
         logger.debug(f"Starting {exe_name} from {debug_path}")  # noqa: G004
