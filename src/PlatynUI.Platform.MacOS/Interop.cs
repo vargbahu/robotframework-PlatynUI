@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace PlatynUI.Platform.MacOS.SwiftInterop
@@ -18,7 +19,14 @@ namespace PlatynUI.Platform.MacOS.SwiftInterop
                 {
                     if (libraryName == LibraryName && RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
-                        string customPath = $"runtimes/osx/native/lib{LibraryName}.dylib";
+                        string assemblyPath = Path.GetDirectoryName(assembly.Location)!;
+                        string customPath = Path.Combine(
+                            assemblyPath,
+                            "runtimes",
+                            "osx",
+                            "native",
+                            $"lib{LibraryName}.dylib"
+                        );
                         if (NativeLibrary.TryLoad(customPath, out IntPtr handle))
                         {
                             return handle;
