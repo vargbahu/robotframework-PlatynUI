@@ -5,6 +5,11 @@
     <ProjectReference Include="..\PlatynUI.Provider.Core\PlatynUI.Provider.Core.csproj" />
     <ProjectReference Include="..\PlatynUI.Extension.Linux.AtSpi2\PlatynUI.Extension.Linux.AtSpi2.csproj" />
     <ProjectReference Include="..\PlatynUI.Extension.Provider.Client\PlatynUI.Extension.Provider.Client.csproj" />
+    <ProjectReference Include="../PlatynUI.Platform.MacOS/PlatynUI.Platform.MacOS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Terminal.Gui" Version="1.18.0" />
   </ItemGroup>
 
   <PropertyGroup>
