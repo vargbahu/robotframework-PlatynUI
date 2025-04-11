@@ -141,3 +141,7 @@ prof/
 
 ## cibuildwheel
 wheelhouse/
+
+## MacOS
+.DS_Store
+
