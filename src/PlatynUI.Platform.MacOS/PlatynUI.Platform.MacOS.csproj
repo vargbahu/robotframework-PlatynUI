@@ -15,7 +15,7 @@
     <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <PackageReference Include="StreamJsonRpc" Version="2.21.69" />
+    <PackageReference Include="StreamJsonRpc" />
   </ItemGroup>
 
   <!-- Swift-Konfiguration -->
