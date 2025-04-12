@@ -46,7 +46,6 @@ def test_fifth() -> None:
     desktop = Desktop()
 
     for i in range(4):
-
         context.activate()
         desktop.mouse.move_to(desktop.bounding_rectangle.CENTER)
 

@@ -28,9 +28,10 @@ classifiers = [
   "Programming Language :: C#",
 ]
 dependencies = [
+  "robotframework>=6.0.0",
   "typing-extensions",
   "robotframework-pythonlibcore>=4.4.0",
-  "robotframework-assertion-engine>=3.0.0"
+  "robotframework-assertion-engine>=3.0.0",
 ]
 
 [project.urls]
@@ -55,7 +56,6 @@ sources = ["src"]
 [tool.hatch.build.targets.sdist]
 exclude = ["src/PlatynUI/technology/uiautomation/runtime"]
 
-
 [tool.hatch.build.targets.wheel.hooks.custom]
 path = "scripts/dotnet_build_hook.py"
 
@@ -70,10 +70,8 @@ dependencies = [
   "pytest-cov",
   "mypy",
   "ruff",
-  "black",
   "GitPython",
   "semantic-version",
-  "robotremoteserver",
   "robotframework",
   "robotframework-tidy",
   "robotframework-robocop",
@@ -87,8 +85,7 @@ python = "3.10"
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13"]
-robotframework = ["4.1", "5.0", "6.0", "6.1", "7.0", "7.1", "7.2"]
-os = ["macos", "linux", "windows"]
+robotframework = ["6.0", "6.1", "7.0", "7.1", "7.2"]
 
 # features = ["all"]
 # pre-install-commands = ["install-packages"]
@@ -99,10 +96,9 @@ pre-commit-check = "pre-commit run --all-files"
 pre-commit-check-log = "pre-commit run --all-files > pre-commit.log 2>&1"
 
 # Auto-formatting scripts
-format-black = "black ."
 format-ruff = "ruff format ."
 format-robotidy = "robotidy ."
-format = ["format-black", "format-ruff", "format-robotidy"]
+format = ["format-ruff", "format-robotidy"]
 
 # Run tests
 python-tests = "pytest tests/python/test_types.py"
@@ -115,14 +111,12 @@ extra-dependencies = ["mypy>=1.0.0"]
 check-mypy = "mypy --install-types --non-interactive {args:src/PlatynUI tests}"
 check-robotidy = "robotidy --check ."
 check-robocop = "robocop ."
-check-black = "black --check ."
 check-ruff = "ruff check ."
 check-pytest = "pytest"
 check = [
   "check-mypy",
   "check-robotidy",
   "check-robocop",
-  "check-black",
   "check-ruff",
   "check-pytest",
 ]
@@ -142,6 +136,42 @@ publish = ["python scripts/publish.py"]
 extract-release-notes = ["python scripts/extract_release_notes.py"]
 is-prerelease = ["python scripts/is_prerelease.py"]
 bump = ["cz bump"]
+
+[tool.hatch.envs.hatch-static-analysis]
+installer = "uv"
+dependencies = ["ruff"]
+
+[tool.hatch.envs.hatch-static-analysis.scripts]
+format-check = ["ruff format --check --diff {args:.}"]
+format-fix = ["ruff format {args:.}"]
+lint-check = ["ruff check {args:.}"]
+lint-fix = "ruff check --fix {args:.}"
+
+[tool.hatch.envs.devel]
+python = "3.10"
+
+[[tool.hatch.envs.devel.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13"]
+rf = ["rf60", "rf61", "rf70", "rf71", "rf72"]
+
+[tool.hatch.envs.devel.overrides]
+matrix.rf.dependencies = [
+  { value = "robotframework>6.0.0, <6.1", if = [
+    "rf60",
+  ] },
+  { value = "robotframework>=6.1, <7.0", if = [
+    "rf61",
+  ] },
+  { value = "robotframework>=7.0, <7.1", if = [
+    "rf70",
+  ] },
+  { value = "robotframework>=7.1, <7.2", if = [
+    "rf71",
+  ] },
+  { value = "robotframework>=7.2, <7.3", if = [
+    "rf72",
+  ] },
+]
 
 [tool.coverage.run]
 source_pkgs = ["robotframework_platynui", "tests"]
@@ -253,26 +283,6 @@ detect-same-package = true
 fixture-parentheses = false
 mark-parentheses = false
 
-# black
-
-[tool.black]
-line-length = 120
-target-version = ['py39']
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | typings/System/Runtime/InteropServices/ObjectiveC/__init__.pyi # TODO: Fix cannot parse for target version Python 3.9
-)/
-'''
 
 [tool.pytest.ini_options]
 minversion = "6.0"

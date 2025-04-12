@@ -5,7 +5,6 @@
 import logging
 import os
 import subprocess
-import warnings
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
