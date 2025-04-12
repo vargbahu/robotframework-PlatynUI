@@ -42,20 +42,21 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: swift --version
 
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            8.0.x
+
       - name: Install Hatch
-        run: pipx install hatch
-
-      - name: Create Hatch environment
-        run: hatch env create
-
-      - name: Install Robot Framework ${{ matrix.robot-version }}
-        run: hatch run pip install robotframework==${{ matrix.robot-version }}
+        uses: pypa/hatch@install
 
       - name: Run Python Tests
-        run: hatch run python-tests
+        run: hatch test -py ${{ matrix.python-version }} -- -m "not wip"
 
       - name: Run Robot Framework Tests
-        run: hatch run robot-tests --outputdir test-results/os-${{ matrix.os }}-py-${{ matrix.python-version }}-rf-${{ matrix.robot-version }}
+        run: hatch run +py=${{ matrix.python-version }} robot:test -e wip -- --outputdir test-results/os-${{ matrix.os }}-py-${{ matrix.python-version }}-rf-${{ matrix.robot-version }}
 
       - name: Upload Test Results
         if: always()

@@ -56,8 +56,9 @@ sources = ["src"]
 [tool.hatch.build.targets.sdist]
 exclude = ["src/PlatynUI/technology/uiautomation/runtime"]
 
-[tool.hatch.build.targets.wheel.hooks.custom]
-path = "scripts/dotnet_build_hook.py"
+# this needs to be enabled only for hatch build
+# [tool.hatch.build.targets.wheel.hooks.custom]
+# path = "scripts/dotnet_build_hook.py"
 
 [tool.hatch.envs.default]
 installer = "uv"
@@ -124,18 +125,66 @@ check = [
 [tool.hatch.envs.build]
 skip-install = true
 detached = true
-python = "3.8"
+python = "3.10"
 dependencies = ["GitPython", "semantic-version", "commitizen", "git-cliff"]
 
 [tool.hatch.envs.build.scripts]
 update-changelog = ["python scripts/update_changelog.py"]
 update-git-versions = ["python scripts/update_git_versions.py"]
-update-doc-links = ["python scripts/update_doc_links.py"]
-package = ["python scripts/package.py"]
-publish = ["python scripts/publish.py"]
-extract-release-notes = ["python scripts/extract_release_notes.py"]
-is-prerelease = ["python scripts/is_prerelease.py"]
 bump = ["cz bump"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13"]
+rf = ["rf60", "rf61", "rf70", "rf71", "rf72"]
+
+[tool.hatch.envs.hatch-test.overrides]
+matrix.rf.dependencies = [
+  { value = "robotframework>6.0.0, <6.1", if = [
+    "rf60",
+  ] },
+  { value = "robotframework>=6.1, <7.0", if = [
+    "rf61",
+  ] },
+  { value = "robotframework>=7.0, <7.1", if = [
+    "rf70",
+  ] },
+  { value = "robotframework>=7.1, <7.2", if = [
+    "rf71",
+  ] },
+  { value = "robotframework>=7.2, <7.3", if = [
+    "rf72",
+  ] },
+]
+
+[tool.hatch.envs.robot]
+python = "3.10"
+extra-dependencies = ["robotcode[runner]"]
+
+[[tool.hatch.envs.robot.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13"]
+rf = ["rf60", "rf61", "rf70", "rf71", "rf72"]
+
+[tool.hatch.envs.robot.overrides]
+matrix.rf.dependencies = [
+  { value = "robotframework>6.0.0, <6.1", if = [
+    "rf60",
+  ] },
+  { value = "robotframework>=6.1, <7.0", if = [
+    "rf61",
+  ] },
+  { value = "robotframework>=7.0, <7.1", if = [
+    "rf70",
+  ] },
+  { value = "robotframework>=7.1, <7.2", if = [
+    "rf71",
+  ] },
+  { value = "robotframework>=7.2, <7.3", if = [
+    "rf72",
+  ] },
+]
+
+[tool.hatch.envs.robot.scripts]
+test = "robotcode robot {args:}"
 
 [tool.hatch.envs.hatch-static-analysis]
 installer = "uv"
@@ -289,19 +338,18 @@ minversion = "6.0"
 #addopts = "-ra -vv -rf"
 addopts = "-ra -rf --tb=short -vv"
 filterwarnings = "ignore:.*Using or importing the ABCs from 'collections' instead of from 'collections.abc'.*:DeprecationWarning"
-testpaths = ["tests/python/test_types.py"]
 junit_suite_name = "robotcode"
 #console_output_style = "classic"
 log_cli = true
 log_cli_level = 4
 # log_cli_format = "%(levelname)s %(name)s: %(message)s"
 faulthandler_timeout = 240
+markers = ["wip: work in progress"]
 
 
 # mypy
-
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 strict = true
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -378,7 +426,7 @@ exclude = [
 [tool.pyright]
 exclude = ["**/.hatch", "**/node_modules", "**/__pycache__", "bundled/libs"]
 typeCheckingMode = "off"
-pythonVersion = "3.8"
+pythonVersion = "3.10"
 stubPath = "typings"
 
 [tool.commitizen]

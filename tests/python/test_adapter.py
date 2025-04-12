@@ -2,18 +2,20 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import pytest
+
 from PlatynUI.core.contextbase import ContextFactory
 from PlatynUI.ui import Button, Desktop, Element, Locator, Pane, Window, locator
 
 # mypy: disable-error-code="empty-body"
 
+pytestmark = pytest.mark.wip
 
 @locator(ClassName="Shell_TrayWnd", role="Pane")
 class TaskBar(Window):
     @property
     @locator(name="Start")
     def start(self) -> Button: ...
-
 
 def test_first() -> None:
     e = Element(Locator(path="/."))
