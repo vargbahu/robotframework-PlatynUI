@@ -126,7 +126,8 @@ bump = ["cz bump"]
 
 [tool.hatch.envs.hatch-test]
 matrix-name-format = "{variable}{value}"
-[tool.hatch.envs.hatch-test.scripts]
+
+#[tool.hatch.envs.hatch-test.scripts]
 # run = "override"
 
 [[tool.hatch.envs.hatch-test.matrix]]
