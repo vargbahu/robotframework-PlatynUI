@@ -464,19 +464,21 @@ archs = ["auto"]
 before-all = """\
 if command -v yum 2>&1 > /dev/null
 then
-  yum -y install libicu wget
+  yum -y install libicu curl
 fi
 
 if command -v apk 2>&1 > /dev/null
 then
-  apk add icu-libs wget
+  apk add icu-libs curl
 fi
 
-wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+#wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+curl -SL --output dotnet-install.sh https://dot.net/v1/dotnet-install.sh
 chmod +x ./dotnet-install.sh
-./dotnet-install.sh --version latest --channel STS
-./dotnet-install.sh --version latest --channel LTS
-ln -s /root/.dotnet/dotnet /bin/dotnet
+./dotnet-install.sh --version latest --channel STS --install-dir /usr/share/dotnet
+./dotnet-install.sh --version latest --channel LTS --install-dir /usr/share/dotnet
+ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+dotnet --version
 """
 
 [tool.cibuildwheel.environment]
