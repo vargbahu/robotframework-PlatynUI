@@ -52,16 +52,16 @@ class DotNetBuildHook(BuildHookInterface[BuilderConfig]):
         rm(self.BASE_OUTPUT_DIR)
         rm(self.BASE_PROVIDERS_DIR)
 
-        self._run_shell("dotnet restore")
-        self._run_shell("dotnet tool restore")
+        self._run_shell("dotnet restore -v diag")
+        self._run_shell("dotnet tool restore -v diag")
 
         self._run_shell(
-            "dotnet publish -c Release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
+            "dotnet publish -v diag -c Release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
             f"-o {self.BASE_OUTPUT_DIR} "
             f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Spy"
         )
         self._run_shell(
-            "dotnet publish -c Release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
+            "dotnet publish -v diag -c Release -f net8.0 -p:DebugSymbols=false -P:DebugType=None "
             f"-o {self.BASE_PROVIDERS_DIR / 'avalonia'} "
             f"-r {self._dotnet_runtime_identifier} ./src/PlatynUI.Provider.Avalonia"
         )
