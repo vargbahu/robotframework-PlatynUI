@@ -127,7 +127,7 @@ bump = ["cz bump"]
 [tool.hatch.envs.hatch-test]
 matrix-name-format = "{variable}{value}"
 [tool.hatch.envs.hatch-test.scripts]
-run = "asdasd"
+# run = "override"
 
 [[tool.hatch.envs.hatch-test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13"]
