@@ -1,12 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>PlatynUI .NET Interface</Description>
-    <TargetFrameworks>net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Description>PlatynUI .NET Interface for Win32 UI Automation</Description>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
+
     <RootNamespace>PlatynUI.Extension.Win32.UiAutomation</RootNamespace>
   </PropertyGroup>
 

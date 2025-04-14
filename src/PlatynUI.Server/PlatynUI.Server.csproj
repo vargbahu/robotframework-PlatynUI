@@ -1,19 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj" />
-  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm;osx-arm64</RuntimeIdentifiers>
+    <NeedsPlatynUIExtensions>true</NeedsPlatynUIExtensions>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="StreamJsonRpc" />
     <PackageReference Include="System.CommandLine.NamingConventionBinder" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\PlatynUI.Runtime\PlatynUI.Runtime.csproj" />
+  </ItemGroup>
 </Project>

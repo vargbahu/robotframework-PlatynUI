@@ -2,11 +2,7 @@
 
   <PropertyGroup>
     <Description>PlatynUI Platform Win32</Description>
-    <TargetFrameworks>net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
     <RootNamespace>PlatynUI.Platform.Win32</RootNamespace>
   </PropertyGroup>
 
