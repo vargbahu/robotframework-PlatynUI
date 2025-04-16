@@ -1,5 +1,3 @@
----
-
 # Security Policy
 
 This document outlines the process for responsibly reporting security vulnerabilities in the **robotframework-PlatynUI** project. We value the security of our users and contributors, and we appreciate your efforts to help us maintain a secure project environment.
