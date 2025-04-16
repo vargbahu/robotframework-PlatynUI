@@ -4,7 +4,9 @@
 
 import AppKit
 import ArgumentParser
+import Cocoa
 import Foundation
+import Interop
 import JSONRPC
 
 struct HighlighterArguments: ParsableCommand {
@@ -36,7 +38,6 @@ func watchProcessExit(pid: Int, completion: @escaping @Sendable () -> Void) {
     DispatchQueue.global(qos: .background).async {
         let kq = kqueue()
         guard kq != -1 else {
-            print("Failed to create kqueue")
             return
         }
 
@@ -50,13 +51,10 @@ func watchProcessExit(pid: Int, completion: @escaping @Sendable () -> Void) {
         ke.data = 0
         ke.udata = nil
 
-        // Register event
         if kevent(kq, &ke, 1, nil, 0, nil) == -1 {
-            print("Failed to register kevent")
             return
         }
 
-        // Wait for event
         var eventList = kevent()
         while kevent(kq, nil, 0, &eventList, 1, nil) > 0 {
             if eventList.fflags & UInt32(NOTE_EXIT) != 0 {
@@ -69,38 +67,33 @@ func watchProcessExit(pid: Int, completion: @escaping @Sendable () -> Void) {
     }
 }
 
-public func GetDisplayHeight() -> Double {
-    let screens = NSScreen.screens
-
-    if screens.isEmpty {
-        return 0
+func convertTopLeftRectRelativeToMainScreen(_ rect: NSRect) throws -> NSRect {
+    guard let mainScreen = NSScreen.main else {
+        throw MainScreenNotFoundException(message: "Main screen not found")
     }
 
-    var minY = screens[0].frame.minY
-    var maxY = screens[0].frame.maxY
+    let mainFrame = mainScreen.frame
+    let originMacOS = CGPoint(
+        x: rect.origin.x + mainFrame.origin.x,
+        y: mainFrame.maxY - rect.origin.y - rect.height
+    )
 
-    for screen in screens {
-        let frame = screen.frame
-        minY = min(minY, frame.minY)
-        maxY = max(maxY, frame.maxY)
-    }
-
-    return maxY - minY
+    return NSRect(origin: originMacOS, size: rect.size)
 }
 
-func showHighlight(x: Double, y: Double, width: Double, height: Double, time: Double?) {
+func showHighlight(x: Double, y: Double, width: Double, height: Double, time: Double?) throws {
+    let borderWidth = 6.0
+    let halfBorderWidth = borderWidth / 2.0
+
+    let topLeftRect = NSRect(
+        x: x - halfBorderWidth,
+        y: y - halfBorderWidth,
+        width: width + borderWidth,
+        height: height + borderWidth)
+
+    let rect = try convertTopLeftRectRelativeToMainScreen(topLeftRect)
+
     DispatchQueue.main.async {
-
-        let borderWidth = 6.0
-        let halfBorderWidth = borderWidth / 2.0
-
-        let adjustedY = GetDisplayHeight() - y - height
-
-        let rect = NSRect(
-            x: x - halfBorderWidth,
-            y: adjustedY - halfBorderWidth,
-            width: width + borderWidth,
-            height: height + borderWidth)
 
         if overlayWindow == nil {
             overlayWindow = NSWindow(
@@ -108,7 +101,7 @@ func showHighlight(x: Double, y: Double, width: Double, height: Double, time: Do
                 styleMask: .borderless,
                 backing: .buffered,
                 defer: false)
-            overlayWindow?.level = .popUpMenu  // Höheres Level als .statusBar
+            overlayWindow?.level = .popUpMenu
             overlayWindow?.backgroundColor = .clear
             overlayWindow?.isOpaque = false
             overlayWindow?.hasShadow = false
@@ -205,7 +198,6 @@ func handleRequest(
                 .params!
 
             watchProcessExit(pid: params.processId) {
-                print("Parent process terminated, shutting down...")
                 DispatchQueue.main.async {
                     app.terminate(nil)
                 }
@@ -217,7 +209,7 @@ func handleRequest(
             let params = try JSONDecoder().decode(JSONRPCRequest<ShowParams>.self, from: data)
                 .params!
 
-            showHighlight(
+            try showHighlight(
                 x: params.x,
                 y: params.y,
                 width: params.width,
@@ -279,13 +271,17 @@ struct Main {
             }
 
         } else {
-            showHighlight(
-                x: arguments.x,
-                y: arguments.y,
-                width: arguments.width,
-                height: arguments.height,
-                time: arguments.timeout
-            )
+            do {
+                try showHighlight(
+                    x: arguments.x,
+                    y: arguments.y,
+                    width: arguments.width,
+                    height: arguments.height,
+                    time: arguments.timeout
+                )
+            } catch {
+                handleError(error)
+            }
         }
 
         app.run()
