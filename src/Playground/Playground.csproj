@@ -3,6 +3,21 @@
     <Description>PlatynUI Playground</Description>
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NeedsPlatynUIExtensions>true</NeedsPlatynUIExtensions>
+    <!-- <NeedsPlatynUIExtensions>true</NeedsPlatynUIExtensions> -->
   </PropertyGroup>
+
+  <!-- <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup> -->
+
+  <ItemGroup>
+    <ProjectReference Include="../PlatynUI.JsonRpc/PlatynUI.JsonRpc.csproj" />
+    <ProjectReference
+      Include="..\PlatynUI.JsonRpc.Generators\PlatynUI.JsonRpc.Generators.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false" />
+    <Compile Remove="Generated\**\*.cs" />
+  </ItemGroup>
+
 </Project>

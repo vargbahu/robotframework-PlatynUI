@@ -19,11 +19,14 @@ SERVER_PATH="dotnet run"
 
 # Debug-Information
 echo "Sende JSON mit Länge $content_length: $json_request" >&2
+echo "" >&2
+
 
 {
+    #for i in {1..10000}; do
     printf "Content-Length: %d\r\n" "$content_length"
     printf "Content-Type: application/vscode-jsonrpc; charset=utf-8\r\n"
     printf "\r\n"  # Leerzeile als Trennung zwischen Header und Body
     printf "%s" "$json_request"  # JSON ohne extra Zeilenumbruch
-    sleep 2
+    #done
 } | $SERVER_PATH
