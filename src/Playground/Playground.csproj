@@ -6,10 +6,14 @@
     <!-- <NeedsPlatynUIExtensions>true</NeedsPlatynUIExtensions> -->
   </PropertyGroup>
 
-  <!-- <PropertyGroup>
+  <PropertyGroup>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
-  </PropertyGroup> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Generated\**\*.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../PlatynUI.JsonRpc/PlatynUI.JsonRpc.csproj" />
@@ -17,7 +21,6 @@
       Include="..\PlatynUI.JsonRpc.Generators\PlatynUI.JsonRpc.Generators.csproj"
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="false" />
-    <Compile Remove="Generated\**\*.cs" />
   </ItemGroup>
 
 </Project>

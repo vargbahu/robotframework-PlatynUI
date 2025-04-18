@@ -1,12 +1,12 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
-
 using PlatynUI.JsonRpc;
 using Playground;
 
 var peer1 = new JsonRpcPeer(Console.OpenStandardInput(), Console.OpenStandardOutput());
 
 DemoEndpoint.Attach(peer1);
+
+IDocumentApi.Attach(peer1);
 
 // Methode bei peer1 registrieren
 peer1.RegisterRequestHandler(

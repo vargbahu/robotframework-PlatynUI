@@ -41,13 +41,16 @@ interface IDemoApi
 }
 
 [JsonRpcEndpoint("textDocument")]
-interface IDocumentApi
+public partial interface IDocumentApi
 {
     [JsonRpcRequest("getText")]
     Task<string> GetTextAsync(string uri, CancellationToken token);
 
     [JsonRpcRequest("Add")]
     double Add(double a, double b, double c);
+
+    [JsonRpcNotification]
+    void NotifyMe(string message);
 }
 
 partial class DemoEndpoint : IDocumentApi, IDemoApi
@@ -83,6 +86,11 @@ partial class DemoEndpoint : IDocumentApi, IDemoApi
     }
 
     public Task<string> GetTextAsync(string uri, CancellationToken token)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void NotifyMe(string message)
     {
         throw new NotImplementedException();
     }
