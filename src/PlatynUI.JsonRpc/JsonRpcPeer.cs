@@ -93,13 +93,7 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
     private CancellationTokenSource? cancellationTokenSource;
 
     public JsonSerializerOptions JsonSerializerOptions { get; set; } =
-        new()
-        {
-            //PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            //UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
-            //RespectRequiredConstructorParameters = true,
-        };
+        new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
 
     private readonly TaskCompletionSource<bool> completionSource = new();
 
@@ -175,17 +169,17 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         await SendMessageAsync(json);
     }
 
-    public async Task<object?> SendRequestAsync(string method)
+    public async Task<object> SendRequestAsync(string method)
     {
-        return await SendRequestAsync<object?>(method, null);
+        return await SendRequestAsync<object>(method, null);
     }
 
-    public async Task<object?> SendRequestAsync(string method, object? @params)
+    public async Task<object> SendRequestAsync(string method, object? @params)
     {
-        return await SendRequestAsync<object?>(method, @params);
+        return await SendRequestAsync<object>(method, @params);
     }
 
-    public async Task<T?> SendRequestAsync<T>(string method, object? @params)
+    public async Task<T> SendRequestAsync<T>(string method, object? @params)
     {
         var id = Interlocked.Increment(ref idCounter).ToString();
         var message = new JsonRpcRequest
@@ -196,7 +190,7 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         };
         var json = JsonSerializer.Serialize(message, JsonSerializerOptions);
 
-        var tcs = new TaskCompletionSource<JsonRpcResponse>();
+        var tcs = new TaskCompletionSource<JsonRpcResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
         pendingRequests[id] = tcs;
 
         await SendMessageAsync(json);
@@ -205,10 +199,24 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
 
         if (response.Result is JsonElement jsonElement)
         {
-            return jsonElement.Deserialize<T>(JsonSerializerOptions);
+            T? result = jsonElement.Deserialize<T>(JsonSerializerOptions);
+
+            if (result == null && !IsNullable(typeof(T)))
+            {
+                throw new InvalidOperationException(
+                    $"Deserialization resulted in null for non-nullable type {typeof(T).FullName}"
+                );
+            }
+
+            return result!;
         }
 
-        return default;
+        return (T)default!;
+    }
+
+    private static bool IsNullable(Type type)
+    {
+        return Nullable.GetUnderlyingType(type) != null || !type.IsValueType;
     }
 
     protected async Task<string?> ReadMessageAsync()
@@ -369,26 +377,40 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
 
     protected async Task<JsonResponseBase?> ProcessSingleMessage(JsonElement jsonElement)
     {
-        if (
-            jsonElement.TryGetProperty("id", out var idProperty)
-            && idProperty.ValueKind != JsonValueKind.Null
-            && pendingRequests.TryRemove(idProperty.ToString(), out var tcs)
-        )
+        if (jsonElement.TryGetProperty("id", out var idProperty) && !jsonElement.TryGetProperty("method", out _))
         {
-            if (jsonElement.TryGetProperty("error", out var errorProperty))
+            if (
+                idProperty.ValueKind != JsonValueKind.Null
+                && pendingRequests.TryRemove(idProperty.ToString(), out var tcs)
+            )
             {
-                var error = errorProperty.Deserialize<JsonRpcError>(JsonSerializerOptions);
-                tcs.SetException(new Exception($"RPC Error {error?.Code}: {error?.Message} ({error?.Data})"));
-            }
-            else if (jsonElement.TryGetProperty("result", out var resultProperty))
-            {
-                var response = new JsonRpcResponse { Id = idProperty, Result = resultProperty };
-                tcs.SetResult(response);
+                if (jsonElement.TryGetProperty("error", out var errorProperty))
+                {
+                    var error = errorProperty.Deserialize<JsonRpcError>(JsonSerializerOptions);
+                    tcs.SetException(new Exception($"RPC Error {error?.Code}: {error?.Message} ({error?.Data})"));
+                }
+                else if (jsonElement.TryGetProperty("result", out var resultProperty))
+                {
+                    var response = new JsonRpcResponse { Id = idProperty, Result = resultProperty };
+                    tcs.SetResult(response);
+                }
+                else
+                {
+                    tcs.SetException(new Exception("RPC Error: Invalid response format"));
+                }
                 return null;
             }
-            else
+            else if (
+                idProperty.ValueKind == JsonValueKind.Null
+                && jsonElement.TryGetProperty("error", out var errorProperty)
+            )
             {
-                tcs.SetException(new Exception("RPC Error: Invalid response format"));
+                var error = errorProperty.Deserialize<JsonRpcError>(JsonSerializerOptions);
+                Console.Error.WriteLine(
+                    $"Received error with null ID: {error?.Code}: {error?.Message} ({error?.Data})"
+                );
+
+                return null;
             }
         }
         else if (jsonElement.TryGetProperty("method", out var methodProperty))
@@ -407,8 +429,7 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
             {
                 var message =
                     jsonElement.Deserialize<JsonRpcNotification>(JsonSerializerOptions)
-                    ?? throw new JsonException("Invalid request format");
-
+                    ?? throw new JsonException("Invalid notification format");
                 return await ProcessNotificationAsync(message);
             }
         }
