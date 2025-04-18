@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.VisualStudio.Threading;
 
 namespace PlatynUI.JsonRpc;
 
@@ -78,6 +79,8 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
     public readonly Stream ReaderStream = readerStream;
     public readonly Stream WriterStream = writerStream;
 
+    public JoinableTaskFactory? JoinableTaskFactory { get; set; }
+
     private readonly ConcurrentDictionary<
         string,
         Func<JsonElement?, JsonSerializerOptions, Task<object?>>
@@ -86,6 +89,7 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         string,
         Func<JsonElement?, JsonSerializerOptions, Task>
     > notificationHandlers = new();
+
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonRpcResponse>> pendingRequests = new();
     private int idCounter = 1;
     private Encoding encoding = Encoding.UTF8;
@@ -158,6 +162,18 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         await WriterStream.FlushAsync();
     }
 
+    public void SendNotification(string method, object @params)
+    {
+        if (JoinableTaskFactory != null)
+        {
+            JoinableTaskFactory.Run(async () => await SendNotificationAsync(method, @params));
+        }
+        else
+        {
+            Task.Run(async () => await SendNotificationAsync(method, @params)).GetAwaiter().GetResult();
+        }
+    }
+
     public async Task SendNotificationAsync(string method, object @params)
     {
         var message = new JsonRpcNotification
@@ -169,14 +185,46 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         await SendMessageAsync(json);
     }
 
-    public async Task<object> SendRequestAsync(string method)
+    public void SendRequest(string method)
     {
-        return await SendRequestAsync<object>(method, null);
+        SendRequest(method, null);
     }
 
-    public async Task<object> SendRequestAsync(string method, object? @params)
+    public void SendRequest(string method, object? @params)
     {
-        return await SendRequestAsync<object>(method, @params);
+        SendRequest<object>(method, @params);
+    }
+
+    public T SendRequest<T>(string method)
+    {
+        return SendRequest<T>(method, null);
+    }
+
+    public T SendRequest<T>(string method, object? @params)
+    {
+        if (JoinableTaskFactory != null)
+        {
+            return JoinableTaskFactory.Run(async () => await SendRequestAsync<T>(method, @params));
+        }
+        else
+        {
+            return Task.Run(async () => await SendRequestAsync<T>(method, @params)).GetAwaiter().GetResult();
+        }
+    }
+
+    public async Task SendRequestAsync(string method)
+    {
+        await SendRequestAsync<object>(method, null);
+    }
+
+    public async Task SendRequestAsync(string method, object? @params)
+    {
+        await SendRequestAsync<object>(method, @params);
+    }
+
+    public async Task<T> SendRequestAsync<T>(string method)
+    {
+        return await SendRequestAsync<T>(method, null);
     }
 
     public async Task<T> SendRequestAsync<T>(string method, object? @params)

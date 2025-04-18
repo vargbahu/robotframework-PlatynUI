@@ -4,4 +4,8 @@
     <Description>PlatynUI JsonRpc</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Only" />
+  </ItemGroup>
+
 </Project>

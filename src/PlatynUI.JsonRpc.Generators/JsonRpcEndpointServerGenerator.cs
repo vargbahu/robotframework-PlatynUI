@@ -117,7 +117,7 @@ public class JsonRpcEndpointServerGenerator : IIncrementalGenerator
                 context.ReportDiagnostic(
                     Diagnostic.Create(
                         new DiagnosticDescriptor(
-                            "JSONRPC001",
+                            "PJSONRPC001",
                             "Duplicate JSON-RPC method name",
                             "Duplicate JSON-RPC method name '{0}' in class '{1}'. Conflicting methods: {2}. Method names must be unique within a JSON-RPC endpoint.",
                             "JsonRpc",

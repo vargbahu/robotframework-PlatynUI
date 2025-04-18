@@ -59,10 +59,10 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
             )
             .Where(x => x != null)!;
 
-        context.RegisterSourceOutput(interfaces, (spc, info) => GenerateClientSource(spc, info!));
+        context.RegisterSourceOutput(interfaces, (spc, info) => GenerateSource(spc, info!));
     }
 
-    private void GenerateClientSource(SourceProductionContext context, InterfaceInfo info)
+    private void GenerateSource(SourceProductionContext context, InterfaceInfo info)
     {
         var ns = info.InterfaceSymbol.ContainingNamespace.ToDisplayString();
         var interfaceName = info.InterfaceSymbol.Name;
@@ -188,22 +188,54 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
             sb.Append(string.Join(", ", m.Parameters.Select(p => $"{p.Name} = {p.Name}")));
             sb.AppendLine(" };");
 
+            var isTaskLike = IsTaskLike(m.ReturnType);
+
+            var fullMethod = String.IsNullOrWhiteSpace(rpcName) ? m.Name : rpcName;
+            fullMethod = String.IsNullOrWhiteSpace(info.EndpointName)
+                ? fullMethod
+                : $"{info.EndpointName}/{fullMethod}";
+
             if (isNotification)
             {
-                var fullMethod = String.IsNullOrWhiteSpace(rpcName) ? m.Name : rpcName;
-                fullMethod = String.IsNullOrWhiteSpace(info.EndpointName)
-                    ? fullMethod
-                    : $"{info.EndpointName}/{fullMethod}";
-                sb.AppendLine($"            _peer.SendNotificationAsync(\"{fullMethod}\", @params);");
+                bool isValid =
+                    m.ReturnType.ToDisplayString() == "void" || m.ReturnType.ToDisplayString() == TaskTypeName;
+
+                if (!isValid)
+                {
+                    var location =
+                        m.Locations.Length > 0 && m.Locations[0].SourceTree != null
+                            ? Location.Create(m.Locations[0].SourceTree!, m.Locations[0].SourceSpan)
+                            : null;
+
+                    context.ReportDiagnostic(
+                        Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                "PJSONRPC002",
+                                "Invalid return type for JsonRpc notification",
+                                "Notification method '{0}' must return 'void' or 'Task', but returns '{1}'",
+                                "JsonRpc",
+                                DiagnosticSeverity.Error,
+                                true
+                            ),
+                            location,
+                            m.Name,
+                            m.ReturnType.ToDisplayString()
+                        )
+                    );
+                }
+                {
+                    if (isTaskLike)
+                    {
+                        sb.AppendLine($"            _peer.SendNotificationAsync(\"{fullMethod}\", @params);");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"            _peer.SendNotification(\"{fullMethod}\", @params);");
+                    }
+                }
             }
             else
             {
-                var isTaskLike = IsTaskLike(m.ReturnType);
-                var fullMethod = String.IsNullOrWhiteSpace(rpcName) ? m.Name : rpcName;
-                fullMethod = String.IsNullOrWhiteSpace(info.EndpointName)
-                    ? fullMethod
-                    : $"{info.EndpointName}/{fullMethod}";
-
                 if (isTaskLike)
                 {
                     if (m.ReturnType.ToString() == TaskTypeName)
@@ -220,9 +252,16 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
                 }
                 else
                 {
-                    sb.AppendLine(
-                        $"            return _peer.SendRequestAsync<{m.ReturnType.ToDisplayString()}>(\"{fullMethod}\", @params).GetAwaiter().GetResult();"
-                    );
+                    if (m.ReturnType.ToDisplayString() == "void")
+                    {
+                        sb.AppendLine($"            _peer.SendRequest(\"{fullMethod}\", @params);");
+                    }
+                    else
+                    {
+                        sb.AppendLine(
+                            $"            return _peer.SendRequest<{m.ReturnType.ToDisplayString()}>(\"{fullMethod}\", @params)"
+                        );
+                    }
                 }
             }
 
