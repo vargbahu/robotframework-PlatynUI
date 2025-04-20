@@ -95,7 +95,7 @@ public class JsonRpcEndpointServerGenerator : IIncrementalGenerator
 
                 if (!methodNameMap.TryGetValue(fullMethod, out var methods))
                 {
-                    methods = new List<(IMethodSymbol, string, string)>();
+                    methods = [];
                     methodNameMap[fullMethod] = methods;
                 }
 
@@ -149,7 +149,6 @@ public class JsonRpcEndpointServerGenerator : IIncrementalGenerator
 
         sb.AppendLine($"partial class {className}");
         sb.AppendLine("{");
-
 
         var allMethods = classInfo.EndpointInfos.SelectMany(ei => ei.Methods).Distinct(MethodEqualityComparer.Instance);
 
@@ -240,7 +239,12 @@ public class JsonRpcEndpointServerGenerator : IIncrementalGenerator
 
                 if (isRequest)
                 {
-                    if (IsTaskLike(m.ReturnType))
+                    if (m.ReturnsVoid)
+                    {
+                        sb.AppendLine($"            target{info.InterfaceSymbol.Name}.{m.Name}({args});");
+                        sb.AppendLine($"            return Task.FromResult<object?>(null);");
+                    }
+                    else if (IsTaskLike(m.ReturnType))
                         sb.AppendLine($"            return target{info.InterfaceSymbol.Name}.{m.Name}({args});");
                     else
                         sb.AppendLine(
@@ -289,25 +293,17 @@ public class JsonRpcEndpointServerGenerator : IIncrementalGenerator
         return typeSymbol.BaseType != null && IsTaskLike(typeSymbol.BaseType);
     }
 
-    private class EndpointInfo
+    private class EndpointInfo(
+        INamedTypeSymbol classSymbol,
+        INamedTypeSymbol interfaceSymbol,
+        string endpointName,
+        IMethodSymbol[] methods
+    )
     {
-        public EndpointInfo(
-            INamedTypeSymbol classSymbol,
-            INamedTypeSymbol interfaceSymbol,
-            string endpointName,
-            IMethodSymbol[] methods
-        )
-        {
-            ClassSymbol = classSymbol;
-            InterfaceSymbol = interfaceSymbol;
-            EndpointName = endpointName;
-            Methods = methods;
-        }
-
-        public INamedTypeSymbol ClassSymbol;
-        public INamedTypeSymbol InterfaceSymbol;
-        public string EndpointName;
-        public IMethodSymbol[] Methods;
+        public INamedTypeSymbol ClassSymbol = classSymbol;
+        public INamedTypeSymbol InterfaceSymbol = interfaceSymbol;
+        public string EndpointName = endpointName;
+        public IMethodSymbol[] Methods = methods;
     }
 
     private class ClassEndpointInfos

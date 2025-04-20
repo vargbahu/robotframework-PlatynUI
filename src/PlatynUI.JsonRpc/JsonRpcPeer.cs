@@ -47,6 +47,7 @@ public abstract record JsonResponseBase : JsonRpcMessage { }
 public record JsonRpcResponse : JsonResponseBase
 {
     [JsonPropertyName("result")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public object? Result { get; set; }
 
     [JsonPropertyName("id")]
@@ -71,6 +72,7 @@ public record JsonRpcErrorResponse : JsonResponseBase
     public required JsonRpcError Error { get; set; }
 
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public required JsonElement? Id { get; set; }
 }
 

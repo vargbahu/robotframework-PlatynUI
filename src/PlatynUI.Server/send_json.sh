@@ -25,5 +25,5 @@ echo "Sende JSON mit Länge $content_length: $json_request" >&2
     printf "Content-Type: application/vscode-jsonrpc; charset=utf-8\r\n"
     printf "\r\n"  # Leerzeile als Trennung zwischen Header und Body
     printf "%s" "$json_request"  # JSON ohne extra Zeilenumbruch
-    sleep 2
+    sleep 5
 } | $SERVER_PATH
