@@ -115,12 +115,6 @@ class JsonRpcErrorResponse(JsonResponseBase):
 
 class JsonRpcPeer:
     def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-        """
-        Initializes a new JsonRpcPeer with asyncio streams
-
-        :param reader: An asyncio StreamReader for reading
-        :param writer: An asyncio StreamWriter for writing
-        """
         self.reader = reader
         self.writer = writer
 
@@ -131,7 +125,7 @@ class JsonRpcPeer:
         self.id_counter = 1
         self.id_lock = asyncio.Lock()
 
-        self.default_encoding = "utf-8"  # Fallback encoding when charset is not specified
+        self.default_encoding = "utf-8"
 
         self.running = False
         self._completion_future: "asyncio.Future[bool]" = asyncio.Future()
@@ -141,23 +135,25 @@ class JsonRpcPeer:
 
     @property
     def completion(self) -> asyncio.Future[bool]:
-        """Completion object for asynchronous termination"""
         return self._completion_future
 
     async def start(self) -> None:
-        """Starts the JSON-RPC peer"""
         self.running = True
-        asyncio.create_task(self.io_loop())
+        self._read_task = asyncio.create_task(self.io_loop())
 
     async def stop(self) -> None:
-        """Stops the JSON-RPC peer"""
         self.running = False
-        self._completion_future.set_result(True)
+        if self._read_task and not self._read_task.done():
+            self._read_task.cancel()
+            try:
+                await self._read_task
+            except asyncio.CancelledError:
+                pass
+        await self.completion
 
     def register_request_handler(
         self, method_name: str, handler: Callable[[Optional[Any], Dict[str, Any]], Any]
     ) -> None:
-        """Registers a handler for request messages"""
         if not method_name or method_name.isspace():
             raise ValueError("Method name cannot be null or whitespace")
 
@@ -169,7 +165,6 @@ class JsonRpcPeer:
     def register_notification_handler(
         self, method_name: str, handler: Callable[[Optional[Any], Dict[str, Any]], None]
     ) -> None:
-        """Registers a handler for notification messages"""
         if not method_name or method_name.isspace():
             raise ValueError("Method name cannot be null or whitespace")
 
@@ -179,7 +174,6 @@ class JsonRpcPeer:
         self.notification_handlers[method_name] = handler
 
     async def send_message(self, json_str: str) -> None:
-        """Sends a JSON message"""
         body_bytes = (json_str + "\r\n").encode(self.default_encoding)
         header = f"Content-Length: {len(body_bytes)}\r\n\r\n"
         header_bytes = header.encode("ascii")
@@ -189,7 +183,6 @@ class JsonRpcPeer:
         await self.writer.drain()
 
     async def send_notification(self, method: str, params: Optional[Any] = None) -> None:
-        """Sends a notification"""
         message = JsonRpcNotification(method=method)
         if params is not None:
             message.params = params
@@ -200,11 +193,9 @@ class JsonRpcPeer:
         await self.send_message(json_str)
 
     async def send_request(self, method: str, params: Optional[Any] = None) -> Any:
-        """Sends a request and waits for response"""
         return await self.send_request_typed(method, params, object)
 
     async def send_request_typed(self, method: str, params: Optional[Any] = None, response_type: Type[T] = object) -> T:
-        """Sends a request with a specific return type"""
         async with self.id_lock:
             id_str = str(self.id_counter)
             self.id_counter += 1
@@ -223,8 +214,7 @@ class JsonRpcPeer:
 
         await self.send_message(json_str)
 
-        # Wait for response with timeout
-        response = await asyncio.wait_for(tcs, timeout=30.0)  # 30 seconds timeout
+        response = await asyncio.wait_for(tcs, timeout=30.0)
 
         if isinstance(response.result, dict) and response_type is object:
             return cast(response_type, response.result)
@@ -232,31 +222,30 @@ class JsonRpcPeer:
         return response.result
 
     async def io_loop(self) -> None:
-        """IO loop for reading and writing messages"""
         buffer = bytearray()
         content_length = 0
         headers_complete = False
-        encoding = self.default_encoding  # Default encoding for messages
+        encoding = self.default_encoding
 
         try:
             while self.running:
-                data = await self.reader.read(4096)
-                if not data:
-                    # Connection closed
+                try:
+                    data = await self.reader.read(4096)
+                    if not data:
+                        self.running = False
+                        break
+                except asyncio.CancelledError:
                     self.running = False
-                    break
+                    raise
 
                 buffer.extend(data)
 
-                # Process all complete messages in the buffer
                 while True:
-                    # Parse headers
                     if not headers_complete:
                         header_end = buffer.find(b"\r\n\r\n")
                         if header_end == -1:
-                            break  # No complete headers yet
+                            break
 
-                        # Reset encoding for new message
                         encoding = self.default_encoding
 
                         headers = buffer[:header_end].decode("ascii")
@@ -265,7 +254,6 @@ class JsonRpcPeer:
                                 content_length = int(line[16:])
                             elif line.startswith("Content-Type: "):
                                 content_type = line[14:]
-                                # Parse content type for charset
                                 parts = content_type.split(";")
                                 for part in parts:
                                     part = part.strip()
@@ -274,34 +262,29 @@ class JsonRpcPeer:
                                         if charset:
                                             encoding = charset
 
-                        buffer = buffer[header_end + 4 :]  # 4 = len("\r\n\r\n")
+                        buffer = buffer[header_end + 4 :]
                         headers_complete = True
 
-                    # Parse body if enough data is available
                     if headers_complete and len(buffer) >= content_length:
                         body = buffer[:content_length]
-                        message = body.decode(encoding)  # Use the encoding from headers for this message
+                        message = body.decode(encoding)
 
-                        # Execute handler method
                         await self.handle_message(message)
 
                         buffer = buffer[content_length:]
                         headers_complete = False
                         content_length = 0
                     else:
-                        break  # Not enough data for the body yet
+                        break
 
         except Exception as e:
             self._completion_future.set_exception(e)
             return
-
-        self._completion_future.set_result(True)
+        finally:
+            self.running = False
+            self._completion_future.set_result(True)
 
     async def handle_message(self, json_str: str) -> None:
-        """
-        Processes an incoming JSON message
-        This method is called separately for each message
-        """
         try:
             json_element = json.loads(json_str)
 
@@ -343,7 +326,6 @@ class JsonRpcPeer:
             )
 
     async def process_single_message(self, json_element: Dict[str, Any]) -> Optional[JsonResponseBase]:
-        """Processes a single JSON-RPC message"""
         if "id" in json_element and "method" not in json_element:
             id_value = json_element.get("id")
             id_str = str(id_value) if id_value is not None else None
@@ -362,33 +344,25 @@ class JsonRpcPeer:
 
                 return None
 
-            # Handle error with null ID
-            elif id_value is None and "error" in json_element:
+            if id_value is None and "error" in json_element:
                 error = JsonRpcError(**json_element["error"])
                 print(f"Received error with null ID: {error.code}: {error.message} ({error.data})")
                 return None
 
         elif "method" in json_element:
             if "id" in json_element and json_element["id"] is not None:
-                # Execute request
                 request = JsonRpcRequest(**json_element)
                 return await self.process_request(request)
-            else:
-                # Execute notification
-                notification = JsonRpcNotification(**json_element)
-                return await self.process_notification(notification)
+
+            notification = JsonRpcNotification(**json_element)
+            return await self.process_notification(notification)
 
         return None
 
     async def process_request(self, message: JsonRpcRequest) -> JsonResponseBase:
-        """
-        Processes an incoming request
-        The actual handler method runs asynchronously
-        """
         if message.method in self.request_handlers:
             handler = self.request_handlers[message.method]
             try:
-                # Execute request
                 result = await handler(message.params, self.json_serializer_options)
                 return JsonRpcResponse(id=message.id, result=result)
             except Exception as ex:
@@ -407,14 +381,9 @@ class JsonRpcPeer:
             )
 
     async def process_notification(self, message: JsonRpcNotification) -> Optional[JsonResponseBase]:
-        """
-        Processes an incoming notification
-        The actual handler method runs asynchronously
-        """
         if message.method in self.notification_handlers:
             handler = self.notification_handlers[message.method]
             try:
-                # Execute notification
                 await handler(message.params, self.json_serializer_options)
                 return None
             except Exception as ex:
