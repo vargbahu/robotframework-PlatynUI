@@ -1,50 +1,93 @@
 import asyncio
-from dataclasses import dataclass
+import contextlib
+import os
+import subprocess
+import sys
 from pathlib import Path
-from typing import Any
 
-from robotcode.jsonrpc2.client import JsonRPCCient
-from robotcode.jsonrpc2.protocol import JsonRPCProtocol, rpc_method
+if __name__ == "__main__" and not __package__:
+    file = Path(__file__).resolve()
+    parent, top = file.parent, file.parents[1]
+
+    if str(top) not in sys.path:
+        sys.path.append(str(top))
+
+    with contextlib.suppress(ValueError):
+        sys.path.remove(str(parent))
+
+    __package__ = "playground"
+
+from .jsonpeer import JsonRpcPeer
 
 
-@dataclass
-class MyParams:
-    message: str
+async def create_process_streams(cmd):
+    """Erstellt asyncio Streams für einen Subprocess"""
+    # Process mit Pipes erstellen
+    process = await asyncio.create_subprocess_exec(
+        *cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
+    # In asyncio.create_subprocess_exec sind stdin, stdout und stderr bereits StreamWriter bzw. StreamReader
+    # Wir müssen sie nicht manuell umwandeln
+    reader = process.stdout
+    writer = process.stdin
 
-class MyJsonRPCProtocol(JsonRPCProtocol):
-    def do_something(self) -> None:
-        print("Doing something in MyJsonRPCProtocol")
-
-    @rpc_method(name="back_to_back", param_type=MyParams)
-    def _back_to_back(self, message: str, *args: Any, **kwargs: Any) -> str:
-        print(f"Back to back: {message}")
-        return message + " back"
-
-    @rpc_method(name="get_rect")
-    def get_rect(self, data: Any) -> str:
-        print(f"Back to back: {data}")
-        return "ok"
+    return process, reader, writer
 
 
 async def main():
-    print(Path())
-    print(Path("./src/PlatynUI.Server/bin/Debug/net8.0/PlatynUI.Server.exe").exists())
-    client = JsonRPCCient(protocol_type=MyJsonRPCProtocol)
-    # await client.connect_pipe(
-    #     "./src/PlatynUI.Server/bin/Debug/net8.0/PlatynUI.Server.exe"
-    #     if sys.platform == "win32"
-    #     else "./src/PlatynUI.Server/bin/Debug/net8.0/PlatynUI.Server"
-    # )
-    await client.connect_tcp("localhost", 5000)
+    # Server-Prozess starten
+    cmd = [
+        "artifacts/bin/PlatynUI.Platform.MacOS/debug/runtimes/osx/native/PlatynUI.Platform.MacOS.Highlighter",
+        "--server",
+    ]
+
+    process, reader, writer = await create_process_streams(cmd)
+
+    # JsonRpcPeer erstellen, der mit dem Serverprozess kommuniziert
+    peer = JsonRpcPeer(reader, writer)
+
+    # Peer starten
+    await peer.start()
 
     try:
-        for i in range(1000):
-            print(await client.protocol.send_request_async("echo", ["Hello, world!"]))
-            print(await client.protocol.send_request_async("Add", [1, i]))
-            print(await client.protocol.send_request_async("send_something_back", ["Hello, world!"]))
+        # Initialisierung senden
+        await peer.send_request("Initialize", {"processId": os.getpid()})
+
+        # Show-Anfragen in einer Schleife senden
+        for x in range(40, 1000, 1):
+            await peer.send_request("Show", {"x": x, "y": x, "width": 100, "height": 100, "timeout": 3})
+            await asyncio.sleep(0.001)  # Kleine Pause zwischen Anfragen
+
+        # Warten, um die Anzeige zu sehen
+        await asyncio.sleep(3)
+
+        # Eine Notification senden
+        await peer.send_notification("Exit", {})
+
+        # Kurze Pause, um dem Server Zeit zum Verarbeiten zu geben
+        await asyncio.sleep(0.5)
+
+    except Exception as e:
+        print(f"Fehler: {e}")
     finally:
-        await client.terminate()
+        # Peer und Prozess ordnungsgemäß beenden
+        await peer.stop()
+
+        print("Prozess beenden...")
+        process.terminate()
+        try:
+            await asyncio.wait_for(process.wait(), timeout=2)
+        except asyncio.TimeoutError:
+            process.kill()
+
+        # Stderr des Servers ausgeben (zur Fehlersuche)
+        stderr_output = await process.stderr.read()
+        if stderr_output:
+            print(f"Server stderr:\n{stderr_output.decode('utf-8')}")
 
 
 if __name__ == "__main__":
