@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using PlatynUI.JsonRpc;
-using PlatynUI.Runtime;
 using PlatynUI.Server.Services;
 
 class Program
@@ -108,7 +107,16 @@ class Program
             }
         );
 
-        return await rootCommand.InvokeAsync(args);
+        var result = await rootCommand.InvokeAsync(args);
+        if (result != 0)
+        {
+            Log($"Command failed with exit code {result}.");
+        }
+        else
+        {
+            Log("Server stopped successfully.");
+        }
+        return result;
     }
 
     private static async Task<int> RunServerAsync(TransportType transportType, string transportValue)
@@ -253,12 +261,18 @@ class Program
 
         while (true)
         {
+            const string prefix = @"\\.\pipe\";
+
+            string name = pipeName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                ? pipeName[prefix.Length..]
+                : pipeName;
+
             var pipeServer = new NamedPipeServerStream(
-                pipeName,
+                name,
                 PipeDirection.InOut,
                 NamedPipeServerStream.MaxAllowedServerInstances,
                 PipeTransmissionMode.Byte,
-                PipeOptions.Asynchronous
+                PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly
             );
 
             Log("Waiting for pipe connection...");
