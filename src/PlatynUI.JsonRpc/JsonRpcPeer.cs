@@ -154,14 +154,24 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         notificationHandlers[methodName] = handler;
     }
 
+    private readonly SemaphoreSlim _writeLock = new(1, 1);
+
     private async Task SendMessageAsync(string json)
     {
-        var bodyBytes = Encoding.UTF8.GetBytes(json + "\r\n");
-        var header = "Content-Length: " + bodyBytes.Length + "\r\n\r\n";
-        var headerBytes = Encoding.ASCII.GetBytes(header);
-        await WriterStream.WriteAsync(headerBytes);
-        await WriterStream.WriteAsync(bodyBytes);
-        await WriterStream.FlushAsync();
+        await _writeLock.WaitAsync();
+        try
+        {
+            var bodyBytes = Encoding.UTF8.GetBytes(json + "\r\n");
+            var header = "Content-Length: " + bodyBytes.Length + "\r\n\r\n";
+            var headerBytes = Encoding.ASCII.GetBytes(header);
+            await WriterStream.WriteAsync(headerBytes);
+            await WriterStream.WriteAsync(bodyBytes);
+            await WriterStream.FlushAsync();
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public void SendNotification(string method, object @params)
