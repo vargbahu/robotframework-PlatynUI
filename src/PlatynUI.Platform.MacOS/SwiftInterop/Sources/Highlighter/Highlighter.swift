@@ -68,7 +68,7 @@ func watchProcessExit(pid: Int, completion: @escaping @Sendable () -> Void) {
 }
 
 func convertTopLeftRectRelativeToMainScreen(_ rect: NSRect) throws -> NSRect {
-    guard let mainScreen = NSScreen.main else {
+    guard let mainScreen = NSScreen.screens.first else {
         throw MainScreenNotFoundException(message: "Main screen not found")
     }
 
