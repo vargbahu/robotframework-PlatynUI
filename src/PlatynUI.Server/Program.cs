@@ -239,6 +239,7 @@ class Program
             while (true)
             {
                 TcpClient client = await listener.AcceptTcpClientAsync();
+                client.NoDelay = true;
                 Log($"Client connected on {listener.LocalEndpoint}.");
 
                 _ = Task.Run(async () =>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -27,7 +28,7 @@ public record JsonRpcRequest : JsonRpcMessage
     public required string Method { get; init; }
 
     [JsonPropertyName("params")]
-    public JsonElement? Params { get; set; }
+    public JsonElement? Params { get; set; } = null;
 
     [JsonPropertyName("id")]
     public required JsonElement? Id { get; set; }
@@ -39,7 +40,7 @@ public record JsonRpcNotification : JsonRpcMessage
     public required string Method { get; init; }
 
     [JsonPropertyName("params")]
-    public JsonElement? Params { get; set; }
+    public JsonElement? Params { get; set; } = null;
 }
 
 public abstract record JsonResponseBase : JsonRpcMessage { }
@@ -161,12 +162,30 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         await _writeLock.WaitAsync();
         try
         {
-            var bodyBytes = Encoding.UTF8.GetBytes(json + "\r\n");
-            var header = "Content-Length: " + bodyBytes.Length + "\r\n\r\n";
-            var headerBytes = Encoding.ASCII.GetBytes(header);
-            await WriterStream.WriteAsync(headerBytes);
-            await WriterStream.WriteAsync(bodyBytes);
-            await WriterStream.FlushAsync();
+            // Body vorbereiten
+            byte[] bodyBytes = Encoding.UTF8.GetBytes(json + "\r\n");
+            string header = "Content-Length: " + bodyBytes.Length + "\r\n\r\n";
+
+            // Header-Länge (nur ASCII) entspricht der Anzahl der Zeichen
+            int headerLen = header.Length;
+            int totalLen = headerLen + bodyBytes.Length;
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(totalLen);
+
+            try
+            {
+                // Header direkt in den gepoolten Puffer schreiben
+                Encoding.ASCII.GetBytes(header, new Span<byte>(buffer, 0, headerLen));
+
+                // Body dahinter kopieren
+                Buffer.BlockCopy(bodyBytes, 0, buffer, headerLen, bodyBytes.Length);
+
+                await WriterStream.WriteAsync(buffer.AsMemory(0, totalLen));
+                await WriterStream.FlushAsync();
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
         finally
         {
