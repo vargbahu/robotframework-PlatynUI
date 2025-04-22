@@ -1,9 +1,9 @@
 using PlatynUI.JsonRpc.Endpoints;
 using PlatynUI.Runtime;
 
-namespace PlatynUI.Server.Services;
+namespace PlatynUI.Server.Endpoints;
 
-partial class DisplayDeviceServiceEndPoint : IDisplayDeviceEndpoint
+partial class DisplayDeviceEndPoint : IDisplayDeviceEndpoint
 {
     public Rect GetBoundingRectangle()
     {

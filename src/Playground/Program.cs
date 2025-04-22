@@ -4,13 +4,14 @@ using PlatynUI.JsonRpc.Endpoints;
 
 var tcpClient = new TcpClient() { NoDelay = true };
 
-await tcpClient.ConnectAsync("localhost", 7721);
+await tcpClient.ConnectAsync("192.168.178.33", 7721);
 
 var stream = tcpClient.GetStream();
 
 var peer = new JsonRpcPeer(stream, stream);
 
 var displaydevice = IDisplayDeviceEndpoint.Attach(peer);
+var mouseDevice = IMouseDeviceEndpoint.Attach(peer);
 peer.Start();
 
 var rect = displaydevice.GetBoundingRectangle();

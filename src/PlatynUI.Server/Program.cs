@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using PlatynUI.JsonRpc;
-using PlatynUI.Server.Services;
+using PlatynUI.Server.Endpoints;
 
 class Program
 {
@@ -452,7 +452,7 @@ class Program
             },
         };
 
-        DisplayDeviceServiceEndPoint.Attach(peer);
+        DisplayDeviceEndPoint.Attach(peer);
 
         peer.Start();
 
