@@ -69,7 +69,9 @@ public class JsonRpcEndpointServerGenerator : IIncrementalGenerator
 
     private void GenerateSource(SourceProductionContext context, ClassEndpointInfos classInfo)
     {
-        var ns = classInfo.ClassSymbol.ContainingNamespace.ToDisplayString();
+        var ns = classInfo.ClassSymbol.ContainingNamespace.IsGlobalNamespace
+            ? string.Empty
+            : classInfo.ClassSymbol.ContainingNamespace.ToDisplayString();
         var className = classInfo.ClassSymbol.Name;
 
         var methodNameMap =

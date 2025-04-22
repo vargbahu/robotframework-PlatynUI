@@ -35,11 +35,12 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
                     if (endpointAttr == null)
                         return null;
 
-                    var endpointName =
-                        endpointAttr.ConstructorArguments.Length > 0
-                        && !string.IsNullOrEmpty(endpointAttr.ConstructorArguments[0].Value as string)
-                            ? endpointAttr.ConstructorArguments[0].Value as string + "/"
-                            : string.Empty;
+                    var endpointName = endpointAttr
+                        .ConstructorArguments.Select(arg => arg.Value as string)
+                        .FirstOrDefault(value => !string.IsNullOrEmpty(value))
+                        is string name
+                        ? $"{name}"
+                        : string.Empty;
 
                     var methods = interfaceSym
                         .GetMembers()
@@ -64,7 +65,10 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
 
     private void GenerateSource(SourceProductionContext context, InterfaceInfo info)
     {
-        var ns = info.InterfaceSymbol.ContainingNamespace.ToDisplayString();
+        var ns = info.InterfaceSymbol.ContainingNamespace.IsGlobalNamespace
+            ? string.Empty
+            : info.InterfaceSymbol.ContainingNamespace.ToDisplayString();
+
         var interfaceName = info.InterfaceSymbol.Name;
         var interfaceAccessibility = info.InterfaceSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
 
@@ -85,7 +89,7 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
 
         sb.AppendLine($"{interfaceAccessibility} partial interface {interfaceName}");
         sb.AppendLine("{");
-        sb.AppendLine($"    static {interfaceName} Attach(JsonRpcPeer peer)");
+        sb.AppendLine($"    public static {interfaceName} Attach(JsonRpcPeer peer)");
         sb.AppendLine("    {");
         sb.AppendLine($"        return new {interfaceName}ClientImplementation.{interfaceName}ClientImpl(peer);");
         sb.AppendLine("    }");
@@ -259,7 +263,7 @@ public class JsonRpcEndpointClientGenerator : IIncrementalGenerator
                     else
                     {
                         sb.AppendLine(
-                            $"            return _peer.SendRequest<{m.ReturnType.ToDisplayString()}>(\"{fullMethod}\", @params)"
+                            $"            return _peer.SendRequest<{m.ReturnType.ToDisplayString()}>(\"{fullMethod}\", @params);"
                         );
                     }
                 }
