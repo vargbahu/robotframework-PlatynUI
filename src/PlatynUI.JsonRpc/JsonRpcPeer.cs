@@ -79,6 +79,9 @@ public record JsonRpcErrorResponse : JsonResponseBase
 
 public class JsonRpcPeer(Stream readerStream, Stream writerStream)
 {
+    public JsonRpcPeer(Stream stream)
+        : this(stream, stream) { }
+
     public readonly Stream ReaderStream = readerStream;
     public readonly Stream WriterStream = writerStream;
 
