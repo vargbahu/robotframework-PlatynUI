@@ -81,6 +81,68 @@ public struct Rect(double x, double y, double width, double height)
     public double Width { get; set; } = width;
     public double Height { get; set; } = height;
 
+    public readonly double Left => X;
+    public readonly double Right => X + Width;
+    public readonly double Top => Y;
+    public readonly double Bottom => Y + Height;
+
+    public Point Location
+    {
+        readonly get => new(X, Y);
+        set
+        {
+            X = value.X;
+            Y = value.Y;
+        }
+    }
+
+    public Point TopLeft
+    {
+        readonly get => new(X, Y);
+        set
+        {
+            X = value.X;
+            Y = value.Y;
+        }
+    }
+    public Point BottomRight
+    {
+        readonly get => new(X + Width, Y + Height);
+        set
+        {
+            Width = value.X - X;
+            Height = value.Y - Y;
+        }
+    }
+    public Point BottomLeft
+    {
+        readonly get => new(X, Y + Height);
+        set
+        {
+            X = value.X;
+            Height = value.Y - Y;
+        }
+    }
+    public Point TopRight
+    {
+        readonly get => new(X + Width, Y);
+        set
+        {
+            Width = value.X - X;
+            Y = value.Y;
+        }
+    }
+
+    public Size Size
+    {
+        readonly get => new(Width, Height);
+        set
+        {
+            Width = value.Width;
+            Height = value.Height;
+        }
+    }
+
     public override readonly string ToString() => $"({X}, {Y}, {Width}, {Height})";
 
     public static bool operator !=(Rect rect1, Rect rect2)
