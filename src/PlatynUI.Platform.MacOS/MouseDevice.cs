@@ -1,5 +1,6 @@
 using System.ComponentModel.Composition;
 
+using PlatynUI.Platform.MacOS.SwiftInterop;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
 
@@ -20,12 +21,13 @@ public class MouseDevice() : IMouseDevice
 
     public Point GetPosition()
     {
-        throw new NotImplementedException();
+        Interop.GetMousePosition(out var x, out var y);
+        return new Point(x, y);
     }
 
     public void Move(double x, double y)
     {
-        throw new NotImplementedException();
+        Interop.MouseMove(x, y);
     }
 
     public void Press(MouseButton button)

@@ -44,5 +44,11 @@ namespace PlatynUI.Platform.MacOS.SwiftInterop
             out double width,
             out double height
         );
+
+        [LibraryImport(LibraryName)]
+        public static partial void GetMousePosition(out double x, out double y);
+
+        [LibraryImport(LibraryName)]
+        public static partial void MouseMove(double x, double y);
     }
 }

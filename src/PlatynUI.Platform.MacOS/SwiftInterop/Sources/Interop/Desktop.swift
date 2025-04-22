@@ -12,7 +12,7 @@ public class MainScreenNotFoundException: Error, @unchecked Sendable {
     }
 }
 
-public func GetBoundingRect() throws -> NSRect {
+public func getBoundingRect() throws -> NSRect {
     guard let mainScreen = NSScreen.screens.first else {
         throw MainScreenNotFoundException(message: "Main screen not found")
     }
@@ -35,12 +35,12 @@ public func GetBoundingRect() throws -> NSRect {
 }
 
 @_cdecl("GetBoundingRectangle")
-public func GetBoundingRectangle(
+public func getBoundingRectangle(
     _ x: UnsafeMutablePointer<Double>, _ y: UnsafeMutablePointer<Double>,
     _ width: UnsafeMutablePointer<Double>, _ height: UnsafeMutablePointer<Double>
 ) {
     do {
-        let r = try GetBoundingRect()
+        let r = try getBoundingRect()
 
         x.pointee = r.minX
         y.pointee = r.minY
