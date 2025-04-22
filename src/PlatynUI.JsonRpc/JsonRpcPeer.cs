@@ -100,7 +100,11 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
     private CancellationTokenSource? cancellationTokenSource;
 
     public JsonSerializerOptions JsonSerializerOptions { get; set; } =
-        new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+        new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
 
     private readonly TaskCompletionSource<bool> completionSource = new();
 
