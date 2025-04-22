@@ -178,8 +178,8 @@ class JsonRpcPeer:
         header = f"Content-Length: {len(body_bytes)}\r\n\r\n"
         header_bytes = header.encode("ascii")
 
-        self.writer.write(header_bytes)
-        self.writer.write(body_bytes)
+        self.writer.write(memoryview(header_bytes + body_bytes))
+
         await self.writer.drain()
 
     async def send_notification(self, method: str, params: Optional[Any] = None) -> None:
@@ -204,6 +204,8 @@ class JsonRpcPeer:
         message.jsonrpc = PROTOCOL_VERSION
         if params is not None:
             message.params = params
+        else:
+            message.params = {}
 
         json_str = json.dumps(
             message, default=_default, skipkeys=self.json_serializer_options.get("ignore_none", False)

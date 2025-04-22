@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import os
+import socket
 import sys
 import tempfile
 import uuid
@@ -61,8 +62,7 @@ def generate_random_pipe_name(prefix: str | None = None) -> str:
     if prefix and not prefix.endswith("_"):
         prefix += "_"
 
-    # random_id = f"{prefix}{uuid.uuid4()}"
-    random_id = f"{prefix}"
+    random_id = f"{prefix}{uuid.uuid4()}"
 
     if os.name == "nt":  # Windows
         pipe_name = f"\\\\.\\pipe\\{random_id}"
@@ -115,6 +115,10 @@ async def create_process_streams_named_pipe_client(
 
 async def connect_tcp_socket(address: str, port: int) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
     reader, writer = await asyncio.open_connection(address, port)
+    transport = writer.transport
+    sock = transport.get_extra_info("socket")
+    if sock is not None:
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     return reader, writer
 
 
@@ -186,7 +190,7 @@ async def main():
 
     try:
         # Initialisierung senden
-        # await peer.send_request("Initialize", {"processId": os.getpid()})
+        print(await peer.send_request("displayDevice/getBoundingRectangle"))
 
         # Show-Anfragen in einer Schleife senden
         for x in range(40, 1000, 1):
