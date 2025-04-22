@@ -1,65 +1,24 @@
-using System.Text.Json;
+using System.Net.Sockets;
 using PlatynUI.JsonRpc;
-using Playground;
+using PlatynUI.JsonRpc.Endpoints;
 
-var peer1 = new JsonRpcPeer(Console.OpenStandardInput(), Console.OpenStandardOutput());
+var tcpClient = new TcpClient() { NoDelay = true };
 
-DemoEndpoint.Attach(peer1);
+await tcpClient.ConnectAsync("localhost", 7721);
 
-IDocumentApi.Attach(peer1);
+var stream = tcpClient.GetStream();
 
-// Methode bei peer1 registrieren
-peer1.RegisterRequestHandler(
-    "AddOld",
-    (parameters, options) =>
-    {
-        if (!parameters.HasValue)
-        {
-            throw new ArgumentNullException(nameof(parameters));
-        }
+var peer = new JsonRpcPeer(stream, stream);
 
-        if (parameters is not JsonElement element)
-        {
-            throw new ArgumentException("Invalid parameters");
-        }
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            // Deserialize the parameters from a JSON object
-            var addParams = element.Deserialize<AddParams>() ?? throw new ArgumentException("Invalid parameters");
+var displaydevice = IDisplayDeviceEndpoint.Attach(peer);
+peer.Start();
 
-            return Task.FromResult(new[] { addParams.A + addParams.B, addParams.C });
-        }
-        var numbers = parameters?.Deserialize<double[]>();
-        if (numbers == null || numbers.Length != 2)
-        {
-            throw new ArgumentException("Invalid parameters");
-        }
-        return Task.FromResult(new[] { numbers[0] + numbers[1] });
-    }
-);
-peer1.RegisterRequestHandler(
-    "Huhu",
-    (parameters, options) =>
-    {
-        return Task.FromResult("Hallo");
-    }
-);
-peer1.RegisterNotificationHandler(
-    "Hello",
-    (parameters, options) =>
-    {
-        Console.Error.WriteLine($"Notification received {parameters}");
-        return Task.CompletedTask;
-    }
-);
+var rect = displaydevice.GetBoundingRectangle();
+Console.WriteLine($"Rect: {rect.X}, {rect.Y}, {rect.Width}, {rect.Height}");
 
-peer1.Start();
-Console.WriteLine(await peer1.Completion);
-
-record AddParams
+for (var i = 0; i < 1000; i++)
 {
-    public required double A { get; init; }
-    public required double B { get; init; }
+    displaydevice.HighlightRect(i, i, 200, 200);
+}
 
-    public double C { get; init; } = -1;
-};
+Thread.Sleep(3000);

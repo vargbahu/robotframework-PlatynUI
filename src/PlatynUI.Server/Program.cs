@@ -452,7 +452,7 @@ class Program
             },
         };
 
-        DisplayDeviceService.Attach(peer);
+        DisplayDeviceServiceEndPoint.Attach(peer);
 
         peer.Start();
 

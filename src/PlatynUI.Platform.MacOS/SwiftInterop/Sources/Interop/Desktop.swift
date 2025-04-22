@@ -13,7 +13,7 @@ public class MainScreenNotFoundException: Error, @unchecked Sendable {
 }
 
 public func GetBoundingRect() throws -> NSRect {
-    guard let mainScreen = NSScreen.main else {
+    guard let mainScreen = NSScreen.screens.first else {
         throw MainScreenNotFoundException(message: "Main screen not found")
     }
 
