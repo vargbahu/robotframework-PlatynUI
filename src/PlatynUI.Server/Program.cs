@@ -453,6 +453,7 @@ class Program
         };
 
         DisplayDeviceEndPoint.Attach(peer);
+        MouseDeviceEndpoint.Attach(peer);
 
         peer.Start();
 

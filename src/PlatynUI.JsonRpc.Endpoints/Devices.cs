@@ -26,7 +26,7 @@ public partial interface IMouseDeviceEndpoint
     Point GetPosition();
 
     [JsonRpcRequest("move")]
-    void Move(double x, double y);
+    void Move(double x, double y, bool direct = false, int maxDurationMs = 500);
 
     [JsonRpcRequest("press")]
     void Press(MouseButton button);
