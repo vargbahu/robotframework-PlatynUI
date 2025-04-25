@@ -133,6 +133,16 @@ public struct Rect(double x, double y, double width, double height)
         }
     }
 
+    public Point Center
+    {
+        readonly get => new(X + Width / 2, Y + Height / 2);
+        set
+        {
+            X = value.X - Width / 2;
+            Y = value.Y - Height / 2;
+        }
+    }
+
     public Size Size
     {
         readonly get => new(Width, Height);
@@ -178,6 +188,11 @@ public struct Rect(double x, double y, double width, double height)
     public static bool Equals(Rect rect1, Rect rect2)
     {
         return rect1.Equals(rect2);
+    }
+
+    public bool Contains(Point point)
+    {
+        return point.X >= X && point.X <= X + Width && point.Y >= Y && point.Y <= Y + Height;
     }
 
     public static readonly Rect Empty = new(0, 0, 0, 0);

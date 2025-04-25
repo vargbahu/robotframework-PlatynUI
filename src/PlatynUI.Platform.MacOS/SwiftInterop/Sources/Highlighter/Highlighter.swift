@@ -225,7 +225,8 @@ func handleRequest(
             await handler(
                 .failure(
                     AnyJSONRPCResponseError(
-                        code: JSONRPCErrors.methodNotFound, message: "Method '\(anyRequest.method)' not found")))
+                        code: JSONRPCErrors.methodNotFound,
+                        message: "Method '\(anyRequest.method)' not found")))
 
         }
     } catch {

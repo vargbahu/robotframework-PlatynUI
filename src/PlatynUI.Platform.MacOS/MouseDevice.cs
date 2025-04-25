@@ -1,5 +1,4 @@
 using System.ComponentModel.Composition;
-
 using PlatynUI.Platform.MacOS.SwiftInterop;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
@@ -11,12 +10,13 @@ public class MouseDevice() : IMouseDevice
 {
     public Size GetDoubleClickSize()
     {
-        throw new NotImplementedException();
+        double toleranceSize = Interop.GetMouseDoubleClickTolerance();
+        return new Size(toleranceSize, toleranceSize);
     }
 
-    public double GetDoubleClickTime()
+    public int GetDoubleClickTime()
     {
-        throw new NotImplementedException();
+        return (int)(Interop.GetMouseDoubleClickInterval() * 1000);
     }
 
     public Point GetPosition()
@@ -32,11 +32,11 @@ public class MouseDevice() : IMouseDevice
 
     public void Press(MouseButton button)
     {
-        throw new NotImplementedException();
+        Interop.MousePress((int)button);
     }
 
     public void Release(MouseButton button)
     {
-        throw new NotImplementedException();
+        Interop.MouseRelease((int)button);
     }
 }

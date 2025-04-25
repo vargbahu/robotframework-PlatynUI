@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using PlatynUI.JsonRpc.Endpoints;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
@@ -6,14 +7,17 @@ namespace PlatynUI.Server.Endpoints;
 
 partial class MouseDeviceEndpoint : IMouseDeviceEndpoint
 {
+    public Size? DoubleClickSize { get; init; } = null;
+    public int? DoubleClickTime { get; init; } = null;
+
     public Size GetDoubleClickSize()
     {
-        return MouseDevice.GetDoubleClickSize();
+        return DoubleClickSize ?? MouseDevice.GetDoubleClickSize();
     }
 
-    public double GetDoubleClickTime()
+    public int GetDoubleClickTime()
     {
-        return MouseDevice.GetDoubleClickTime();
+        return DoubleClickTime ?? MouseDevice.GetDoubleClickTime();
     }
 
     public Point GetPosition()
@@ -21,103 +25,554 @@ partial class MouseDeviceEndpoint : IMouseDeviceEndpoint
         return MouseDevice.GetPosition();
     }
 
-    public void Move(double x, double y, bool direct = false, int maxDurationMs = 500)
+    public MouseButton DefaultButton = MouseButton.Left;
+    public int MultiClickDelay = 200;
+    public int AfterPressReleaseDelay = 50;
+    public int MaxMoveDuration = 1500;
+    public int AfterMoveDelay = 10;
+    public int EnsureMoveDelay = 500;
+    public bool EnsureMovePosition = true;
+    public double EnsureMoveThreshold { get; init; } = 0.5;
+    public bool EnsureClickPosition = true;
+    public int AfterClickDelay = 50;
+    public int BeforeNextClickDelay = 50;
+    public MouseMoveType MoveType = MouseMoveType.Linear;
+    public double MoveStepsPerPixel = 0.3;
+    public MouseAcceleration Acceleration = MouseAcceleration.Constant;
+
+    private static Tuple<double, double> GetPoint(double? x, double? y)
     {
-        if (direct)
+        if (x != null && y != null)
         {
-            MouseDevice.Move(x, y);
-            return;
+            return new Tuple<double, double>(x.Value, y.Value);
         }
 
+        var mousePos = MouseDevice.GetPosition();
+
+        return new Tuple<double, double>(x ?? mousePos.X, y ?? mousePos.Y);
+    }
+
+    public Point Move(double? x = null, double? y = null, MouseOptions? options = null)
+    {
+        if (x == null && y == null)
+        {
+            return MouseDevice.GetPosition();
+        }
+        var (x1, y1) = GetPoint(x, y);
+
+        var afterMoveDelay = options?.AfterMoveDelay ?? AfterMoveDelay;
+
+        try
+        {
+            var algorithm = GetMoveAlgorithm(options?.MoveType ?? MoveType);
+            var stepsPerPixel = options?.MoveStepsPerPixel ?? MoveStepsPerPixel;
+            var acceleration = options?.Acceleration ?? Acceleration;
+            ExecuteMouseMovement(
+                x1,
+                y1,
+                options?.MaxMoveDuration ?? (Math.Max(0, MaxMoveDuration - afterMoveDelay)),
+                algorithm,
+                stepsPerPixel,
+                acceleration
+            );
+        }
+        finally
+        {
+            Thread.Sleep(afterMoveDelay);
+        }
+
+        var ensureMovePostion = options?.EnsureMovePosition ?? EnsureMovePosition;
+        var ensureMoveDelay = options?.EnsureMoveDelay ?? EnsureMoveDelay;
+
+        var ensureMoveThreshold = options?.EnsureMoveThreshold ?? EnsureMoveThreshold;
+        if (ensureMoveThreshold < 0)
+        {
+            ensureMoveThreshold = 0;
+        }
+
+        var newPos = MouseDevice.GetPosition();
+        if (ensureMovePostion)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            while (stopwatch.ElapsedMilliseconds < ensureMoveDelay)
+            {
+                if (Math.Abs(newPos.X - x1) <= ensureMoveThreshold && Math.Abs(newPos.Y - y1) <= ensureMoveThreshold)
+                {
+                    break;
+                }
+                Thread.Sleep(5);
+                newPos = MouseDevice.GetPosition();
+            }
+            stopwatch.Stop();
+        }
+
+        if (
+            ensureMovePostion
+            && (Math.Abs(newPos.X - x1) > ensureMoveThreshold || Math.Abs(newPos.Y - y1) > ensureMoveThreshold)
+        )
+        {
+            throw new Exception(
+                $"Mouse position is not as expected. Expected: ({x1}, {y1}), Actual: ({newPos.X}, {newPos.Y})"
+            );
+        }
+
+        return newPos;
+    }
+
+    private delegate IEnumerable<(double X, double Y)> MouseMoveAlgorithm(
+        double startX,
+        double startY,
+        double targetX,
+        double targetY,
+        double distance,
+        int steps,
+        Rect screen,
+        Random random
+    );
+
+    private static MouseMoveAlgorithm GetMoveAlgorithm(MouseMoveType moveType)
+    {
+        return moveType switch
+        {
+            MouseMoveType.Linear => LinearMoveAlgorithm,
+            MouseMoveType.Curved => CurvedMoveAlgorithm,
+            MouseMoveType.Shaky => ShakyMoveAlgorithm,
+            MouseMoveType.BezierCurved => BezierMoveAlgorithm,
+            MouseMoveType.Overshooting => OvershootingMoveAlgorithm,
+            _ => LinearMoveAlgorithm,
+        };
+    }
+
+    private static void ExecuteMouseMovement(
+        double x,
+        double y,
+        int maxMoveDuration,
+        MouseMoveAlgorithm algorithm,
+        double stepsPerPixel,
+        MouseAcceleration acceleration
+    )
+    {
         var screen = DisplayDevice.GetBoundingRectangle();
-
-        // Get current mouse position
         var currentPosition = MouseDevice.GetPosition();
+        var totalDistance = CalculateDistance(currentPosition.X, currentPosition.Y, x, y);
 
-        // Calculate the distance between current position and target
-        double totalDistance = Math.Sqrt(Math.Pow(x - currentPosition.X, 2) + Math.Pow(y - currentPosition.Y, 2));
+        x = Math.Max(screen.Left, Math.Min(screen.Right, x));
+        y = Math.Max(screen.Top, Math.Min(screen.Bottom, y));
 
-        // If distance is very small, just move directly
         if (totalDistance < 5)
         {
             MouseDevice.Move(x, y);
             return;
         }
 
-        // Dynamic steps calculation - more steps for longer distances, fewer for short distances
-        int steps = Math.Min((int)(totalDistance / 5), 100);
-        steps = Math.Max(steps, 10); // At least 10 steps for smoothness
+        var maxPossibleDistance = Math.Sqrt(
+            Math.Pow(screen.Right - screen.Left, 2) + Math.Pow(screen.Bottom - screen.Top, 2)
+        );
 
-        // Calculate optimal delay between steps
-        int delayBetweenStepsMs = maxDurationMs / steps;
+        var actualMoveDuration = (int)(maxMoveDuration * (totalDistance / maxPossibleDistance));
+        actualMoveDuration = Math.Max(actualMoveDuration, 100);
 
-        // Start timestamp with high precision
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var steps = Math.Min((int)(totalDistance * stepsPerPixel), 500);
+        steps = Math.Max(steps, 20);
 
-        // Prepare variables for ease-in-out movement
-        double startX = currentPosition.X;
-        double startY = currentPosition.Y;
+        var random = new Random();
+        var stopwatch = Stopwatch.StartNew();
 
-        // Move mouse gradually along the path with easing
-        for (int i = 1; i <= steps; i++)
+        var positions = algorithm(currentPosition.X, currentPosition.Y, x, y, totalDistance, steps, screen, random)
+            .ToList();
+        var totalSteps = positions.Count;
+
+        if (positions.Count > 0 && (Math.Abs(positions[^1].X - x) > 0.1 || Math.Abs(positions[^1].Y - y) > 0.1))
         {
-            // Calculate progress (0.0 to 1.0) with easing for more natural movement
-            double t = (double)i / steps;
+            positions.Add((x, y));
+            totalSteps++;
+        }
 
-            // Ease-in-out curve: slower at start and end, faster in middle
-            double easedT = EaseInOutQuad(t);
+        for (int i = 0; i < positions.Count; i++)
+        {
+            var (X, Y) = positions[i];
+            MouseDevice.Move(X, Y);
 
-            // Calculate current position using easing function
-            double intermediateX = startX + (x - startX) * easedT;
-            double intermediateY = startY + (y - startY) * easedT;
+            if (i == positions.Count - 1)
+                continue;
 
-            // Ensure coordinates stay within screen boundaries
-            intermediateX = Math.Max(screen.Left, Math.Min(screen.Right, intermediateX));
-            intermediateY = Math.Max(screen.Top, Math.Min(screen.Bottom, intermediateY));
+            var elapsedMs = stopwatch.ElapsedMilliseconds;
 
-            // Move to this position
-            MouseDevice.Move(intermediateX, intermediateY);
+            var remainingTimeMs = Math.Max(0, actualMoveDuration - elapsedMs);
+            var remainingSteps = totalSteps - i - 1;
 
-            // Calculate remaining steps and adjust delay for consistent timing
-            if (i < steps)
+            if (remainingSteps <= 0 || remainingTimeMs <= 0)
+                continue;
+
+            var progressFactor = (double)(i + 1) / totalSteps;
+
+            var delayFactor = acceleration switch
             {
-                // Calculate elapsed time and how much we need to wait
-                long elapsedMs = stopwatch.ElapsedMilliseconds;
-                long expectedTimeMs = i * delayBetweenStepsMs;
-                int sleepMs = (int)Math.Max(0, expectedTimeMs - elapsedMs);
+                MouseAcceleration.FastToSlow => EaseOutQuad(progressFactor),
+                MouseAcceleration.SlowToFast => 1 - EaseInQuad(progressFactor),
+                MouseAcceleration.Smooth => 0.5 + 0.5 * Math.Sin((progressFactor - 0.5) * Math.PI),
+                MouseAcceleration.Constant => 0.5,
+                _ => EaseOutQuad(progressFactor),
+            };
 
-                if (sleepMs > 0)
-                {
-                    System.Threading.Thread.Sleep(sleepMs);
-                }
+            var delayMs = (int)(remainingTimeMs * delayFactor / remainingSteps);
 
-                // If we're already behind schedule, don't sleep but
-                // if we're too far behind, jump to the end
-                if (stopwatch.ElapsedMilliseconds > maxDurationMs)
-                {
-                    MouseDevice.Move(x, y);
-                    return;
-                }
+            if (delayMs > 0)
+            {
+                Thread.Sleep(delayMs);
             }
         }
 
-        // Final precise move exactly to the target coordinates
         MouseDevice.Move(x, y);
     }
 
-    // Easing function: quad ease-in-out for more natural movement
+    private static (double X, double Y) ClampToScreen(double x, double y, Rect screen)
+    {
+        return (Math.Max(screen.Left, Math.Min(screen.Right, x)), Math.Max(screen.Top, Math.Min(screen.Bottom, y)));
+    }
+
+    private static double CalculateDistance(double x1, double y1, double x2, double y2)
+    {
+        return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+    }
+
+    private static IEnumerable<(double X, double Y)> LinearMoveAlgorithm(
+        double startX,
+        double startY,
+        double targetX,
+        double targetY,
+        double distance,
+        int steps,
+        Rect screen,
+        Random random
+    )
+    {
+        for (var i = 1; i <= steps; i++)
+        {
+            var t = (double)i / steps;
+            var intermediateX = startX + (targetX - startX) * t;
+            var intermediateY = startY + (targetY - startY) * t;
+            (intermediateX, intermediateY) = ClampToScreen(intermediateX, intermediateY, screen);
+            yield return (intermediateX, intermediateY);
+        }
+    }
+
+    private static IEnumerable<(double X, double Y)> CurvedMoveAlgorithm(
+        double startX,
+        double startY,
+        double targetX,
+        double targetY,
+        double distance,
+        int steps,
+        Rect screen,
+        Random random
+    )
+    {
+        var curveAmplitude = distance * (0.05 + random.NextDouble() * 0.1);
+
+        if (random.Next(2) == 0)
+            curveAmplitude = -curveAmplitude;
+
+        var dx = targetX - startX;
+        var dy = targetY - startY;
+
+        var perpLength = Math.Sqrt(dx * dx + dy * dy);
+        var perpX = -dy / perpLength;
+        var perpY = dx / perpLength;
+
+        for (var i = 1; i <= steps; i++)
+        {
+            var t = (double)i / steps;
+            var easedT = EaseInOutQuad(t);
+            var curveOffset = curveAmplitude * 4 * t * (1 - t);
+            var baseX = startX + (targetX - startX) * easedT;
+            var baseY = startY + (targetY - startY) * easedT;
+            var intermediateX = baseX + perpX * curveOffset;
+            var intermediateY = baseY + perpY * curveOffset;
+            (intermediateX, intermediateY) = ClampToScreen(intermediateX, intermediateY, screen);
+            yield return (intermediateX, intermediateY);
+        }
+    }
+
+    private static IEnumerable<(double X, double Y)> ShakyMoveAlgorithm(
+        double startX,
+        double startY,
+        double targetX,
+        double targetY,
+        double distance,
+        int steps,
+        Rect screen,
+        Random random
+    )
+    {
+        steps = Math.Max(steps, 20);
+
+        var maxShakiness = Math.Min(distance * 0.05, 10.0);
+
+        for (var i = 1; i <= steps; i++)
+        {
+            var t = (double)i / steps;
+            var easedT = EaseInOutQuad(t);
+            var baseX = startX + (targetX - startX) * easedT;
+            var baseY = startY + (targetY - startY) * easedT;
+            var shakeAmplitude = maxShakiness * (1 - easedT);
+            var shakeX = (random.NextDouble() * 2 - 1) * shakeAmplitude;
+            var shakeY = (random.NextDouble() * 2 - 1) * shakeAmplitude;
+            var intermediateX = baseX + shakeX;
+            var intermediateY = baseY + shakeY;
+            (intermediateX, intermediateY) = ClampToScreen(intermediateX, intermediateY, screen);
+            yield return (intermediateX, intermediateY);
+        }
+    }
+
+    private static IEnumerable<(double X, double Y)> BezierMoveAlgorithm(
+        double startX,
+        double startY,
+        double targetX,
+        double targetY,
+        double distance,
+        int steps,
+        Rect screen,
+        Random random
+    )
+    {
+        steps = Math.Max(steps, 15);
+
+        var dx = targetX - startX;
+        var dy = targetY - startY;
+
+        var control1DistanceAlongPath = 0.3 + random.NextDouble() * 0.2;
+        var control1X = startX + dx * control1DistanceAlongPath;
+        var control1Y = startY + dy * control1DistanceAlongPath;
+
+        var perpOffset1 = (random.NextDouble() - 0.5) * distance * 0.4;
+        control1X += -dy * perpOffset1 / distance;
+        control1Y += dx * perpOffset1 / distance;
+
+        var control2DistanceAlongPath = 0.6 + random.NextDouble() * 0.2;
+        var control2X = startX + dx * control2DistanceAlongPath;
+        var control2Y = startY + dy * control2DistanceAlongPath;
+
+        var perpOffset2 = (random.NextDouble() - 0.5) * distance * 0.3;
+        control2X += -dy * perpOffset2 / distance;
+        control2Y += dx * perpOffset2 / distance;
+
+        for (var i = 0; i <= steps; i++)
+        {
+            var t = (double)i / steps;
+            var oneMinusT = 1 - t;
+            var oneMinusTCubed = oneMinusT * oneMinusT * oneMinusT;
+            var oneMinusTSquared = oneMinusT * oneMinusT;
+            var tSquared = t * t;
+            var tCubed = tSquared * t;
+
+            var bx =
+                oneMinusTCubed * startX
+                + 3 * oneMinusTSquared * t * control1X
+                + 3 * oneMinusT * tSquared * control2X
+                + tCubed * targetX;
+
+            var by =
+                oneMinusTCubed * startY
+                + 3 * oneMinusTSquared * t * control1Y
+                + 3 * oneMinusT * tSquared * control2Y
+                + tCubed * targetY;
+
+            (bx, by) = ClampToScreen(bx, by, screen);
+            yield return (bx, by);
+        }
+    }
+
+    private static IEnumerable<(double X, double Y)> OvershootingMoveAlgorithm(
+        double startX,
+        double startY,
+        double targetX,
+        double targetY,
+        double distance,
+        int steps,
+        Rect screen,
+        Random random
+    )
+    {
+        if (distance < 10)
+        {
+            foreach (
+                var position in LinearMoveAlgorithm(startX, startY, targetX, targetY, distance, steps, screen, random)
+            )
+            {
+                yield return position;
+            }
+            yield break;
+        }
+
+        var overshootFactor = 0.05 + random.NextDouble() * 0.1;
+
+        var overshootX = targetX + (targetX - startX) * overshootFactor;
+        var overshootY = targetY + (targetY - startY) * overshootFactor;
+
+        (overshootX, overshootY) = ClampToScreen(overshootX, overshootY, screen);
+
+        var timeToOvershootMs = (int)(steps * 0.7);
+        var timeToTargetMs = steps - timeToOvershootMs;
+
+        var distanceToOvershoot = CalculateDistance(startX, startY, overshootX, overshootY);
+        var steps1 = Math.Min((int)(distanceToOvershoot / 5), 80);
+        steps1 = Math.Max(steps1, 10);
+
+        var dx1 = overshootX - startX;
+        var dy1 = overshootY - startY;
+
+        var perpLength1 = Math.Sqrt(dx1 * dx1 + dy1 * dy1);
+        var perpX1 = -dy1 / perpLength1;
+        var perpY1 = dx1 / perpLength1;
+
+        var curveAmplitude1 = distanceToOvershoot * (0.02 + random.NextDouble() * 0.05);
+        if (random.Next(2) == 0)
+            curveAmplitude1 = -curveAmplitude1;
+
+        for (var i = 1; i <= steps1; i++)
+        {
+            var t = (double)i / steps1;
+            var easedT = EaseOutQuad(t);
+
+            var curveOffset = curveAmplitude1 * 4 * t * (1 - t);
+
+            var baseX = startX + (overshootX - startX) * easedT;
+            var baseY = startY + (overshootY - startY) * easedT;
+
+            var intermediateX = baseX + perpX1 * curveOffset;
+            var intermediateY = baseY + perpY1 * curveOffset;
+
+            (intermediateX, intermediateY) = ClampToScreen(intermediateX, intermediateY, screen);
+            yield return (intermediateX, intermediateY);
+        }
+
+        var overshootPosition = MouseDevice.GetPosition();
+
+        var distanceToTarget = CalculateDistance(overshootPosition.X, overshootPosition.Y, targetX, targetY);
+        var steps2 = Math.Min((int)(distanceToTarget / 5), 40);
+        steps2 = Math.Max(steps2, 5);
+
+        for (var i = 1; i <= steps2; i++)
+        {
+            var t = (double)i / steps2;
+            var easedT = EaseInQuad(t);
+
+            var intermediateX = overshootPosition.X + (targetX - overshootPosition.X) * easedT;
+            var intermediateY = overshootPosition.Y + (targetY - overshootPosition.Y) * easedT;
+
+            (intermediateX, intermediateY) = ClampToScreen(intermediateX, intermediateY, screen);
+            yield return (intermediateX, intermediateY);
+        }
+    }
+
     private static double EaseInOutQuad(double t)
     {
         return t < 0.5 ? 2 * t * t : 1 - Math.Pow(-2 * t + 2, 2) / 2;
     }
 
-    public void Press(MouseButton button)
+    private static double EaseInQuad(double t)
     {
-        MouseDevice.Press(button);
+        return t * t;
     }
 
-    public void Release(MouseButton button)
+    private static double EaseOutQuad(double t)
     {
-        MouseDevice.Release(button);
+        return 1 - (1 - t) * (1 - t);
+    }
+
+    public void Press(MouseButton? button = null, double? x = null, double? y = null, MouseOptions? options = null)
+    {
+        Move(x, y, options);
+
+        MouseDevice.Press(button ?? DefaultButton);
+
+        int delay = options?.AfterPressReleaseDelay ?? AfterPressReleaseDelay;
+        if (delay > 0)
+        {
+            Thread.Sleep(delay);
+        }
+    }
+
+    public void Release(MouseButton? button = null, double? x = null, double? y = null, MouseOptions? options = null)
+    {
+        Move(x, y, options);
+
+        MouseDevice.Release(button ?? DefaultButton);
+
+        int delay = options?.AfterPressReleaseDelay ?? AfterPressReleaseDelay;
+        if (delay > 0)
+        {
+            Thread.Sleep(delay);
+        }
+    }
+
+    DateTime? lastClickTime = null;
+    Point? lastClickPosition = null;
+    Rect? lastClickRect = null;
+    MouseButton? lastClickButton = null;
+
+    public void Click(
+        MouseButton? button = null,
+        double? x = null,
+        double? y = null,
+        int count = 1,
+        MouseOptions? options = null
+    )
+    {
+        var (x1, y1) = GetPoint(x, y);
+        var currentPos = Move(x, y, options);
+
+        lastClickPosition = currentPos;
+        var doubleClickSize = GetDoubleClickSize();
+
+        lastClickRect = new Rect(
+            x1 - doubleClickSize.Width / 2,
+            y1 - doubleClickSize.Height / 2,
+            doubleClickSize.Width,
+            doubleClickSize.Height
+        );
+
+        if (options?.EnsureClickPosition ?? EnsureClickPosition)
+        {
+            var ensureMoveThreshold = options?.EnsureMoveThreshold ?? EnsureMoveThreshold;
+            if (ensureMoveThreshold < 0)
+            {
+                ensureMoveThreshold = 0;
+            }
+
+            if (Math.Abs(currentPos.X - x1) > ensureMoveThreshold || Math.Abs(currentPos.Y - y1) > ensureMoveThreshold)
+            {
+                throw new Exception(
+                    $"Mouse position is not as expected. Expected: ({x}, {y}), Actual: ({currentPos.X}, {currentPos.Y})"
+                );
+            }
+        }
+
+        int clickDelay = options?.MultiClickDelay ?? MultiClickDelay;
+        int releaseDelay = options?.AfterPressReleaseDelay ?? AfterPressReleaseDelay;
+        int nextClickDelay = options?.BeforeNextClickDelay ?? BeforeNextClickDelay;
+
+        for (var i = 0; i < count; i++)
+        {
+            if (i > 0 && nextClickDelay > 0)
+            {
+                Thread.Sleep(nextClickDelay);
+            }
+
+            MouseDevice.Press(button ?? DefaultButton);
+            MouseDevice.Release(button ?? DefaultButton);
+
+            if (i < count - 1 && clickDelay > 0)
+            {
+                Thread.Sleep(clickDelay);
+            }
+        }
+        lastClickTime = DateTime.UtcNow;
+        int afterClickDelay = options?.AfterClickDelay ?? AfterClickDelay;
+        if (afterClickDelay > 0)
+        {
+            Thread.Sleep(afterClickDelay);
+        }
     }
 }

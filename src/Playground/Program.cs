@@ -45,34 +45,34 @@ try
     var rect = displaydevice.GetBoundingRectangle();
     Console.WriteLine($"Rect: {rect.X}, {rect.Y}, {rect.Width}, {rect.Height}");
     Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
+    Console.WriteLine("DoubleClickTime: " + mouseDevice.GetDoubleClickTime());
+    Console.WriteLine("DoubleClickSize: " + mouseDevice.GetDoubleClickSize());
 
     // while (true)
     // {
     //     Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
     // }
 
-    // for (var i = 0; i < 20; i += 10)
-    // {
-    //     //displaydevice.HighlightRect(i, i, 200, 200);
-    //     mouseDevice.Move(i, i);
-    //     //Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
-    // }
+    for (var i = 10; i < 200; i++)
+    {
+        //displaydevice.HighlightRect(i, i, 200, 200);
+        mouseDevice.Move(i, i, options: new MouseOptions { AfterMoveDelay = 5, MoveType = MouseMoveType.Direct });
 
-    mouseDevice.Move(rect.TopLeft.X, rect.TopLeft.Y);
-    Thread.Sleep(500);
+        //Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
+    }
 
-    mouseDevice.Move(rect.TopRight.X, rect.TopRight.Y);
-    Thread.Sleep(500);
-
+    Console.WriteLine(mouseDevice.Move(0, 0, options: new MouseOptions { MoveType = MouseMoveType.Shaky }));
+    Console.WriteLine(
+        mouseDevice.Move(rect.TopLeft.X, rect.TopLeft.Y, options: new MouseOptions { MoveType = MouseMoveType.Shaky })
+    );
     mouseDevice.Move(rect.BottomRight.X, rect.BottomRight.Y);
-    Thread.Sleep(500);
-
+    mouseDevice.Move(rect.TopRight.X, rect.TopRight.Y);
     mouseDevice.Move(rect.BottomLeft.X, rect.BottomLeft.Y);
-    Thread.Sleep(500);
+    mouseDevice.Move(rect.Center.X, rect.Center.Y);
 
     mouseDevice.Move(27, 12);
-    mouseDevice.Press(MouseButton.Left);
-    mouseDevice.Release(MouseButton.Left);
+    mouseDevice.Click(MouseButton.Left);
+    mouseDevice.Click(MouseButton.Left);
 
     Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
 
