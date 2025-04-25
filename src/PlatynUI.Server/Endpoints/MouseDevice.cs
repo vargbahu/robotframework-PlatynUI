@@ -64,17 +64,25 @@ partial class MouseDeviceEndpoint : IMouseDeviceEndpoint
 
         try
         {
-            var algorithm = GetMoveAlgorithm(options?.MoveType ?? MoveType);
-            var stepsPerPixel = options?.MoveStepsPerPixel ?? MoveStepsPerPixel;
-            var acceleration = options?.Acceleration ?? Acceleration;
-            ExecuteMouseMovement(
-                x1,
-                y1,
-                options?.MaxMoveDuration ?? (Math.Max(0, MaxMoveDuration - afterMoveDelay)),
-                algorithm,
-                stepsPerPixel,
-                acceleration
-            );
+            var moveType = options?.MoveType ?? MoveType;
+            if (moveType == MouseMoveType.Direct)
+            {
+                MouseDevice.Move(x1, y1);
+            }
+            else
+            {
+                var algorithm = GetMoveAlgorithm(moveType);
+                var stepsPerPixel = options?.MoveStepsPerPixel ?? MoveStepsPerPixel;
+                var acceleration = options?.Acceleration ?? Acceleration;
+                ExecuteMouseMovement(
+                    x1,
+                    y1,
+                    options?.MaxMoveDuration ?? (Math.Max(0, MaxMoveDuration - afterMoveDelay)),
+                    algorithm,
+                    stepsPerPixel,
+                    acceleration
+                );
+            }
         }
         finally
         {
