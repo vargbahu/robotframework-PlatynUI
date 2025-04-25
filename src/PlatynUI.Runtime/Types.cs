@@ -86,62 +86,11 @@ public struct Rect(double x, double y, double width, double height)
     public readonly double Top => Y;
     public readonly double Bottom => Y + Height;
 
-    public Point Location
-    {
-        readonly get => new(X, Y);
-        set
-        {
-            X = value.X;
-            Y = value.Y;
-        }
-    }
-
-    public Point TopLeft
-    {
-        readonly get => new(X, Y);
-        set
-        {
-            X = value.X;
-            Y = value.Y;
-        }
-    }
-    public Point BottomRight
-    {
-        readonly get => new(X + Width, Y + Height);
-        set
-        {
-            Width = value.X - X;
-            Height = value.Y - Y;
-        }
-    }
-    public Point BottomLeft
-    {
-        readonly get => new(X, Y + Height);
-        set
-        {
-            X = value.X;
-            Height = value.Y - Y;
-        }
-    }
-    public Point TopRight
-    {
-        readonly get => new(X + Width, Y);
-        set
-        {
-            Width = value.X - X;
-            Y = value.Y;
-        }
-    }
-
-    public Point Center
-    {
-        readonly get => new(X + Width / 2, Y + Height / 2);
-        set
-        {
-            X = value.X - Width / 2;
-            Y = value.Y - Height / 2;
-        }
-    }
+    public readonly Point TopLeft => new(X, Y);
+    public readonly Point BottomRight => new(X + Width - 1, Y + Height - 1);
+    public readonly Point BottomLeft => new(X, Y + Height - 1);
+    public readonly Point TopRight => new(X + Width - 1, Y);
+    public readonly Point Center => new(X + Width / 2, Y + Height / 2);
 
     public Size Size
     {
@@ -190,9 +139,17 @@ public struct Rect(double x, double y, double width, double height)
         return rect1.Equals(rect2);
     }
 
-    public bool Contains(Point point)
+    public readonly bool Contains(Point point)
     {
-        return point.X >= X && point.X <= X + Width && point.Y >= Y && point.Y <= Y + Height;
+        return point.X >= X && point.X <= X + Width - 1 && point.Y >= Y && point.Y <= Y + Height - 1;
+    }
+
+    public readonly bool Contains(Rect other)
+    {
+        return X <= other.X
+            && Y <= other.Y
+            && X + Width >= other.X + other.Width
+            && Y + Height >= other.Y + other.Height;
     }
 
     public static readonly Rect Empty = new(0, 0, 0, 0);
