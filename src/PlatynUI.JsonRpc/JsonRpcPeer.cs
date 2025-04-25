@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using Microsoft.VisualStudio.Threading;
 
 namespace PlatynUI.JsonRpc;
@@ -169,21 +170,17 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         await _writeLock.WaitAsync();
         try
         {
-            // Body vorbereiten
-            byte[] bodyBytes = Encoding.UTF8.GetBytes(json + "\r\n");
-            string header = "Content-Length: " + bodyBytes.Length + "\r\n\r\n";
+            byte[] bodyBytes = Encoding.UTF8.GetBytes(json);
+            string header = "\r\nContent-Length: " + bodyBytes.Length + "\r\n\r\n";
 
-            // Header-Länge (nur ASCII) entspricht der Anzahl der Zeichen
             int headerLen = header.Length;
             int totalLen = headerLen + bodyBytes.Length;
             byte[] buffer = ArrayPool<byte>.Shared.Rent(totalLen);
 
             try
             {
-                // Header direkt in den gepoolten Puffer schreiben
                 Encoding.ASCII.GetBytes(header, new Span<byte>(buffer, 0, headerLen));
 
-                // Body dahinter kopieren
                 Buffer.BlockCopy(bodyBytes, 0, buffer, headerLen, bodyBytes.Length);
 
                 await WriterStream.WriteAsync(buffer.AsMemory(0, totalLen));
@@ -307,63 +304,136 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
 
     protected async Task<string?> ReadMessageAsync()
     {
-        string? line;
-        int contentLength = 0;
+        var contentLength = 0;
+        var hasContentLength = false;
         encoding = Encoding.UTF8;
 
-        while (!string.IsNullOrEmpty(line = await ReadLineAsync(ReaderStream, cancellationTokenSource!.Token)))
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(4096);
+        try
         {
-            if (line.StartsWith("Content-Length: "))
-                contentLength = int.Parse(line["Content-Length: ".Length..]);
-            else if (line.StartsWith("Content-Type: "))
+            var headerBuilder = new StringBuilder(128);
+            var inHeaderSection = true;
+            var bufferPos = 0;
+            var bufferLen = 0;
+
+            while (inHeaderSection)
             {
-                var contentType = line["Content-Type: ".Length..];
-                var charsetToken = contentType
-                    .Split(';')
-                    .FirstOrDefault(s => s.Trim().StartsWith("charset=", StringComparison.OrdinalIgnoreCase));
-                var charset = charsetToken?.Split('=')[1].Trim();
-                encoding = charset?.ToLower() switch
+                if (bufferPos >= bufferLen)
                 {
-                    "utf-8" => Encoding.UTF8,
-                    "ascii" => Encoding.ASCII,
-                    "utf-16" => Encoding.Unicode,
-                    _ => Encoding.UTF8,
-                };
+                    bufferPos = 0;
+                    bufferLen = await ReaderStream.ReadAsync(buffer, cancellationTokenSource!.Token);
+
+                    if (bufferLen == 0)
+                        return null;
+                }
+
+                var availableData = buffer.AsSpan(bufferPos, bufferLen - bufferPos);
+                var crlfIndex = -1;
+
+                for (var i = 0; i < availableData.Length - 1; i++)
+                {
+                    if (availableData[i] == '\r' && availableData[i + 1] == '\n')
+                    {
+                        crlfIndex = i;
+                        break;
+                    }
+                }
+
+                if (crlfIndex >= 0)
+                {
+                    if (crlfIndex > 0)
+                    {
+                        var line = Encoding.ASCII.GetString(availableData.Slice(0, crlfIndex));
+                        headerBuilder.Append(line);
+                    }
+
+                    var headerLine = headerBuilder.ToString();
+                    headerBuilder.Clear();
+
+                    if (headerLine.Length == 0)
+                    {
+                        if (hasContentLength)
+                            inHeaderSection = false;
+                    }
+                    else if (headerLine.StartsWith("Content-Length: "))
+                    {
+                        hasContentLength = true;
+                        contentLength = int.Parse(headerLine["Content-Length: ".Length..]);
+                    }
+                    else if (headerLine.StartsWith("Content-Type: "))
+                    {
+                        var contentType = headerLine["Content-Type: ".Length..];
+                        var charsetToken = contentType
+                            .Split(';')
+                            .FirstOrDefault(s => s.Trim().StartsWith("charset=", StringComparison.OrdinalIgnoreCase));
+                        var charset = charsetToken?.Split('=')[1].Trim();
+                        encoding = charset?.ToLower() switch
+                        {
+                            "utf-8" => Encoding.UTF8,
+                            "ascii" => Encoding.ASCII,
+                            "utf-16" => Encoding.Unicode,
+                            _ => Encoding.UTF8,
+                        };
+                    }
+
+                    bufferPos += crlfIndex + 2;
+                }
+                else
+                {
+                    headerBuilder.Append(Encoding.ASCII.GetString(availableData));
+                    bufferPos = bufferLen;
+                }
+            }
+
+            if (contentLength <= 0)
+                return null;
+
+            var usePooledBuffer = contentLength > 8192;
+            var contentBuffer = usePooledBuffer ? ArrayPool<byte>.Shared.Rent(contentLength) : new byte[contentLength];
+
+            try
+            {
+                var bytesRead = 0;
+
+                if (bufferPos < bufferLen)
+                {
+                    var bytesToCopy = Math.Min(bufferLen - bufferPos, contentLength);
+                    Buffer.BlockCopy(buffer, bufferPos, contentBuffer, 0, bytesToCopy);
+                    bytesRead = bytesToCopy;
+                }
+
+                while (bytesRead < contentLength)
+                {
+                    var read = await ReaderStream.ReadAsync(
+                        contentBuffer.AsMemory(bytesRead, contentLength - bytesRead),
+                        cancellationTokenSource!.Token
+                    );
+
+                    if (read == 0)
+                        break;
+
+                    bytesRead += read;
+                }
+
+                if (bytesRead == contentLength)
+                {
+                    return encoding.GetString(contentBuffer, 0, contentLength);
+                }
+
+                return null;
+            }
+            finally
+            {
+                if (usePooledBuffer)
+                {
+                    ArrayPool<byte>.Shared.Return(contentBuffer);
+                }
             }
         }
-
-        if (contentLength > 0)
+        finally
         {
-            var buffer = new byte[contentLength];
-            await ReaderStream.ReadExactlyAsync(buffer.AsMemory(0, contentLength));
-            return encoding.GetString(buffer);
+            ArrayPool<byte>.Shared.Return(buffer);
         }
-
-        return null;
-    }
-
-    protected static async Task<string?> ReadLineAsync(Stream stream, CancellationToken ca = default)
-    {
-        ArgumentNullException.ThrowIfNull(stream);
-
-        if (ca.IsCancellationRequested)
-            return null;
-
-        var sb = new StringBuilder();
-        var buffer = new byte[1];
-        int prev = 0;
-
-        while (await stream.ReadAsync(buffer.AsMemory(0, 1), ca) > 0)
-        {
-            int curr = buffer[0];
-            if (prev == '\r' && curr == '\n')
-                break;
-            if (prev != 0)
-                sb.Append((char)prev);
-            prev = curr;
-        }
-
-        return sb.Length > 0 ? sb.ToString() : null;
     }
 
     protected async Task MessageLoopAsync(CancellationToken cancellationToken)
