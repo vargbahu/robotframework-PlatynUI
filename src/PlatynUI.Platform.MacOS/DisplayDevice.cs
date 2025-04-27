@@ -15,16 +15,16 @@ namespace PlatynUI.Platform.MacOS;
 [JsonRpcEndpoint]
 internal partial interface IHighlighterRpcClient
 {
-    [JsonRpcRequest]
+    [JsonRpcRequest("initialize")]
     void Initialize(int processId);
 
-    [JsonRpcRequest]
+    [JsonRpcRequest("show")]
     void Show(double x, double y, double width, double height, double timeout);
 
-    [JsonRpcRequest]
+    [JsonRpcRequest("hide")]
     void Hide();
 
-    [JsonRpcNotification]
+    [JsonRpcNotification("exit")]
     void Exit();
 }
 
