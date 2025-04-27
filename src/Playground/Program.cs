@@ -12,12 +12,12 @@ using PlatynUI.Runtime.Core;
 // };
 
 // await tcpClient.ConnectAsync("192.168.178.33", 7721);
+
 // //await tcpClient.ConnectAsync("localhost", 7721);
 
 // var stream = tcpClient.GetStream();
 
-//var peer = new JsonRpcPeer(stream);
-Console.WriteLine(Directory.GetCurrentDirectory());
+// var peer = new JsonRpcPeer(stream);
 
 var process = new Process
 {
@@ -55,24 +55,33 @@ try
 
     for (var i = 10; i < 200; i++)
     {
-        //displaydevice.HighlightRect(i, i, 200, 200);
+        displaydevice.HighlightRect(i - 2, i - 2, 5, 5);
         mouseDevice.Move(i, i, options: new MouseOptions { AfterMoveDelay = 5, MoveType = MouseMoveType.Direct });
 
         //Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
     }
+    var mouseOptions = new MouseOptions
+    {
+        // MoveType = MouseMoveType.Linear,
+        // MoveStepsPerPixel = 1,
+        // MaxMoveDuration = 5000,
+        // AfterMoveDelay = 1000,
+        // EnsureClickPosition = false,
+        // EnsureMovePosition = false,
+        // Acceleration = MouseAcceleration.Constant,
+    };
 
-    Console.WriteLine(mouseDevice.Move(0, 0, options: new MouseOptions { MoveType = MouseMoveType.Shaky }));
-    Console.WriteLine(
-        mouseDevice.Move(rect.TopLeft.X, rect.TopLeft.Y, options: new MouseOptions { MoveType = MouseMoveType.Shaky })
-    );
-    mouseDevice.Move(rect.BottomRight.X, rect.BottomRight.Y);
-    mouseDevice.Move(rect.TopRight.X, rect.TopRight.Y);
-    mouseDevice.Move(rect.BottomLeft.X, rect.BottomLeft.Y);
-    mouseDevice.Move(rect.Center.X, rect.Center.Y);
+    Console.WriteLine(mouseDevice.Move(0, 0, options: mouseOptions));
 
-    mouseDevice.Move(27, 12);
-    mouseDevice.Click(MouseButton.Left);
-    mouseDevice.Click(MouseButton.Left);
+    Console.WriteLine(mouseDevice.Move(rect.TopLeft.X, rect.TopLeft.Y, options: mouseOptions));
+    mouseDevice.Move(rect.BottomRight.X, rect.BottomRight.Y, options: mouseOptions);
+    mouseDevice.Move(rect.TopRight.X, rect.TopRight.Y, options: mouseOptions);
+    mouseDevice.Move(rect.BottomLeft.X, rect.BottomLeft.Y, options: mouseOptions);
+    mouseDevice.Move(rect.Center.X, rect.Center.Y, options: mouseOptions);
+
+    mouseDevice.Move(27, 12, options: mouseOptions);
+    mouseDevice.Click();
+    mouseDevice.Click();
 
     Console.WriteLine("MousePosition: " + mouseDevice.GetPosition());
 
@@ -82,5 +91,5 @@ finally
 {
     process.Kill();
     process.Dispose();
-    //tcpClient.Close();
+    // tcpClient.Close();
 }
