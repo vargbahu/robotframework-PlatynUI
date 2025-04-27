@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using Microsoft.VisualStudio.Threading;
 
 namespace PlatynUI.JsonRpc;
@@ -17,10 +16,16 @@ public enum JsonRpcErrorCode
     InternalError = -32603,
 }
 
+// Add JSON-RPC version constant
+public static class JsonRpcConstants
+{
+    public const string JSON_RPC_VERSION = "2.0";
+}
+
 public abstract record JsonRpcMessage
 {
     [JsonPropertyName("jsonrpc")]
-    public string JsonRpc { get; init; } = "2.0";
+    public string JsonRpc { get; init; } = JsonRpcConstants.JSON_RPC_VERSION;
 }
 
 public record JsonRpcRequest : JsonRpcMessage
@@ -99,7 +104,9 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonRpcResponse>> pendingRequests = new();
     private int idCounter = 1;
-    private Encoding encoding = Encoding.UTF8;
+    private readonly Encoding defaultEncoding = Encoding.UTF8;
+    private readonly string defaultContentType = "application/vscode-jsonrpc";
+
     private Task? messageLoopTask;
     private CancellationTokenSource? cancellationTokenSource;
 
@@ -170,12 +177,25 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         await _writeLock.WaitAsync();
         try
         {
-            byte[] bodyBytes = Encoding.UTF8.GetBytes(json);
-            string header = "\r\nContent-Length: " + bodyBytes.Length + "\r\n\r\n";
+            var bodyBytes = defaultEncoding.GetBytes(json + "\r\n");
 
-            int headerLen = header.Length;
-            int totalLen = headerLen + bodyBytes.Length;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(totalLen);
+            var headerBuilder = new StringBuilder();
+            headerBuilder.Append("Content-Length: ").Append(bodyBytes.Length).Append("\r\n");
+
+            if (defaultEncoding != Encoding.UTF8)
+            {
+                headerBuilder
+                    .Append($"Content-Type: application/${defaultContentType}; charset=")
+                    .Append(defaultEncoding.WebName)
+                    .Append("\r\n");
+            }
+
+            headerBuilder.Append("\r\n");
+            var header = headerBuilder.ToString();
+
+            var headerLen = header.Length;
+            var totalLen = headerLen + bodyBytes.Length;
+            var buffer = ArrayPool<byte>.Shared.Rent(totalLen);
 
             try
             {
@@ -195,6 +215,11 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         {
             _writeLock.Release();
         }
+    }
+
+    protected static void LogError(string message)
+    {
+        Console.Error.WriteLine(message);
     }
 
     public void SendNotification(string method, object @params)
@@ -302,11 +327,26 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
         return Nullable.GetUnderlyingType(type) != null || !type.IsValueType;
     }
 
+    static (string HeaderName, string HeaderValue) SplitHeader(string headerLine)
+    {
+        if (string.IsNullOrWhiteSpace(headerLine))
+            return (string.Empty, string.Empty);
+
+        var separatorIndex = headerLine.IndexOf(':');
+        if (separatorIndex == -1)
+            return (headerLine.Trim(), string.Empty);
+
+        var headerName = headerLine[..separatorIndex].Trim();
+        var headerValue = headerLine[(separatorIndex + 1)..].Trim();
+
+        return (headerName, headerValue);
+    }
+
     protected async Task<string?> ReadMessageAsync()
     {
         var contentLength = 0;
         var hasContentLength = false;
-        encoding = Encoding.UTF8;
+        var encoding = Encoding.UTF8;
 
         byte[] buffer = ArrayPool<byte>.Shared.Rent(4096);
         try
@@ -343,37 +383,45 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
                 {
                     if (crlfIndex > 0)
                     {
-                        var line = Encoding.ASCII.GetString(availableData.Slice(0, crlfIndex));
+                        var line = Encoding.ASCII.GetString(availableData[..crlfIndex]);
                         headerBuilder.Append(line);
                     }
 
                     var headerLine = headerBuilder.ToString();
                     headerBuilder.Clear();
 
+                    var (headerName, headerValue) = SplitHeader(headerLine);
+
                     if (headerLine.Length == 0)
                     {
                         if (hasContentLength)
                             inHeaderSection = false;
                     }
-                    else if (headerLine.StartsWith("Content-Length: "))
+                    else if (headerName.StartsWith("content-length", StringComparison.OrdinalIgnoreCase))
                     {
                         hasContentLength = true;
-                        contentLength = int.Parse(headerLine["Content-Length: ".Length..]);
+                        contentLength = int.Parse(headerValue);
                     }
-                    else if (headerLine.StartsWith("Content-Type: "))
+                    else if (headerName.StartsWith("content-type", StringComparison.OrdinalIgnoreCase))
                     {
-                        var contentType = headerLine["Content-Type: ".Length..];
+                        var contentType = headerValue;
                         var charsetToken = contentType
                             .Split(';')
                             .FirstOrDefault(s => s.Trim().StartsWith("charset=", StringComparison.OrdinalIgnoreCase));
-                        var charset = charsetToken?.Split('=')[1].Trim();
-                        encoding = charset?.ToLower() switch
+
+                        if (charsetToken != null)
                         {
-                            "utf-8" => Encoding.UTF8,
-                            "ascii" => Encoding.ASCII,
-                            "utf-16" => Encoding.Unicode,
-                            _ => Encoding.UTF8,
-                        };
+                            var charset = charsetToken.Split('=')[1].Trim();
+                            try
+                            {
+                                encoding = Encoding.GetEncoding(charset);
+                            }
+                            catch (ArgumentException)
+                            {
+                                LogError($"Unsupported encoding: {charset}");
+                                encoding = defaultEncoding;
+                            }
+                        }
                     }
 
                     bufferPos += crlfIndex + 2;
@@ -533,6 +581,39 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
 
     protected async Task<JsonResponseBase?> ProcessSingleMessage(JsonElement jsonElement)
     {
+        // If it's a response (has id and no method), we should be more tolerant of version differences
+        bool isResponse = jsonElement.TryGetProperty("id", out var _) && !jsonElement.TryGetProperty("method", out _);
+
+        if (jsonElement.TryGetProperty("jsonrpc", out var versionProperty))
+        {
+            // Only enforce version check for requests/notifications, not for responses
+            if (versionProperty.GetString() != JsonRpcConstants.JSON_RPC_VERSION && !isResponse)
+            {
+                return new JsonRpcErrorResponse
+                {
+                    Id = null,
+                    Error = new JsonRpcError
+                    {
+                        Code = (int)JsonRpcErrorCode.InvalidRequest,
+                        Message = $"Unsupported JSON-RPC version: {versionProperty.GetString()}",
+                    },
+                };
+            }
+        }
+        else if (!isResponse) // Only require jsonrpc property for requests/notifications
+        {
+            // If jsonrpc property is missing entirely
+            return new JsonRpcErrorResponse
+            {
+                Id = null,
+                Error = new JsonRpcError
+                {
+                    Code = (int)JsonRpcErrorCode.InvalidRequest,
+                    Message = "Missing required 'jsonrpc' property",
+                },
+            };
+        }
+
         if (jsonElement.TryGetProperty("id", out var idProperty) && !jsonElement.TryGetProperty("method", out _))
         {
             if (
@@ -562,9 +643,7 @@ public class JsonRpcPeer(Stream readerStream, Stream writerStream)
             )
             {
                 var error = errorProperty.Deserialize<JsonRpcError>(JsonSerializerOptions);
-                Console.Error.WriteLine(
-                    $"Received error with null ID: {error?.Code}: {error?.Message} ({error?.Data})"
-                );
+                LogError($"Received error with null ID: {error?.Code}: {error?.Message} ({error?.Data})");
 
                 return null;
             }
