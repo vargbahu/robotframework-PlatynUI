@@ -45,8 +45,18 @@ public class MouseDevice
         Instance.mouseDevice?.Press(button);
     }
 
+    public static void Press(int button)
+    {
+        Instance.mouseDevice?.Press((MouseButton)button);
+    }
+
     public static void Release(MouseButton button)
     {
         Instance.mouseDevice?.Release(button);
+    }
+
+    public static void Release(int button)
+    {
+        Instance.mouseDevice?.Release((MouseButton)button);
     }
 }
