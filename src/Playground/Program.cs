@@ -4,40 +4,41 @@ using PlatynUI.JsonRpc;
 using PlatynUI.JsonRpc.Endpoints;
 using PlatynUI.Runtime.Core;
 
-// var tcpClient = new TcpClient()
-// {
-//     NoDelay = true,
-//     SendTimeout = 1000,
-//     ReceiveTimeout = 1000,
-// };
-
-// await tcpClient.ConnectAsync("192.168.178.33", 7721);
-
-// //await tcpClient.ConnectAsync("localhost", 7721);
-
-// var stream = tcpClient.GetStream();
-
-// var peer = new JsonRpcPeer(stream);
-
-var process = new Process
+var tcpClient = new TcpClient()
 {
-    StartInfo = new ProcessStartInfo
-    {
-        FileName = "dotnet",
-        ArgumentList = { "run" },
-        UseShellExecute = false,
-        RedirectStandardInput = true,
-        RedirectStandardOutput = true,
-        CreateNoWindow = true,
-        WorkingDirectory = "../../../../src/PlatynUI.Server",
-    },
+    NoDelay = true,
+    SendTimeout = 1000,
+    ReceiveTimeout = 1000,
 };
 
-process.Start();
-var peer = new JsonRpcPeer(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
+await tcpClient.ConnectAsync("10.211.55.7", 7720);
+
+//await tcpClient.ConnectAsync("localhost", 7721);
+
+var stream = tcpClient.GetStream();
+
+var peer = new JsonRpcPeer(stream);
+
+// var process = new Process
+// {
+//     StartInfo = new ProcessStartInfo
+//     {
+//         FileName = "dotnet",
+//         ArgumentList = { "run" },
+//         UseShellExecute = false,
+//         RedirectStandardInput = true,
+//         RedirectStandardOutput = true,
+//         CreateNoWindow = true,
+//         WorkingDirectory = "../../../../src/PlatynUI.Server",
+//     },
+// };
+
+// process.Start();
+// var peer = new JsonRpcPeer(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
 
 try
 {
+    Thread.Sleep(2000);
     var displaydevice = IDisplayDeviceEndpoint.Attach(peer);
     var mouseDevice = IMouseDeviceEndpoint.Attach(peer);
     peer.Start();
@@ -89,7 +90,7 @@ try
 }
 finally
 {
-    process.Kill();
-    process.Dispose();
-    // tcpClient.Close();
+    // process.Kill();
+    // process.Dispose();
+    tcpClient.Close();
 }

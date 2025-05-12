@@ -180,7 +180,7 @@ async def main():
 
     # process, reader, writer = await create_process_streams_named_pipe_client(pipe_name, *cmd)
 
-    reader, writer = await connect_tcp_socket("localhost", 7721)
+    reader, writer = await connect_tcp_socket("10.211.55.7", 7720)
 
     # JsonRpcPeer erstellen, der mit dem Serverprozess kommuniziert
     peer = JsonRpcPeer(reader, writer)
