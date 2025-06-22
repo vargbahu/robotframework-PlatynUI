@@ -32,6 +32,7 @@ dependencies = [
   "typing-extensions",
   "robotframework-pythonlibcore>=4.4.0",
   "robotframework-assertion-engine>=3.0.0",
+  "pythonnet>=3.0.0",
 ]
 
 [project.urls]
