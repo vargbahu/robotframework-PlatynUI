@@ -81,7 +81,7 @@ internal class ElementNode : Node<Control>
             ["IsEnabled"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsEnabled) ?? false,
             ["IsVisible"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsVisible) ?? false,
             ["IsFocused"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsFocused) ?? false,
-
+            ["IsInView"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsVisible) ?? false,
             ["IsHitTestVisible"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsHitTestVisible) ?? false,
         };
 
