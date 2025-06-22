@@ -11,30 +11,30 @@ var tcpClient = new TcpClient()
     ReceiveTimeout = 1000,
 };
 
-await tcpClient.ConnectAsync("10.211.55.7", 7720);
+//await tcpClient.ConnectAsync("192.168.178.33", 7721);
 
 //await tcpClient.ConnectAsync("localhost", 7721);
 
-var stream = tcpClient.GetStream();
+// var stream = tcpClient.GetStream();
 
-var peer = new JsonRpcPeer(stream);
+// var peer = new JsonRpcPeer(stream);
 
-// var process = new Process
-// {
-//     StartInfo = new ProcessStartInfo
-//     {
-//         FileName = "dotnet",
-//         ArgumentList = { "run" },
-//         UseShellExecute = false,
-//         RedirectStandardInput = true,
-//         RedirectStandardOutput = true,
-//         CreateNoWindow = true,
-//         WorkingDirectory = "../../../../src/PlatynUI.Server",
-//     },
-// };
+var process = new Process
+{
+    StartInfo = new ProcessStartInfo
+    {
+        FileName = "dotnet",
+        ArgumentList = { "run" },
+        UseShellExecute = false,
+        RedirectStandardInput = true,
+        RedirectStandardOutput = true,
+        CreateNoWindow = true,
+        WorkingDirectory = "../../../../src/PlatynUI.Server",
+    },
+};
 
-// process.Start();
-// var peer = new JsonRpcPeer(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
+process.Start();
+var peer = new JsonRpcPeer(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
 
 try
 {
@@ -90,7 +90,7 @@ try
 }
 finally
 {
-    // process.Kill();
-    // process.Dispose();
-    tcpClient.Close();
+    process.Kill();
+    process.Dispose();
+    // tcpClient.Close();
 }

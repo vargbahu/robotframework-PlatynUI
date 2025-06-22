@@ -1,12 +1,13 @@
 import asyncio
 import contextlib
+from dataclasses import dataclass
 import os
 import socket
 import sys
 import tempfile
 import uuid
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Protocol, cast
 
 if TYPE_CHECKING:
     from asyncio.windows_events import ProactorEventLoop
@@ -162,6 +163,25 @@ async def create_process_streams_tcp(
             await asyncio.sleep(0.5)
 
 
+@dataclass
+class Rect:
+    x: float
+    y: float
+    width: float
+    height: float
+
+
+@rpc_endpoint("displayDevice")
+class IDisplayDevice(Protocol):
+    @rpc_request("getBoundingRectangle")
+    async def get_bounding_rectangle(self) -> Rect: ...
+
+    @rpc_request("highlight_rect")
+    async def highlight_rect(
+        self, x: float, y: float, width: float, height: float, timeout: float | None = None
+    ) -> None: ...
+
+
 async def main():
     # Server-Prozess starten
     # cmd = [
@@ -174,19 +194,28 @@ async def main():
 
     # process, reader, writer = await create_process_streams_stdio(*cmd)
 
-    # pipe_name = generate_random_pipe_name("platynui")
+    pipe_name = generate_random_pipe_name("platynui")
 
-    # cmd = ["dotnet", "run", "--project", "src/PlatynUI.Server", "--", "--verbose", "--pipe-server", pipe_name]
+    cmd = ["dotnet", "run", "--project", "src/PlatynUI.Server", "--", "--verbose", "--pipe-server", pipe_name]
 
-    # process, reader, writer = await create_process_streams_named_pipe_client(pipe_name, *cmd)
+    process, reader, writer = await create_process_streams_named_pipe_client(pipe_name, *cmd)
 
-    reader, writer = await connect_tcp_socket("10.211.55.7", 7720)
+    # reader, writer = await connect_tcp_socket("localhost", 7721)
 
     # JsonRpcPeer erstellen, der mit dem Serverprozess kommuniziert
     peer = JsonRpcPeer(reader, writer)
 
     # Peer starten
     await peer.start()
+
+    # Beispiel für die Verwendung von send_request, alles muss alleine gemacht werden
+    r = await peer.send_request("displayDevice/getBoundingRectangle")
+
+    # füge den endpoint an als client an das peer
+    display_device = IDisplayDevice.attach(peer)
+
+    # Beispiel für die Verwendung von send_request über den endpoint
+    r = await display_device.get_bounding_rectangle()
 
     try:
         # Initialisierung senden
