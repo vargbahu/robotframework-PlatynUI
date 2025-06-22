@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.8.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.7.0..v0.8.0) - 2025-06-22
+
+### Bug Fixes
+
+- **JSONRPC2:** Corrected namespace generation if no namespace is provides in the source file ([89c32e2](https://github.com/imbus/robotframework-PlatynUI/commit/89c32e21da92fb4bb5261cd0fac2da498fc59370))
+- **Server:** Corrected connection to named pipes ([713bd52](https://github.com/imbus/robotframework-PlatynUI/commit/713bd521ea5ef9747b643a9d53e8c87d6e4309d6))
+- **macOS:** Corrected conversion between macOS and standard coordinates in highlighter ([77f2fb4](https://github.com/imbus/robotframework-PlatynUI/commit/77f2fb4f7b385d63b1e5f4f62d75780fde16eff0))
+- **macOS:** Corrected handling of main screen for highlighter ([3d776e2](https://github.com/imbus/robotframework-PlatynUI/commit/3d776e2754546635bc3579a16b513057c231b6bc))
+- Improve null handling and error reporting in JsonRpcPeer methods ([3594f3f](https://github.com/imbus/robotframework-PlatynUI/commit/3594f3fa7bdc508b98b6283d1e5dcfe542db54bb))
+- Make JsonRpcPeer threadsafe in sending messages ([7358cba](https://github.com/imbus/robotframework-PlatynUI/commit/7358cbab3124635f8f0b5f508daedac1f1f984d3))
+
+
+### Features
+
+- **JSONRPC:** Implemented MouseDeviceEndpoint ([d004b2f](https://github.com/imbus/robotframework-PlatynUI/commit/d004b2f4db6d5dde0bc4000bd54c16811eb020fc))
+- **JSONRPC:** Add another simplified constructor to JsonRpcPeer ([56ca7b2](https://github.com/imbus/robotframework-PlatynUI/commit/56ca7b2f9721563478e3c40ac260f35b6aab01ab))
+- **JSONRPC:** Speedup reading messages and analysing header and messages ([ed2f247](https://github.com/imbus/robotframework-PlatynUI/commit/ed2f247d23a5ddd3f722a623ba5c3f8f3f2d794b))
+- **JSONRPC:** Better handling of JSONRPC headers and respect content-type and encoding ([a6bb1b7](https://github.com/imbus/robotframework-PlatynUI/commit/a6bb1b7033c9b002aa615155139b5217558148ab))
+- **JSONRPC2:** Make CamelCase the default in de/serialization of JSON ([975045a](https://github.com/imbus/robotframework-PlatynUI/commit/975045a554a87caba817d6d169f0e5ea856ed670))
+- **Server:** Create a new library only for JsonRpcs Endpoints, so we can use this in server and client libraries ([292a1ef](https://github.com/imbus/robotframework-PlatynUI/commit/292a1efc66741704551830f4614ba02e2f6089c6))
+- **Server:** Implement real mouse movement on server side ([102b31f](https://github.com/imbus/robotframework-PlatynUI/commit/102b31fb29ff15c6fcf362ab64694cb859c2ec3e))
+- **Server:** Implemented mouse settings, different mouse move strategies ([205268e](https://github.com/imbus/robotframework-PlatynUI/commit/205268e97d39970d07e6efb165997e8de589e1e3))
+- **github:** Add issue templates ([83d0ad6](https://github.com/imbus/robotframework-PlatynUI/commit/83d0ad67b53cc6587b4bd6937f1f49a0cc578d3d))
+- **macOS:** Switch communication to our new JsonRpc library ([169842f](https://github.com/imbus/robotframework-PlatynUI/commit/169842f98d835ec49ba644deabb6eebab5e7ae4e))
+- **macOS:** Implemented Mouse move ([767a97d](https://github.com/imbus/robotframework-PlatynUI/commit/767a97dcd13b8191a9eeb1035c81d2ba032b0654))
+- **macOS:** Implement our own JsonRpcPeer that works like the c# version ([57f6dea](https://github.com/imbus/robotframework-PlatynUI/commit/57f6dea09e8febacde0cdb1ff531dae8060beac2))
+- **runtime:** First simple JSONRPC Display ([73eb17f](https://github.com/imbus/robotframework-PlatynUI/commit/73eb17f02faf798ef53fa3ba695b4c767d6e9fb1))
+- **runtime:** Extend Rect struct a little bit ([a2b0ae8](https://github.com/imbus/robotframework-PlatynUI/commit/a2b0ae86b94130914cdc3a0b15d15a49f9a0be1b))
+- **server:** Implemented direkt mouse movement ([70d6027](https://github.com/imbus/robotframework-PlatynUI/commit/70d6027f594c9ad4e0390e18ce1c4461c1a2d011))
+- Added minimum required robotframework 6.0 as dependency and switching to hatch/ruff fmt ([04a19c5](https://github.com/imbus/robotframework-PlatynUI/commit/04a19c51b9b8646faa76659bdf06852318992656))
+- Added first version of our own JSONRPC communication ([687c79b](https://github.com/imbus/robotframework-PlatynUI/commit/687c79bd30837a2821011b2eb4c6645941ac44c0))
+- Implement JsonRpcEndpointClientGenerator and JsonRpcEndpointServerGenerator for JSON-RPC communication ([910a590](https://github.com/imbus/robotframework-PlatynUI/commit/910a59036d82d8692ca8fceebbb1d00662ed6e3f))
+- Enhance JsonRpcPeer with synchronous request/notification methods and add JoinableTaskFactory support ([bd3d15a](https://github.com/imbus/robotframework-PlatynUI/commit/bd3d15a0e0ec1a0c1c0367edf4a40019b712b125))
+- Added community standards ([b9ff858](https://github.com/imbus/robotframework-PlatynUI/commit/b9ff85845cb062399994330e73758ac28abdb548))
+- Created some documents to fit community standards ([6432504](https://github.com/imbus/robotframework-PlatynUI/commit/64325042bd8cc548f83fcac8cf360e0e0b3ba33c))
+- Implement mouse an keyboard for linux/X11 ([1ff977f](https://github.com/imbus/robotframework-PlatynUI/commit/1ff977fcee6654152b9d34984bd51ab838c633fd))
+- Some refactorings for keywords and to support some linux atspi standard control types ([9a8a10c](https://github.com/imbus/robotframework-PlatynUI/commit/9a8a10c782a74f40a5f2d52d035bab0c8dd85cfa))
+- Add IsInView to avalonia ([b3991be](https://github.com/imbus/robotframework-PlatynUI/commit/b3991be6cb2aaa8ab4a74b767a748ee073e8210f))
+
+
+### Performance
+
+- **JSONRPC2:** Some performance improvements in sending messages ([06f13df](https://github.com/imbus/robotframework-PlatynUI/commit/06f13dfdf6f879a58f6dc19aea0fed8c9d240d68))
+
+
+### Refactor
+
+- **Runtime:** Corrected edgepoints properties of Rect ([d3cddd0](https://github.com/imbus/robotframework-PlatynUI/commit/d3cddd081b96283b4455364b2530f3aa81b6574f))
+- Changed headline ([2474980](https://github.com/imbus/robotframework-PlatynUI/commit/24749808a136f3372883e1ae0f2247b8b6ff9893))
+- Deleted unnecessary line ([67903f9](https://github.com/imbus/robotframework-PlatynUI/commit/67903f989f52001870850a921cc633874a3ac1a4))
+
+
 ## [0.7.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.6.0..v0.7.0) - 2025-04-11
 
 ### Bug Fixes

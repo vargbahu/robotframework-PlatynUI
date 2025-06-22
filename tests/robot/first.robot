@@ -43,9 +43,9 @@ first
     # ${text}    Get Text    ${calculator.n1}
     # Get Text    ${calculator.n1}    ==    ein text123445
 
-    Click    ${calculator.n1}    button=right
-    Click    ${calculator.results}    button=right
-    Click    ${calculator.calculator_results}    button=right
+    Mouse Click    ${calculator.n1}    button=right
+    Mouse Click    ${calculator.results}    button=right
+    Mouse Click    ${calculator.calculator_results}    button=right
 
 
 *** Keywords ***

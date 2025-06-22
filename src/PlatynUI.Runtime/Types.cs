@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Text.Json.Serialization;
+
 namespace PlatynUI.Runtime;
 
 public struct Point(double x, double y)
@@ -81,17 +83,34 @@ public struct Rect(double x, double y, double width, double height)
     public double Width { get; set; } = width;
     public double Height { get; set; } = height;
 
+    [JsonIgnore]
     public readonly double Left => X;
+
+    [JsonIgnore]
     public readonly double Right => X + Width;
+
+    [JsonIgnore]
     public readonly double Top => Y;
+
+    [JsonIgnore]
     public readonly double Bottom => Y + Height;
 
+    [JsonIgnore]
     public readonly Point TopLeft => new(X, Y);
+
+    [JsonIgnore]
     public readonly Point BottomRight => new(X + Width - 1, Y + Height - 1);
+
+    [JsonIgnore]
     public readonly Point BottomLeft => new(X, Y + Height - 1);
+
+    [JsonIgnore]
     public readonly Point TopRight => new(X + Width - 1, Y);
+
+    [JsonIgnore]
     public readonly Point Center => new(X + Width / 2, Y + Height / 2);
 
+    [JsonIgnore]
     public Size Size
     {
         readonly get => new(Width, Height);
