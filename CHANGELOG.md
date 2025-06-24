@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.8.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.8.0..v0.8.1) - 2025-06-24
+
+### Bug Fixes
+
+- Corrected loading of  .NET runtimes ([1ee86f8](https://github.com/imbus/robotframework-PlatynUI/commit/1ee86f8bd5f46f57cfa25a4318408525dd3a5256))
+
+
 ## [0.8.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.7.0..v0.8.0) - 2025-06-22
 
 ### Bug Fixes
