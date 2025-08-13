@@ -129,7 +129,7 @@ class ApplicationNode(INode? parent, ElementReference reference, ProcessProvider
 
 class ElementNode(INode? parent, ElementReference reference, ProcessProvider provider)
     : Node(parent, reference, provider),
-        IElement
+        IElement, IAdapter
 {
     protected override List<INode> GetChildren()
     {
@@ -150,23 +150,42 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
 
     public bool TryEnsureVisible()
     {
-        throw new NotImplementedException();
+        //TODO: throw new NotImplementedException();
+        return true;
     }
 
     public bool TryEnsureApplicationIsReady()
     {
-        throw new NotImplementedException();
+        //TODO: throw new NotImplementedException();
+        return true;
     }
 
     public bool TryEnsureToplevelParentIsActive()
     {
-        throw new NotImplementedException();
+        //TODO: throw new NotImplementedException();
+        return true;
     }
 
     public bool TryBringIntoView()
     {
-        throw new NotImplementedException();
+        //TODO: throw new NotImplementedException();
+        return true;
     }
+
+    public bool IsValid()
+    {
+        return Provider.NodeInfo.IsValid(Reference);
+    }
+
+    public string Id => "";
+    public string Name => "";
+    public string Role => LocalName;
+    public string ClassName => "";
+    public string[] SupportedRoles => ["Adapter"];
+    public string Type => "element";
+    public string[] SupportedTypes => ["element"];
+    public string FrameworkId => "";
+    public string RuntimeId => Reference.ToString();
 
     public bool IsEnabled => GetAttribute<bool?>("IsEnabled") ?? false;
 
