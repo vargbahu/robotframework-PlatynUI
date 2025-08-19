@@ -181,7 +181,7 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
     public string Name => "";
     public string Role => LocalName;
     public string ClassName => "";
-    public string[] SupportedRoles => ["Adapter"];
+    public string[] SupportedRoles => GetAttribute<string[]>("SupportedRoles") ?? ["Adapter"];
     public string Type => "element";
     public string[] SupportedTypes => ["element"];
     public string FrameworkId => "";
