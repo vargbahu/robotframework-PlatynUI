@@ -209,5 +209,16 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
 
     public Rect VisibleRectangle => GetAttribute<Rect?>("VisibleRectangle") ?? Rect.Empty;
 
-    public Point? DefaultClickPosition => GetAttribute<Point?>("DefaultClickPosition") ?? Point.Empty;
+    public Point? DefaultClickPosition
+    {
+        get
+        {
+            var data = GetAttribute<double[]?>("DefaultClickPosition");
+            if (data is not null && data.Length == 2)
+            {
+                return new Point(data[0], data[1]);
+            }
+            return  Point.Empty;
+        }
+    }
 }
