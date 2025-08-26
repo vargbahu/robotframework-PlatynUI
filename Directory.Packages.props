@@ -24,14 +24,14 @@
     <PackageVersion Include="Tmds.DBus.SourceGenerator" Version="0.0.20" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.Themes.Simple" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.2.7" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.7" />
-    <PackageVersion Include="FluentAvaloniaUI" Version="2.3.0" />
+    <PackageVersion Include="Avalonia" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Themes.Simple" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.3" />
+    <PackageVersion Include="FluentAvaloniaUI" Version="2.4.0" />
   </ItemGroup>
 </Project>
