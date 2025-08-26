@@ -6,5 +6,5 @@ paths = ["tests/robot"]
 
 log-level = "TRACE"
 
-[env]
-PYTHONNET_RUNTIME = "coreclr"
+# [env]
+# PYTHONNET_RUNTIME = "coreclr"
