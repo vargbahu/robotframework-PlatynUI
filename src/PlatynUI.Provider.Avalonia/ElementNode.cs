@@ -43,6 +43,41 @@ internal class ElementNode : Node<Control>
         }
     }
 
+    private Rect? BoundingRectangle
+    {
+        get
+        {
+            if (Element == null || AutomationPeer == null)
+            {
+                return null;
+            }
+
+            var r = GetBounds(Element);
+
+            var root = Element.GetVisualRoot();
+
+            if (root == null)
+            {
+                return null;
+            }
+
+            return new PixelRect(root.PointToScreen(r.TopLeft), root.PointToScreen(r.BottomRight)).ToRect(1);
+        }
+    }
+
+    public Point? DefaultClickPosition
+    {
+        get
+        {
+            var b = BoundingRectangle;
+
+            if (!b.HasValue)
+                return null;
+
+            return new Point(b.Value.X + b.Value.Width / 2, b.Value.Y + b.Value.Height / 2);
+        }
+    }
+
     private Dictionary<string, Func<object?>> GetAttributes()
     {
         var result = new Dictionary<string, Func<object?>>
@@ -54,29 +89,21 @@ internal class ElementNode : Node<Control>
             ["ClassName"] = () => Element?.GetType().ToString() ?? "",
             ["BoundingRectangle"] = () =>
             {
-                var pr = Dispatcher.UIThread.Invoke<Rect?>(() =>
-                {
-                    if (Element == null || AutomationPeer == null)
-                    {
-                        return null;
-                    }
-
-                    var r = GetBounds(Element);
-
-                    var root = Element.GetVisualRoot();
-
-                    if (root == null)
-                    {
-                        return null;
-                    }
-
-                    return new PixelRect(root.PointToScreen(r.TopLeft), root.PointToScreen(r.BottomRight)).ToRect(1);
-                });
+                var pr = Dispatcher.UIThread.Invoke(() => BoundingRectangle);
 
                 if (!pr.HasValue)
                     return null;
 
                 return new double[] { pr.Value.X, pr.Value.Y, pr.Value.Width, pr.Value.Height };
+            },
+            ["DefaultClickPosition"] = () =>
+            {
+                var pr = Dispatcher.UIThread.Invoke(() => DefaultClickPosition);
+
+                if (!pr.HasValue)
+                    return null;
+
+                return new double[] { pr.Value.X, pr.Value.Y };
             },
             ["IsEnabled"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsEnabled) ?? false,
             ["IsVisible"] = () => Dispatcher.UIThread.Invoke(() => Element?.IsVisible) ?? false,
