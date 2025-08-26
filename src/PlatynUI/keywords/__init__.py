@@ -6,6 +6,7 @@ from .activatable import ActivatableKeywords
 from .application import Application
 from .keyboard import Keyboard
 from .mouse import Mouse
+from .properties import Properties
 from .text import TextKeywords
 from .types import ElementDescriptor, RootElementDescriptor
 from .wait import Wait
@@ -16,8 +17,9 @@ __all__ = [
     "ElementDescriptor",
     "Keyboard",
     "Mouse",
+    "Properties",
     "RootElementDescriptor",
     "TextKeywords",
     "TimeSpan",
-    "Wait",
+    "Wait"
 ]

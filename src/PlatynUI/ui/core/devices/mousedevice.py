@@ -189,7 +189,7 @@ class DefaultMouseDevice(MouseDevice):
 
         if pos and pos != start_pos:
             if self.move_time > 0 and self.move_delay < self.move_time:
-                for p in self._generate_move_events(start_pos, pos):
+                for p in self._generate_move_events(start_pos, pos):                    
                     self.__base_mouse_device.move_to(p)
                     self.delay(self.move_delay)
 
