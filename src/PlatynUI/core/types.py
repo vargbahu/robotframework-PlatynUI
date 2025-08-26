@@ -172,11 +172,11 @@ class Rect:
 
     @property
     def x2(self) -> float:
-        return self.left + self.width - 1
+        return self.left + self.width
 
     @property
     def y2(self) -> float:
-        return self.top + self.height - 1
+        return self.top + self.height
 
     @property
     def is_valid(self) -> bool:
