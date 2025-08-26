@@ -83,7 +83,7 @@ internal class ElementNode : Node<Control>
         var result = new Dictionary<string, Func<object?>>
         {
             ["Name"] = () => Element?.Name,
-            ["Role"] = () => new string[] { LocalName },
+            ["Role"] = () => LocalName,
             ["SupportedRoles"] = () => YieldSupportedRoles(Element).ToArray(),
             ["AutomationId"] = () => Dispatcher.UIThread.Invoke(() => AutomationPeer?.GetAutomationId()),
             ["ClassName"] = () => Element?.GetType().ToString() ?? "",
