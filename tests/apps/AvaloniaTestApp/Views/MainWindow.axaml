@@ -26,6 +26,8 @@
             VerticalAlignment="Center" />
         <TextBox x:Name="AutoCompleteEditBox" Text="{Binding Greeting}"
             HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.AutomationId="ATextBox" />
+        <ScrollBar 
+             HorizontalAlignment="Left" Visibility="Visible" VerticalAlignment="Center" Orientation="Horizontal" Width="100" />                
     </StackPanel>
 
 </Window>

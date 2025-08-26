@@ -17,8 +17,10 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    readonly string[] gretings = ["Hello", "Hi", "What's up?", "How are you?"];
+    readonly Random random = new();
     public void ClickCommand()
-    {
-        Greeting = "Hello Avalonia!";
+    {        
+        Greeting = gretings[random.Next(gretings.Length-1)];
     }
 }
