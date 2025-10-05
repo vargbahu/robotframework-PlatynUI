@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from enum import Enum, auto
-from typing import Optional, Union
 
 from robotlibcore import keyword
 

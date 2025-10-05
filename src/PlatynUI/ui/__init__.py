@@ -16,6 +16,7 @@ from .element import Element
 from .graphic import Graphic, GraphicItem
 from .header import Header, HeaderItem
 from .item import Item
+from .label import Label
 from .lists import List, ListItem
 from .locator import Locator, locator
 from .menus import Menu, MenuBar, MenuItem
