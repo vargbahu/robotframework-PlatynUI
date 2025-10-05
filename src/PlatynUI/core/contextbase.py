@@ -309,7 +309,7 @@ class ContextBase(metaclass=ABCMeta):
     def children(self) -> List["ContextBase"]:
         return list(self)
 
-    def get_properties(self) -> List[str]:
+    def get_property_names(self) -> List[str]:
         self.ensure_that(self._adapter_exists)
 
         return self.adapter.get_strategy(Properties).get_property_names()

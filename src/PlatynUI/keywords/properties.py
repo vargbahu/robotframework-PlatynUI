@@ -3,10 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from enum import Enum, auto
+from typing import Union
 
 from robotlibcore import keyword
 
-from ..ui.strategies import Element
+from ..core.strategies import Properties
 from .assertable import assertable
 from .types import ElementDescriptor
 
@@ -20,13 +21,9 @@ class PropertyName(Enum):
 class Properties:
     @keyword
     @assertable
-    def get_property_value(self, descriptor: ElementDescriptor[Element], name: PropertyName) -> None:
-        match name:
-            case PropertyName.BoundingRectangle:
-                return descriptor().bounding_rectangle
-            case PropertyName.Enabled:
-                return descriptor().is_enabled
-            case PropertyName.Visible:
-                return descriptor().is_visible
-            case _:
-                raise TypeError("Unknown property")
+    def get_property_value(self, descriptor: ElementDescriptor[Properties], name: Union[PropertyName, str]) -> None:
+        return descriptor().get_property_value(name)
+
+    @keyword
+    def get_property_names(self, descriptor: ElementDescriptor[Properties]) -> None:
+        return descriptor().get_property_names()

@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.ComponentModel.Composition;
+
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
+
 using Tmds.DBus.Protocol;
 using Tmds.DBus.SourceGenerator;
+
 using Attribute = PlatynUI.Runtime.Core.Attribute;
 
 [assembly: PlatynUiExtension(supportedPlatforms: [RuntimePlatform.Linux])]
@@ -217,6 +220,20 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
         ];
     }
 
+    public string[] GetAttributeNames()
+    {
+        return [.. Attributes.Keys];
+    }
+
+    public object? GetAttributeValue(string name)
+    {
+        if (Attributes.TryGetValue(name, out var attribute))
+        {
+            return attribute.Value;
+        }
+        throw new KeyNotFoundException($"Attribute '{name}' not found.");
+    }
+
     private Dictionary<string, IAttribute> GetAttributes()
     {
         return GetAttributesList().OrderBy(x => x.Name).ToDictionary(x => x.Name);
@@ -402,9 +419,24 @@ class ComponentAdapter(Connection connection, INode? parent, ElementReference el
     {
         get
         {
-            var text = new OrgA11yAtspiTextProxy(Connection, ElementReference.Service, ElementReference.Path);
-            var l = text.GetCharacterCountPropertyAsync().GetAwaiter().GetResult();
-            return text.GetTextAsync(0, l).GetAwaiter().GetResult();
+            try
+            {
+                var text = new OrgA11yAtspiTextProxy(Connection, ElementReference.Service, ElementReference.Path);
+                var l = text.GetCharacterCountPropertyAsync().GetAwaiter().GetResult();
+                return text.GetTextAsync(0, l).GetAwaiter().GetResult();
+            }
+            catch (DBusException)
+            {
+                try
+                {
+                    var text = new OrgA11yAtspiValueProxy(Connection, ElementReference.Service, ElementReference.Path);
+                    return text.GetCurrentValuePropertyAsync().GetAwaiter().GetResult().ToString();
+                }
+                catch (DBusException)
+                {
+                    return Name;
+                }
+            }
         }
     }
 }

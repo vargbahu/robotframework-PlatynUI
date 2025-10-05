@@ -143,3 +143,20 @@ public interface INodeProvider
 {
     IEnumerable<INode> GetNodes(INode parent);
 }
+
+
+public static class INodeExtensions
+{
+    public static string[] GetAttributeName(this INode node)
+    {
+        return [.. node.Attributes.Keys];
+    }
+    public static object? GetAttributeValue(this INode node, string name)
+    {
+        if (node.Attributes.TryGetValue(name, out var attribute))
+        {
+            return attribute.Value;
+        }
+        throw new KeyNotFoundException($"Attribute '{name}' not found.");
+    }
+}

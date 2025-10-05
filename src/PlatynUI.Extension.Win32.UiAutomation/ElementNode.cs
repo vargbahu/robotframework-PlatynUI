@@ -6,9 +6,11 @@ using PlatynUI.Extension.Win32.UiAutomation.Client;
 using PlatynUI.Extension.Win32.UiAutomation.Core;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
+
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+
 using IAdapter = PlatynUI.Runtime.Core.IAdapter;
 using IAttribute = PlatynUI.Runtime.Core.IAttribute;
 using INode = PlatynUI.Runtime.Core.INode;
@@ -105,6 +107,20 @@ public partial class ElementNode(INode? parent, IUIAutomationElement element) : 
             .ToDictionary(x => x.Name);
 
         return result;
+    }
+
+    public string[] GetAttributeNames()
+    {
+        return [.. Attributes.Keys];
+    }
+
+    public object? GetAttributeValue(string name)
+    {
+        if (Attributes.TryGetValue(name, out var attribute))
+        {
+            return attribute.Value;
+        }
+        throw new KeyNotFoundException($"Attribute '{name}' not found.");
     }
 
     private object? GetPropertyValue(Automation.PropertyIdAndName attribute)

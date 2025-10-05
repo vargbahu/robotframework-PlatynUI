@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
+
 using Newtonsoft.Json.Linq;
+
 using PlatynUI.Provider.Core;
 using PlatynUI.Runtime;
 using PlatynUI.Runtime.Core;
+
 using Attribute = PlatynUI.Runtime.Core.Attribute;
 
 namespace PlatynUI.Extension.Provider.Client;
@@ -148,6 +151,21 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
         return default;
     }
 
+
+    public string[] GetAttributeNames()
+    {
+        return [.. Attributes.Keys];
+    }
+
+    public object? GetAttributeValue(string name)
+    {
+        if (Attributes.TryGetValue(name, out var attribute))
+        {
+            return attribute.Value;
+        }
+        throw new KeyNotFoundException($"Attribute '{name}' not found.");
+    }
+
     public bool TryEnsureVisible()
     {
         //TODO: throw new NotImplementedException();
@@ -218,7 +236,7 @@ class ElementNode(INode? parent, ElementReference reference, ProcessProvider pro
             {
                 return new Point(data[0], data[1]);
             }
-            return  Point.Empty;
+            return Point.Empty;
         }
     }
 }

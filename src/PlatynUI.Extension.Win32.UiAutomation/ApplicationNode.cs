@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
+
 using PlatynUI.Extension.Win32.UiAutomation.Core;
 using PlatynUI.Runtime.Core;
 
@@ -76,6 +77,20 @@ public class ApplicationNode(Runtime.Core.INode? parent, int processId) : Runtim
         }
             .OrderBy(x => x.Name)
             .ToDictionary(a => a.Name);
+    }
+
+    public string[] GetAttributeNames()
+    {
+        return [.. Attributes.Keys];
+    }
+
+    public object? GetAttributeValue(string name)
+    {
+        if (Attributes.TryGetValue(name, out var attribute))
+        {
+            return attribute.Value;
+        }
+        throw new KeyNotFoundException($"Attribute '{name}' not found.");
     }
 
     public Runtime.Core.INode Clone()

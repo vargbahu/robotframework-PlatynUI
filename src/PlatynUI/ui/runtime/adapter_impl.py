@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple, Type, c
 
 from PlatynUI.core import Adapter
 from PlatynUI.core.adapter import TStrategyBase
+from PlatynUI.core.strategies import Properties
 from PlatynUI.core.types import Point, Rect
 from PlatynUI.ui.strategies import Element
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from .technology_impl import TechnologyImpl
 
 
-class ElementImpl(Element, AdapterImplBase):
+class ElementImpl(Element, AdapterImplBase, Properties):
     @property
     def element_interface(self) -> "IElement":
         return cast("IElement", self.adapter_interface)
@@ -100,6 +101,12 @@ class ElementImpl(Element, AdapterImplBase):
 
     def try_bring_into_view(self) -> bool:
         return self.element_interface.TryBringIntoView()
+
+    def get_property_names(self) -> List[str]:
+        return list(self.element_interface.GetAttributeNames())
+
+    def get_property_value(self, name: str) -> Any:
+        return self.element_interface.GetAttributeValue(name)
 
 
 class AdapterImpl(Adapter, ElementImpl):

@@ -56,7 +56,7 @@ def test_sixth() -> None:
     context: Element = ContextFactory.create_context(
         Locator(path="/Pane[@Name='Taskleiste']//Button[@Name='Start' and @Role='Button']"), Button
     )
-    props = context.get_properties()
+    props = context.get_property_names()
 
     assert "RuntimeId" in props
     assert "BoundingRectangle" in props
