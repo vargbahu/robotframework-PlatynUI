@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.9.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.8.1..v0.9.0) - 2025-10-05
+
+### Bug Fixes
+
+- **avalonia:** Correct role attribute ([4b6dd43](https://github.com/imbus/robotframework-PlatynUI/commit/4b6dd43e3af329bdeb1f45276d7e585beff904fc))
+- Type keys implementation on x11 ([0f4b80b](https://github.com/imbus/robotframework-PlatynUI/commit/0f4b80b81851dfb22d5c588a273ecb780ae718e4))
+- Correct some things in Avalonia provider (#76) ([d4dff2e](https://github.com/imbus/robotframework-PlatynUI/commit/d4dff2e3fd1236235637a50db4e7cd10db21b01f))
+
+
+  * feat: add IAdapter interface to Provider.Client.ElementNode
+
+  * feat: add DefaultClickPosition to avalonia provider
+
+  * feat: get SupportedRoles from attributes
+- Correct calculation of x2 and y1 in a rect ([7cfbf3d](https://github.com/imbus/robotframework-PlatynUI/commit/7cfbf3dae2a3db5bc0c91549a6f5aa648f7bd416))
+- Add a name and automationid to scrollbar in avalonia demo app ([2d09c91](https://github.com/imbus/robotframework-PlatynUI/commit/2d09c919a4841d20ab06898c5763b993dd7bad00))
+
+
+### Features
+
+- Add a scrollbar to the avalonia app ([c3844c5](https://github.com/imbus/robotframework-PlatynUI/commit/c3844c5b61ac28f26b48ec6c36885637f2155202))
+- Add `Get Property Value` keyword ([44dc166](https://github.com/imbus/robotframework-PlatynUI/commit/44dc1667783580d76e36da26038172e0290f4560))
+- Add `Mouse Position` keyword and extend all other mouse keywords to get the final position after calling ([26cb4a9](https://github.com/imbus/robotframework-PlatynUI/commit/26cb4a9455f81c1956486d9cfb5574c9cd72be82))
+- Add Label and StaticText classes to enhance UI component support ([7afd025](https://github.com/imbus/robotframework-PlatynUI/commit/7afd0255eccbe0e8b370b9d7402924865e24c87f))
+- Add methods/Keywords to retrieve attribute/property names ([1a4196e](https://github.com/imbus/robotframework-PlatynUI/commit/1a4196ed58321936259685a930c1716508dd0943))
+
+
+### Testing
+
+- Type keys on x11 ([a346acc](https://github.com/imbus/robotframework-PlatynUI/commit/a346acc8a8866970f6ca63e589f8c409fb1e3a4c))
+
+
 ## [0.8.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.8.0..v0.8.1) - 2025-06-24
 
 ### Bug Fixes
