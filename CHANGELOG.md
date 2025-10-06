@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [0.9.1](https://github.com/imbus/robotframework-PlatynUI/compare/v0.9.0..v0.9.1) - 2025-10-06
+
+### Bug Fixes
+
+- Update Python version requirement to exclude 3.14 ([6ba06cf](https://github.com/imbus/robotframework-PlatynUI/commit/6ba06cfb2eb083f785e7ba2b4093cb776ee63fed))
+- Update return types in property methods to fix errors in assertion methods ([f5d192a](https://github.com/imbus/robotframework-PlatynUI/commit/f5d192a83e6f84dfa00a89e3300d957128ef7ca1))
+
+
 ## [0.9.0](https://github.com/imbus/robotframework-PlatynUI/compare/v0.8.1..v0.9.0) - 2025-10-05
 
 ### Bug Fixes
