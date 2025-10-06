@@ -21,9 +21,10 @@ class PropertyName(Enum):
 class Properties:
     @keyword
     @assertable
-    def get_property_value(self, descriptor: ElementDescriptor[Properties], name: Union[PropertyName, str]) -> None:
+    def get_property_value(self, descriptor: ElementDescriptor[Properties], name: Union[PropertyName, str]) -> any:
         return descriptor().get_property_value(name)
 
     @keyword
-    def get_property_names(self, descriptor: ElementDescriptor[Properties]) -> None:
+    @assertable
+    def get_property_names(self, descriptor: ElementDescriptor[Properties]) -> list[str]:
         return descriptor().get_property_names()

@@ -129,7 +129,7 @@ class PlatynUI(DynamicCore):
 
         if kw is not None and getattr(kw, PLATYNUI_ASSERTABLE_FIELD, False):
             result["assertion_operator"] = Optional[AssertionOperator]
-            result["assertion_expected"] = result.get("return", Optional[Any])
+            result["assertion_expected"] = any
             result["assertion_message"] = Optional[str]
 
         return result
