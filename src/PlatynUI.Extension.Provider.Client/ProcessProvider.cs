@@ -87,6 +87,18 @@ public class NodeInfoProxy(INodeInfoAsync nodeInfoAsync)
     {
         return NodeInfoAsync.GetAttributeTypeAsync(reference, attributeName);
     }
+
+    public bool HasChildrenChanged(ElementReference reference )
+    {
+        return ThreadHelper.JoinableTaskFactory.Run(() =>
+            NodeInfoAsync.HasChildrenChangedAsync(reference)
+        );
+    }
+
+    public Task<bool> HasChildrenChangedAsync(ElementReference reference)
+    {
+        return NodeInfoAsync.HasChildrenChangedAsync(reference);
+    }
 }
 
 public class ApplicationInfoProxy(IApplicationInfoAsync applicationInfoAsync)

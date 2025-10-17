@@ -127,4 +127,15 @@ public class NodeInfo : INodeInfoAsync
 
         return Task.FromResult(node.NodeType);
     }
+
+    public Task<bool>HasChildrenChangedAsync(ElementReference reference)
+    {
+        var node = GetNodeFromReference(reference);
+        if (node is null)
+        {
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(node.HasChildrenChanged());
+    }
 }

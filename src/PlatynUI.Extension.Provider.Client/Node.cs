@@ -22,7 +22,16 @@ public class Node(INode? parent, ElementReference reference, ProcessProvider pro
     public INode? Parent { get; } = parent;
 
     private List<INode>? _children = null;
-    public IList<INode> Children => _children ??= GetChildren();
+    public IList<INode> Children
+    {
+        get
+        {
+            if (Provider.NodeInfo.HasChildrenChanged(Reference))
+                _children = null;
+
+            return _children ??= GetChildren();
+        }
+    }
 
     protected virtual List<INode> GetChildren()
     {

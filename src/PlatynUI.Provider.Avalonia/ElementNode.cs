@@ -18,6 +18,8 @@ internal class ElementNode : Node<Control>
 
     protected Dictionary<string, Func<object?>> Attributes => _attributes ??= GetAttributes();
 
+    private bool _childrenChanged = false;
+
     private static Rect GetBounds(Control control)
     {
         var root = control.GetVisualRoot();
@@ -145,11 +147,41 @@ internal class ElementNode : Node<Control>
     }
 
     public AutomationPeer? _automationPeer = null;
-    public AutomationPeer? AutomationPeer =>
-        _automationPeer ??=
-            Element != null
-                ? Dispatcher.UIThread.Invoke(() => ControlAutomationPeer.CreatePeerForElement(Element))
-                : null;
+    public AutomationPeer? AutomationPeer
+    {
+        get
+        {
+            if (_automationPeer == null && Element != null)
+            {
+                _automationPeer = Dispatcher.UIThread.Invoke(() => ControlAutomationPeer.CreatePeerForElement(Element));
+                if (_automationPeer != null)
+                {
+                    SubscribeToChildrenChanges();
+                }
+            }
+            return _automationPeer;
+        }
+    }
+
+    private void SubscribeToChildrenChanges()
+    {
+        if (AutomationPeer != null)
+        {
+            AutomationPeer.ChildrenChanged += OnChildrenChanged;
+        }
+    }
+
+    private void OnChildrenChanged(object? sender, EventArgs e)
+    {
+        _childrenChanged = true;
+    }
+
+    public override bool HasChildrenChanged()
+    {
+        var changed = _childrenChanged;
+        _childrenChanged = false;
+        return changed;
+    }
 
     public override string[] GetAttributeNames()
     {

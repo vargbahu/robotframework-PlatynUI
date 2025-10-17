@@ -77,6 +77,8 @@ public class ApplicationNode : Node
         return value?.GetType().FullName ?? "";
     }
 
+    public override bool HasChildrenChanged() => false;
+
     internal override IEnumerable<Node> GetChildren()
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)

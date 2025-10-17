@@ -53,5 +53,6 @@ namespace PlatynUI.Provider.Core
         Task<string[]> GetAttributeNamesAsync(ElementReference reference);
         Task<object?> GetAttributeValueAsync(ElementReference reference, string attributeName);
         Task<string> GetAttributeTypeAsync(ElementReference reference, string attributeName);
+        Task<bool>HasChildrenChangedAsync(ElementReference reference);
     }
 }

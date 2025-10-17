@@ -20,6 +20,7 @@ public abstract class Node
     public abstract string LocalName { get; }
 
     internal abstract IEnumerable<Node> GetChildren();
+    public abstract bool HasChildrenChanged();
 }
 
 public abstract class Node<TElement> : Node
