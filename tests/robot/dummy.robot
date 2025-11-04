@@ -1,6 +1,8 @@
 *** Settings ***
-Library     PlatynUI
-Test Tags    wip
+Library         PlatynUI
+
+Test Tags       wip
+
 
 *** Variables ***
 ${ROOT_PATH}        /app:Application[@Name="explorer"]
@@ -74,6 +76,11 @@ third
     Activate    .//Button[@AutomationId='DoSomething']
 
     Activate    ./Window//Button
+
+fourth
+    Activate    Window[@Name='Rechner']//Button[@AutomationId="num1Button"]
+    Mouse Double Click    Window[@Name='Rechner']//Button[@AutomationId="num2Button"]
+    Mouse Double Click    Window[@Name='Rechner']//Button[@AutomationId="num2Button"]
 
 
 *** Keywords ***
