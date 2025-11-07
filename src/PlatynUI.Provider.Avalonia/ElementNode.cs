@@ -147,19 +147,17 @@ internal class ElementNode : Node<Control>
     }
 
     public AutomationPeer? _automationPeer = null;
-    public AutomationPeer? AutomationPeer
+    public AutomationPeer? AutomationPeer => _automationPeer;
+
+    private void InitializeAutomationPeer()
     {
-        get
+        if (Element != null)
         {
-            if (_automationPeer == null && Element != null)
+            _automationPeer = Dispatcher.UIThread.Invoke(() => ControlAutomationPeer.CreatePeerForElement(Element));
+            if (_automationPeer != null)
             {
-                _automationPeer = Dispatcher.UIThread.Invoke(() => ControlAutomationPeer.CreatePeerForElement(Element));
-                if (_automationPeer != null)
-                {
-                    SubscribeToChildrenChanges();
-                }
+                SubscribeToChildrenChanges();
             }
-            return _automationPeer;
         }
     }
 
@@ -221,6 +219,8 @@ internal class ElementNode : Node<Control>
         {
             return [];
         }
+
+        InitializeAutomationPeer();
 
         return Element
             .GetVisualChildren()
