@@ -40,11 +40,13 @@
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,0,0,20">
                 <Button Content="Add Button" Command="{Binding AddButtonCommand}" 
-                        AutomationProperties.AutomationId="AddButtonCommand" />
+                        AutomationProperties.AutomationId="AddButtonCommand" />                
                 
                 <!-- Dynamic Button - only exists in visual tree when visible -->
                 <ContentControl Content="{Binding DynamicRemoveButton}" />
             </StackPanel>
+            <Button Content="Dummy Button" HorizontalAlignment="Center"
+                VerticalAlignment="Center" AutomationProperties.AutomationId="DummyButton" />
         </StackPanel>
     </ScrollViewer>
 
