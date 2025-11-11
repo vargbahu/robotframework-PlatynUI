@@ -193,6 +193,7 @@ internal class ElementNode : Node<Control>
         return Element
             .GetVisualChildren()
             .Cast<Control>()
+            .Where(e => e.IsEffectivelyVisible == true)
             .Select(e => NodeInfo.GetOrCreateNode<ElementNode, Control>(e))
             .Where(n => n != null && n.IsValid());
     }
