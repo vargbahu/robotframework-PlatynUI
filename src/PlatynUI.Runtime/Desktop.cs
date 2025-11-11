@@ -104,6 +104,11 @@ public class Desktop : INode, IAdapter, IElement
 
     public void Invalidate()
     {
+        foreach (var child in Children)
+        {
+            try { child.Invalidate(); } catch { }
+        }
+
         _children = null;
     }
 
