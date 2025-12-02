@@ -1,5 +1,6 @@
 using System.Diagnostics;
-using System.IO.Pipes;
+using System.Net;
+using System.Net.Sockets;
 using PlatynUI.Provider.Core;
 using StreamJsonRpc;
 
@@ -31,41 +32,51 @@ namespace PlatynUI.Provider.Server
 
         public async Task RunAsync(CancellationToken cancellationToken)
         {
-            string pipeName = PipeHelper.BuildPipeName(Environment.ProcessId);
-
-            using var mutex = new Mutex(true, pipeName);
-
-            int clientId = 0;
-            while (true)
+            int port = ConnectionHelper.GetPortForProcess(Environment.ProcessId);
+            var endpoint = new IPEndPoint(IPAddress.Any, port);
+            var listener = new TcpListener(endpoint);
+            
+            try
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    Debug.WriteLine("Cancellation requested. Exiting the loop.");
-                    break;
-                }
+                listener.Start();
+                Debug.WriteLine($"TCP server started on port {port} for process {Environment.ProcessId}");
+                
+                // Register this server in the connection registry with actual hostname
+                string hostName = ConnectionHelper.GetLocalHostName();
+                ConnectionHelper.RegisterServer(Environment.ProcessId, port, hostName);
 
-                Debug.WriteLine("Waiting for client to make a connection...");
+                int clientId = 0;
+                while (true)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("Cancellation requested. Exiting the loop.");
+                        break;
+                    }
 
-                var stream = new NamedPipeServerStream(
-                    pipeName,
-                    PipeDirection.InOut,
-                    NamedPipeServerStream.MaxAllowedServerInstances,
-                    PipeTransmissionMode.Byte,
-                    PipeOptions.Asynchronous
-                );
-                try
-                {
-                    await stream.WaitForConnectionAsync(cancellationToken);
-                    _ = RespondToRpcRequestsAsync(stream, ++clientId);
+                    Debug.WriteLine("Waiting for client to make a connection...");
+
+                    try
+                    {
+                        var client = await listener.AcceptTcpClientAsync(cancellationToken);
+                        var stream = client.GetStream();
+                        _ = RespondToRpcRequestsAsync(stream, ++clientId);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine($"Error while waiting for connection: {e}");
+                    }
                 }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine($"Error while waiting for connection: {e}");
-                }
+            }
+            finally
+            {
+                listener.Stop();
+                ConnectionHelper.UnregisterServer(Environment.ProcessId);
+                Debug.WriteLine($"TCP server stopped on port {port}");
             }
         }
     }

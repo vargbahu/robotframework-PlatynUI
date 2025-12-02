@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
-using System.IO.Pipes;
+using System.Net.Sockets;
 using PlatynUI.Provider.Core;
 using PlatynUI.Runtime.Core;
 using StreamJsonRpc;
@@ -104,7 +104,7 @@ public class ApplicationInfoProxy(IApplicationInfoAsync applicationInfoAsync)
     }
 }
 
-public class ProcessProvider(Process process, string pipeName, INode? parent) : IDisposable
+public class ProcessProvider(Process process, int port, string hostName, INode? parent) : IDisposable
 {
     ~ProcessProvider()
     {
@@ -128,11 +128,13 @@ public class ProcessProvider(Process process, string pipeName, INode? parent) : 
 
         if (disposing)
         {
+            TcpClient?.Dispose();
             Stream?.Dispose();
             JsonRpc?.Dispose();
         }
 
         _disposed = true;
+        TcpClient = null;
         Stream = null;
         JsonRpc = null;
     }
@@ -140,7 +142,8 @@ public class ProcessProvider(Process process, string pipeName, INode? parent) : 
     public Process Process { get; } = process;
     public INode? Parent { get; } = parent;
 
-    NamedPipeClientStream? Stream = null;
+    TcpClient? TcpClient = null;
+    NetworkStream? Stream = null;
     JsonRpc? JsonRpc = null;
 
     private ApplicationInfoProxy? _applicationInfo = null;
@@ -152,26 +155,30 @@ public class ProcessProvider(Process process, string pipeName, INode? parent) : 
 
     public string Technology = "";
 
-    public string PipeName => pipeName;
+    public int Port => port;
+    public string HostName => hostName;
 
     public async Task ConnectAsync()
     {
-        if (Stream != null)
+        if (TcpClient != null && TcpClient.Connected)
         {
             return;
         }
 
-        Stream = new NamedPipeClientStream(".", PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+        TcpClient = new TcpClient();
         try
         {
-            Debug.WriteLine($"Connecting to process {Process.Id} with name {Process.ProcessName} and {PipeName}");
-            await Stream.ConnectAsync(2000);
+            Debug.WriteLine($"Connecting to process {Process.Id} with name {Process.ProcessName} at {HostName}:{Port}");
+            await TcpClient.ConnectAsync(HostName, Port);
+            Stream = TcpClient.GetStream();
         }
         catch
         {
             Debug.WriteLine(
-                $"Failed to connect to process {Process.Id} with name {Process.ProcessName} and {PipeName}"
+                $"Failed to connect to process {Process.Id} with name {Process.ProcessName} at {HostName}:{Port}"
             );
+            TcpClient?.Dispose();
+            TcpClient = null;
             Stream = null;
             throw;
         }
@@ -189,13 +196,15 @@ public class ProcessProvider(Process process, string pipeName, INode? parent) : 
         }
         catch (Exception e)
         {
+            TcpClient?.Dispose();
+            TcpClient = null;
             Stream = null;
             JsonRpc = null;
             _applicationInfo = null;
             _nodeInfo = null;
 
             Debug.WriteLine(
-                $"Failed to attach to process {Process.Id} with name {Process.ProcessName} and {PipeName}: {e}"
+                $"Failed to attach to process {Process.Id} with name {Process.ProcessName} at {HostName}:{Port}: {e}"
             );
             throw;
         }

@@ -22,23 +22,33 @@ class NodeProvider : INodeProvider
         ThreadHelper.JoinableTaskFactory.Run(async () =>
         {
             var tasks = new List<Task<ProcessProvider?>>();
-            foreach (var process in Process.GetProcesses())
+            
+            // 1. Get all registered LOCAL servers from the connection registry
+            var registeredServers = ConnectionHelper.GetRegisteredServers();
+            
+            foreach (var serverEntry in registeredServers)
             {
-                if (_providerProcesses.ContainsKey(process.Id))
+                int processId = serverEntry.Key;
+                var serverInfo = serverEntry.Value;
+                
+                if (_providerProcesses.ContainsKey(processId))
                 {
                     continue;
                 }
 
-                var pipeName = PipeHelper.BuildPipeName(process.Id);
-
-                if (Mutex.TryOpenExisting(pipeName, out var mutex))
+                Process? process = null;
+                try
                 {
-                    Debug.WriteLine($"Found mutex for process {process.Id} with name {process.ProcessName}");
+                    process = Process.GetProcessById(processId);
                 }
-                else
+                catch (ArgumentException)
                 {
+                    // Process doesn't exist anymore
+                    Debug.WriteLine($"Process {processId} not found, skipping");
                     continue;
                 }
+
+                Debug.WriteLine($"Found registered server for process {process.Id} with name {process.ProcessName} on port {serverInfo.Port}");
 
                 process.EnableRaisingEvents = true;
 
@@ -50,10 +60,16 @@ class NodeProvider : INodeProvider
                         _providerProcesses.Remove(process.Id);
                     }
                 };
+                
                 tasks.Add(
                     Task.Run(async () =>
                     {
-                        var provider = new ProcessProvider(process, pipeName, parent);
+                        var provider = new ProcessProvider(
+                            process, 
+                            serverInfo.Port, 
+                            serverInfo.HostName ?? "localhost", 
+                            parent
+                        );
                         try
                         {
                             await provider.ConnectAsync();
@@ -67,6 +83,47 @@ class NodeProvider : INodeProvider
                     })
                 );
             }
+            
+            // 2. Also check for REMOTE hosts from configuration
+            var config = ConnectionConfig.Load();
+            foreach (var remoteHost in config.RemoteHosts)
+            {
+                // Use negative process ID for remote connections to avoid conflicts
+                int virtualProcessId = -1 - remoteHost.Port;
+                
+                if (_providerProcesses.ContainsKey(virtualProcessId))
+                {
+                    continue;
+                }
+                
+                Debug.WriteLine($"Attempting to connect to remote host {remoteHost.HostName}:{remoteHost.Port}");
+                
+                tasks.Add(
+                    Task.Run(async () =>
+                    {
+                        // Create a dummy process for remote connections
+                        var dummyProcess = Process.GetCurrentProcess();
+                        var provider = new ProcessProvider(
+                            dummyProcess,
+                            remoteHost.Port,
+                            remoteHost.HostName,
+                            parent
+                        );
+                        try
+                        {
+                            await provider.ConnectAsync();
+                            return provider;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Failed to connect to remote host {remoteHost.HostName}:{remoteHost.Port}: {ex.Message}");
+                            provider.Dispose();
+                            return null;
+                        }
+                    })
+                );
+            }
+            
             var connected = (await Task.WhenAll(tasks) ?? []).Where(x => x != null);
             foreach (var provider in connected)
             {
