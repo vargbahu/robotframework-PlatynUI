@@ -47,6 +47,15 @@
             </StackPanel>
             <Button Content="Dummy Button" HorizontalAlignment="Center"
                 VerticalAlignment="Center" AutomationProperties.AutomationId="DummyButton" />
+            
+            <ComboBox HorizontalAlignment="Center" VerticalAlignment="Center" 
+                      Width="200" Margin="0,10,0,0"
+                      AutomationProperties.AutomationId="TestComboBox">
+                <ComboBoxItem Content="Option 1" />
+                <ComboBoxItem Content="Option 2" />
+                <ComboBoxItem Content="Option 3" />
+                <ComboBoxItem Content="Option 4" IsSelected="True" />
+            </ComboBox>
         </StackPanel>
     </ScrollViewer>
 
