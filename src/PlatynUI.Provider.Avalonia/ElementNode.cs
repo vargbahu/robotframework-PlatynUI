@@ -20,7 +20,9 @@ internal class ElementNode : Node<Control>
 
     private static Rect GetBounds(Control control)
     {
-        var root = control.GetVisualRoot();
+        // Avalonia 12 removed the GetVisualRoot() extension method; TopLevel is a Visual
+        // and exposes PointToScreen, so it covers both uses here.
+        var root = TopLevel.GetTopLevel(control);
 
         if (root is not Visual rootVisual)
             return default;
@@ -54,7 +56,7 @@ internal class ElementNode : Node<Control>
 
             var r = GetBounds(Element);
 
-            var root = Element.GetVisualRoot();
+            var root = TopLevel.GetTopLevel(Element);
 
             if (root == null)
             {
