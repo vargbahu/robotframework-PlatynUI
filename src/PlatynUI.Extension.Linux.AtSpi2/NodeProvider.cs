@@ -115,33 +115,55 @@ class Adapter(Connection connection, INode? parent, ElementReference elementRefe
     {
         var result = new List<INode>();
 
-        var children = Element.GetChildrenAsync().GetAwaiter().GetResult();
-        foreach (var child in children)
+        try
         {
-            var acc = new OrgA11yAtspiAccessibleProxy(connection, child.Item1, child.Item2);
-            var interfaces = acc.GetInterfacesAsync().GetAwaiter().GetResult();
-
-            if (interfaces.Contains("org.a11y.atspi.Component"))
+            var children = Element.GetChildrenAsync().GetAwaiter().GetResult();
+            foreach (var child in children)
             {
-                result.Add(new ComponentAdapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
-                continue;
-            }
-
-            if (interfaces.Contains("org.a11y.atspi.Application"))
-            {
-                var childCount = acc.GetChildCountPropertyAsync().GetAwaiter().GetResult();
-                if (childCount == 0)
+                try
                 {
-                    continue;
+                    AddChild(result, child);
                 }
-                result.Add(new ApplicationAdapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
-
-                continue;
+                catch (DBusException)
+                {
+                    // This particular child was removed/replaced on the a11y bus after the parent's
+                    // GetChildren call returned it; skip it and keep processing the remaining siblings.
+                }
             }
-
-            result.Add(new Adapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
         }
+        catch (DBusException)
+        {
+            // The accessible object was removed/replaced on the a11y bus (e.g. the UI re-rendered
+            // this element) between enumeration and this call. Treat it as having no children.
+        }
+
         return result;
+    }
+
+    private void AddChild(List<INode> result, (string, ObjectPath) child)
+    {
+        var acc = new OrgA11yAtspiAccessibleProxy(connection, child.Item1, child.Item2);
+        var interfaces = acc.GetInterfacesAsync().GetAwaiter().GetResult();
+
+        if (interfaces.Contains("org.a11y.atspi.Component"))
+        {
+            result.Add(new ComponentAdapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
+            return;
+        }
+
+        if (interfaces.Contains("org.a11y.atspi.Application"))
+        {
+            var childCount = acc.GetChildCountPropertyAsync().GetAwaiter().GetResult();
+            if (childCount == 0)
+            {
+                return;
+            }
+            result.Add(new ApplicationAdapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
+
+            return;
+        }
+
+        result.Add(new Adapter(Connection, this, new ElementReference(child.Item1, child.Item2)));
     }
 
     static string ConvertToCamelCase(string input)
