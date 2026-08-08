@@ -80,6 +80,14 @@ public class ApplicationNode : Node
         return value?.GetType().FullName ?? "";
     }
 
+    // Cached reflection handle: direct `Popup.Host` access throws MethodAccessException at runtime
+    // in this app's Avalonia build (its accessibility differs from what we compile against), but
+    // reflection bypasses the compiled callvirt accessibility check.
+    private static readonly System.Reflection.PropertyInfo? PopupHostProperty = typeof(Popup).GetProperty(
+        "Host",
+        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+    );
+
     internal override IEnumerable<Node> GetChildren()
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
@@ -88,54 +96,23 @@ public class ApplicationNode : Node
             var windows = lifetime.Windows
                 .Select(w => NodeInfo.GetOrCreateNode<ElementNode, Control>(w))
                 .Where(n => n != null && n.IsValid());
-            
-            // Get popup roots by searching for open popups in all windows
-            // Must be done on the UI thread
+
+            // Get popup roots by searching for open popups in all windows.
+            // Must be done on the UI thread.
             var popupRoots = Dispatcher.UIThread.Invoke(() =>
             {
                 var roots = new List<Node>();
                 foreach (var window in lifetime.Windows)
                 {
-                    var openPopups = window.GetVisualDescendants()
-                        .OfType<Control>()
-                        .Where(control => control is PopupRoot or OverlayPopupHost);
-                    
-                    //Console.WriteLine($"Found {openPopups.Count()} open popups in window '{window.Title}'.");
-                    //Console.WriteLine($"Popup roots: {string.Join(", ", openPopups.Select(pr => pr!.Name))}");
+                    var openPopups = window.GetVisualDescendants().OfType<Popup>().Where(p => p.IsOpen);
 
-                    foreach (var popupRoot in openPopups)
+                    foreach (var popup in openPopups)
                     {
-                        /*
-                        Console.WriteLine($"\nPopupRoot: {popupRoot!.GetType().Name} (Name: {popupRoot.Name})");
-                        
-                        // Print all descendants
-                        var descendants = popupRoot.GetVisualDescendants().ToList();
-                        Console.WriteLine($"  Total descendants: {descendants.Count}");
-                        
-                        foreach (var descendant in descendants)
+                        if (PopupHostProperty?.GetValue(popup) is not Control popupRoot)
                         {
-                            var indent = "  ";
-                            var level = 0;
-                            var parent = descendant;
-                            while (parent != null && parent != popupRoot)
-                            {
-                                parent = parent.GetVisualParent() as Visual;
-                                level++;
-                            }
-                            indent = new string(' ', level * 2 + 2);
-                            
-                            var controlInfo = $"{indent}{descendant.GetType().Name}";
-                            if (descendant is Control ctrl)
-                            {
-                                controlInfo += $" (Name: {ctrl.Name ?? "null"})";
-                                if (descendant is ContentControl contentCtrl && contentCtrl.Content != null)
-                                {
-                                    controlInfo += $" Content: '{contentCtrl.Content}'";
-                                }
-                            }
-                            Console.WriteLine(controlInfo);
+                            continue;
                         }
-                        */
+
                         var node = NodeInfo.GetOrCreateNode<ElementNode, Control>(popupRoot);
                         if (node != null && node.IsValid())
                         {
@@ -152,3 +129,4 @@ public class ApplicationNode : Node
         return [];
     }
 }
+
