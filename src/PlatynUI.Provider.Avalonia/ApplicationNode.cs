@@ -96,12 +96,9 @@ public class ApplicationNode : Node
                 var roots = new List<Node>();
                 foreach (var window in lifetime.Windows)
                 {
-                    // Find all Popup controls that are currently open
                     var openPopups = window.GetVisualDescendants()
-                        .OfType<Popup>()
-                        .Where(p => p.IsOpen && p.Host is PopupRoot)
-                        .Select(p => p.Host as PopupRoot)
-                        .Where(pr => pr != null);
+                        .OfType<Control>()
+                        .Where(control => control is PopupRoot or OverlayPopupHost);
                     
                     //Console.WriteLine($"Found {openPopups.Count()} open popups in window '{window.Title}'.");
                     //Console.WriteLine($"Popup roots: {string.Join(", ", openPopups.Select(pr => pr!.Name))}");
@@ -139,7 +136,7 @@ public class ApplicationNode : Node
                             Console.WriteLine(controlInfo);
                         }
                         */
-                        var node = NodeInfo.GetOrCreateNode<ElementNode, Control>(popupRoot!);
+                        var node = NodeInfo.GetOrCreateNode<ElementNode, Control>(popupRoot);
                         if (node != null && node.IsValid())
                         {
                             roots.Add(node);

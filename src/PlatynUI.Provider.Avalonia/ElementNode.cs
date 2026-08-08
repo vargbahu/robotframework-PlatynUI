@@ -20,7 +20,7 @@ internal class ElementNode : Node<Control>
 
     private static Rect GetBounds(Control control)
     {
-        var root = control.GetVisualRoot();
+        var root = TopLevel.GetTopLevel(control);
 
         if (root is not Visual rootVisual)
             return default;
@@ -54,7 +54,7 @@ internal class ElementNode : Node<Control>
 
             var r = GetBounds(Element);
 
-            var root = Element.GetVisualRoot();
+            var root = TopLevel.GetTopLevel(Element);
 
             if (root == null)
             {
